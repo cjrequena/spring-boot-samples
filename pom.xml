@@ -18,6 +18,14 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+        <springdoc.version>1.6.11</springdoc.version>
+        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+        <mapstruct.version>1.5.2.Final</mapstruct.version>
+        <!-- https://mvnrepository.com/artifact/org.apache.johnzon/johnzon-core -->
+        <johnzon-core.version>1.2.19</johnzon-core.version>
+        <!-- https://mvnrepository.com/artifact/jakarta.json/jakarta.json-api/2.1.1 -->
+        <jakarta.json-api.version>2.1.1</jakarta.json-api.version>
     </properties>
     <modules>
         <module>spring-boot-data-jpa-h2-sample</module>
