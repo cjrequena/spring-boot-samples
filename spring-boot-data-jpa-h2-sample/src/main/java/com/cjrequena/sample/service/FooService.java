@@ -66,15 +66,14 @@ public class FooService {
 
   public FooDTO update(FooDTO dto) throws FooNotFoundServiceException {
     Optional<FooEntity> optional = fooRepository.findById(dto.getId());
-    optional.ifPresent(
-      entity -> {
-        entity = this.fooMapper.toEntity(dto);
-        fooRepository.saveAndFlush(entity);
-        log.debug("Updated User: {}", entity);
-      }
-    );
-    optional.orElseThrow(() -> new FooNotFoundServiceException("Not Found"));
-    return this.fooMapper.toDTO(optional.get());
+    if (optional.isPresent()) {
+      FooEntity entity = this.fooMapper.toEntity(dto);
+      fooRepository.saveAndFlush(entity);
+      log.debug("Updated account with id {}", entity.getId());
+      return this.fooMapper.toDTO(entity);
+    } else {
+      throw new FooNotFoundServiceException("The account " + dto.getId() + " was not Found");
+    }
   }
 
   public FooDTO patch(Long id, JsonPatch patchDocument) {

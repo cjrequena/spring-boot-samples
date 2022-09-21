@@ -8,11 +8,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -33,12 +32,11 @@ public class FooApi {
   )
   public ResponseEntity<Void> create(
     @Valid @RequestBody FooDTO dto,
-    HttpServletRequest request,
-    UriComponentsBuilder ucBuilder,
-    BindingResult bindingResult) {
+    ServerHttpRequest request,
+    UriComponentsBuilder ucBuilder) {
 
     dto = fooService.create(dto);
-    URI resourcePath = ucBuilder.path(new StringBuilder().append(request.getServletPath()).append("/{id}").toString()).buildAndExpand(dto.getId()).toUri();
+    URI resourcePath = ucBuilder.path(new StringBuilder().append(request.getPath()).append("/{id}").toString()).buildAndExpand(dto.getId()).toUri();
     // Headers
     HttpHeaders headers = new HttpHeaders();
     headers.set(CACHE_CONTROL, "no store, private, max-age=0");
