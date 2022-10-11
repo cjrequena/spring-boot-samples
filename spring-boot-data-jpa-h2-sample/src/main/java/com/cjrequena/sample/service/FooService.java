@@ -4,12 +4,15 @@ import com.cjrequena.sample.db.entity.FooEntity;
 import com.cjrequena.sample.db.repository.FooRepository;
 import com.cjrequena.sample.dto.FooDTO;
 import com.cjrequena.sample.exception.service.FooNotFoundServiceException;
+import com.cjrequena.sample.exception.service.ServiceException;
 import com.cjrequena.sample.mapper.FooMapper;
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonPatch;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -25,21 +28,12 @@ import java.util.stream.Collectors;
  */
 @Log4j2
 @Service
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = ServiceException.class)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FooService {
 
-  private FooMapper fooMapper;
-  private FooRepository fooRepository;
-
-  /**
-   *
-   * @param fooRepository
-   */
-  @Autowired
-  public FooService(FooRepository fooRepository, FooMapper fooMapper) {
-    this.fooRepository = fooRepository;
-    this.fooMapper = fooMapper;
-  }
+  private final FooMapper fooMapper;
+  private final FooRepository fooRepository;
 
   public FooDTO create(FooDTO dto) {
     FooEntity entity = this.fooMapper.toEntity(dto);

@@ -27,6 +27,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @JsonPropertyOrder(value = {
   "date",
+  "status",
   "error_code",
   "message"
 })
@@ -37,6 +38,10 @@ public class ErrorDTO implements Serializable {
   @JsonProperty(value = "date")
   @Getter(onMethod = @__({@JsonProperty("date")}))
   private String date;
+
+  @JsonProperty(value = "status")
+  @Getter(onMethod = @__({@JsonProperty("status")}))
+  private int status;
 
   @JsonProperty(value = "error_code")
   @Getter(onMethod = @__({@JsonProperty("error_code")}))

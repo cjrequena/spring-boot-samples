@@ -1,5 +1,6 @@
 package com.cjrequena.sample;
 
+import lombok.SneakyThrows;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,6 @@ public class MainApplication implements CommandLineRunner {
   }
 
   @Override
-  public void run(String... args) throws Exception {
-
-  }
+  @SneakyThrows
+  public void run(String... args){}
 }
