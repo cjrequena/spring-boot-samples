@@ -16,12 +16,12 @@ services:
         source: "postgres"
         target: "/data/postgres"
     networks:
-      - "spring-boot-samples.local"
+      - "network.local"
     restart: unless-stopped
 #---------------------------------------------------------------------------------------------------------------------
 networks:
-  spring-boot-samples.local:
-    name: "spring-boot-samples.local"
+  network.local:
+    name: "network.local"
     driver: bridge
     ipam:
       driver: default
