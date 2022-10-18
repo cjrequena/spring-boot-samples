@@ -36,6 +36,8 @@ spring.datasource.postgres.jdbcUrl: jdbc:postgresql://${POSTGRES_HOST:localhost}
 spring.datasource.postgres.driver-class-name: org.postgresql.Driver
 spring.datasource.postgres.username: postgres
 spring.datasource.postgres.password: postgres
+spring.datasource.testOnBorrow: true
+spring.datasource.validationQuery: SELECT 1
 
 # JPA specific configs
 spring.jpa.open-in-view: false
@@ -48,6 +50,8 @@ spring.jpa.properties.hibernate.hibernate.dialect: true
 spring.jpa.properties.hibernate.id.new_generator_mappings: false
 spring.jpa.properties.hibernate.search.autoregister_listeners: false
 spring.jpa.properties.hibernate.bytecode.use_reflection_optimizer: false
+spring.jpa.properties.hibernate.default_schema: foo
 
 spring.flyway.enabled: true
 spring.flyway.locations: classpath:/db/migration
+spring.flyway.schemas: foo
