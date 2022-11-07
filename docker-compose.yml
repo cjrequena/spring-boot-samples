@@ -1,9 +1,10 @@
 version: '3.8'
 
 services:
+  #---------------------------------------------------------------------------------------------------------------------
   postgres:
     image: "postgres"
-    container_name: "postgres"
+    #container_name: "postgres"
     hostname: "postgres"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -18,7 +19,21 @@ services:
     networks:
       - "network.local"
     restart: unless-stopped
-#---------------------------------------------------------------------------------------------------------------------
+  #---------------------------------------------------------------------------------------------------------------------
+  redis:
+    image: "redis:alpine"
+    #container_name: "redis"
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - "network.local"
+    restart: unless-stopped
+#-----------------------------------------------------------------------------------------------------------------------
 networks:
   network.local:
     name: "network.local"
