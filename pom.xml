@@ -31,5 +31,6 @@
         <module>spring-boot-data-jpa-h2-sample</module>
         <module>spring-boot-data-jpa-postgres-sample</module>
         <module>spring-boot-data-redis-sample</module>
+        <module>spring-boot-data-mongodb-sample</module>
     </modules>
 </project>

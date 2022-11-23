@@ -33,6 +33,44 @@ services:
     networks:
       - "network.local"
     restart: unless-stopped
+  #---------------------------------------------------------------------------------------------------------------------
+  mongo:
+    image: mongo:latest
+    #container_name: mongo
+    hostname: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27017:27017
+    volumes:
+      - type: volume
+        source: "mongo-data"
+        target: "/data/db"
+      - type: volume
+        source: "mongo-config"
+        target: "/data/configdb"
+    networks:
+      - "network.local"
+  #---------------------------------------------------------------------------------------------------------------------
+  mongo-express:
+    image: mongo-express:latest
+    #container_name: mongo-express
+    hostname: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+    ports:
+      - 8081:8081
+    networks:
+      - "network.local"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    restart: unless-stopped
 #-----------------------------------------------------------------------------------------------------------------------
 networks:
   network.local:
@@ -46,3 +84,7 @@ networks:
 volumes:
   postgres:
     name: "postgres"
+  mongo-data:
+    name: "mongo-data"
+  mongo-config:
+    name: "mongo-config"
