@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 /**
  * <p>
  * <p>
@@ -33,45 +31,45 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FooService {
 
-    private final FooMapper fooMapper;
-    private final FooRepository fooRepository;
+  private final FooMapper fooMapper;
+  private final FooRepository fooRepository;
 
-    public Mono<FooDTO> create(FooDTO dto) {
-        FooEntity entity = this.fooMapper.toEntity(dto);
-        Mono<FooDTO> dto$ = this.fooRepository.save(entity).map(this.fooMapper::toDTO);
-        return dto$;
-    }
+  public Mono<FooDTO> create(FooDTO dto) {
+    FooEntity entity = this.fooMapper.toEntity(dto);
+    Mono<FooDTO> dto$ = this.fooRepository.save(entity).map(this.fooMapper::toDTO);
+    return dto$;
+  }
 
-    public Mono<FooDTO> retrieveById(String id) {
-        Mono<FooEntity> entity$ = fooRepository.findById(id).switchIfEmpty(Mono.error(new FooNotFoundServiceException("Foo not found by id: " + id)));
-        Mono<FooDTO> dto$ = entity$.map((entity) -> this.fooMapper.toDTO(entity));
-        return dto$;
-    }
+  public Mono<FooDTO> retrieveById(String id) {
+    Mono<FooDTO> dto$ = fooRepository.findById(id)
+      .switchIfEmpty(Mono.error(new FooNotFoundServiceException("Foo not found by id: " + id)))
+      .map(this.fooMapper::toDTO);
+    return dto$;
+  }
 
-    public List<FooDTO> retrieve() {
-        Flux<FooEntity> entities$ = this.fooRepository.findAll();
-        Flux<FooDTO> dtos$ = entities$.map((entity) -> this.fooMapper.toDTO(entity));
-        return dtos$.collectList().block();
-    }
+  public Flux<FooDTO> retrieve() {
+    Flux<FooDTO> dtos$ = this.fooRepository.findAll().map(this.fooMapper::toDTO);
+    return dtos$;
+  }
 
-    public FooDTO update(FooDTO dto) throws FooNotFoundServiceException {
-        Mono<FooDTO> dto$ = fooRepository.findById(dto.getId())
-                .flatMap((_entity$) -> this.fooRepository.save(this.fooMapper.toEntity(dto)).map(this.fooMapper::toDTO))
-                .switchIfEmpty(Mono.error(new FooNotFoundServiceException("The account " + dto.getId() + " was not Found")));
-        return dto$.block();
-    }
+  public Mono<FooDTO> update(FooDTO dto) {
+    Mono<FooDTO> dto$ = fooRepository.findById(dto.getId())
+      .switchIfEmpty(Mono.error(new FooNotFoundServiceException("The account " + dto.getId() + " was not Found")))
+      .flatMap((_entity$) -> this.fooRepository.save(this.fooMapper.toEntity(dto)).map(this.fooMapper::toDTO));
+    return dto$;
+  }
 
-    public FooDTO patch(Long id, JsonPatch patchDocument) {
-        return null;
-    }
+  public FooDTO patch(Long id, JsonPatch patchDocument) {
+    return null;
+  }
 
-    public FooDTO patch(Long id, JsonMergePatch mergePatchDocument) {
-        return null;
-    }
+  public FooDTO patch(Long id, JsonMergePatch mergePatchDocument) {
+    return null;
+  }
 
-    public void delete(String id) throws FooNotFoundServiceException {
-        fooRepository.findById(id)
-                .flatMap((_entity$) -> this.fooRepository.deleteById(id))
-                .switchIfEmpty(Mono.error(new FooNotFoundServiceException("The account " + id + " was not Found")));
-    }
+  public Mono<Void> delete(String id) {
+    return fooRepository.findById(id)
+      .switchIfEmpty(Mono.error(new FooNotFoundServiceException("The account " + id + " was not Found")))
+      .flatMap((_entity$) -> this.fooRepository.deleteById(id));
+  }
 }

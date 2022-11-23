@@ -8,16 +8,15 @@ import com.cjrequena.sample.service.FooService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 
 import static com.cjrequena.sample.web.api.FooApi.ACCEPT_VERSION;
 import static org.springframework.http.HttpHeaders.CACHE_CONTROL;
@@ -71,44 +70,48 @@ public class FooApi {
     path = "/fooes",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<List<FooDTO>> retrieve() {
-    List<FooDTO> dtoList = this.fooService.retrieve();
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-    return new ResponseEntity<>(dtoList, responseHeaders, HttpStatus.OK);
+  public Mono<ResponseEntity<Flux<FooDTO>>> retrieve() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(CACHE_CONTROL, "no store, private, max-age=0");
+    final Flux<FooDTO> fooDTOV1Flux = this.fooService.retrieve();
+    return Mono.just(ResponseEntity.ok().headers(headers).body(fooDTOV1Flux));
   }
 
   @PutMapping(
     path = "/fooes/{id}",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<Void> update(@PathVariable(value = "id") String id, @Valid @RequestBody FooDTO dto) throws NotFoundApiException {
-    try {
-      dto.setId(id);
-      this.fooService.update(dto);
-      //Headers
-      HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-      return new ResponseEntity<>(responseHeaders, HttpStatus.NO_CONTENT);
-    } catch (FooNotFoundServiceException ex) {
-      throw new NotFoundApiException();
-    }
+  public Mono<ResponseEntity<Object>> update(@PathVariable(value = "id") String id, @Valid @RequestBody FooDTO dto) throws NotFoundApiException {
+    dto.setId(id);
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(CACHE_CONTROL, "no store, private, max-age=0");
+    return this.fooService.update(dto)
+      .map(entity -> ResponseEntity.noContent().headers(headers).build())
+      .onErrorMap(ex -> {
+          if (ex instanceof FooNotFoundServiceException) {
+            return new NotFoundApiException();
+          }
+          return ex;
+        }
+      );
   }
 
   @DeleteMapping(
     path = "/fooes/{id}",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<Void> delete(@PathVariable(value = "id") String id) throws NotFoundApiException {
-    try {
-      //Headers
-      HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-      this.fooService.delete(id);
-      return new ResponseEntity<>(responseHeaders, HttpStatus.NO_CONTENT);
-    } catch (FooNotFoundServiceException ex) {
-      throw new NotFoundApiException();
-    }
+  public Mono<ResponseEntity<Object>> delete(@PathVariable(value = "id") String id) throws NotFoundApiException {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(CACHE_CONTROL, "no store, private, max-age=0");
+    return this.fooService.delete(id)
+      .map(entity -> ResponseEntity.noContent().headers(headers).build())
+      .onErrorMap(ex -> {
+        if (ex instanceof FooNotFoundServiceException) {
+          return new NotFoundApiException();
+        } else {
+          return ex;
+        }
+      });
   }
 
 }
