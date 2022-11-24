@@ -2,6 +2,7 @@ package com.cjrequena.sample.db.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
  * <p>
  * @author cjrequena
  */
-
+@Document(collection = "foo")
 @Setter
 @Getter
 public class FooEntity {
