@@ -11,6 +11,7 @@ import jakarta.json.JsonPatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,8 @@ public class FooService {
 
   private final FooMapper fooMapper;
   private final FooRepository fooRepository;
+  private final ReactiveMongoTemplate reactiveMongoTemplate;
+
 
   public Mono<FooDTO> create(FooDTO dto) {
     FooEntity entity = this.fooMapper.toEntity(dto);
@@ -71,5 +74,14 @@ public class FooService {
     return fooRepository.findById(id)
       .switchIfEmpty(Mono.error(new FooNotFoundServiceException("The account " + id + " was not Found")))
       .flatMap((_entity$) -> this.fooRepository.deleteById(id));
+  }
+
+  public Flux<FooDTO> subscribe(){
+    return reactiveMongoTemplate
+      .changeStream(FooEntity.class)
+      .watchCollection("foo")
+      .listen()
+      .map((event)->this.fooMapper.toDTO(event.getBody()))
+      .doOnNext(log::info);
   }
 }

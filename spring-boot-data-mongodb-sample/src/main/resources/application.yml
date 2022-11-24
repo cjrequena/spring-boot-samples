@@ -31,13 +31,14 @@ management.info.git.mode: full # Mode to use to expose git information.
 spring.config.activate.on-profile: local
 
 # MONGODB
-spring:
-  data:
-    mongodb:
-      host: ${MONGODB_HOST:localhost}
-      port: 27017
-      database: foodb
-      username: root
-      password: root
-      authentication-database: admin
-#spring.data.mongodb.uri: mongodb://root:root@127.0.0.1:27017/foodb?authSource=admin
+#spring:
+#  data:
+#    mongodb:
+#      host: ${MONGODB_HOST:localhost}
+#      port: 27017
+#      database: foodb
+#      username: root
+#      password: root
+#      authentication-database: admin
+spring.data.mongodb.uri: mongodb://root:root@127.0.0.1:27017/foodb?authSource=admin
+#spring.data.mongodb.uri: mongodb://127.0.0.1:30001/foodb?authSource=admin

@@ -8,6 +8,7 @@ import com.cjrequena.sample.service.FooService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ public class FooApi {
   public static final String ACCEPT_VERSION = "Accept-Version=" + Constants.VND_SAMPLE_SERVICE_V1;
 
   private final FooService fooService;
+
 
   @PostMapping(
     path = "/fooes",
@@ -112,6 +114,12 @@ public class FooApi {
           return ex;
         }
       });
+  }
+
+
+  @GetMapping(path = "/fooes/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<FooDTO> subscribe() {
+    return this.fooService.subscribe();
   }
 
 }
