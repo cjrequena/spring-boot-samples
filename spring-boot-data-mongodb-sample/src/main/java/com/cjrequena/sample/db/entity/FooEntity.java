@@ -23,10 +23,10 @@ import java.time.LocalDate;
 public class FooEntity {
 
   @Id
-  @Field(name = "id")
   private String id;
 
   @Field(name = "name")
+  //@Indexed(name = "ttl_index", expireAfterSeconds=20)
   private String name;
 
   @Field(name = "description")
