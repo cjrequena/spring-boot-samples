@@ -26,13 +26,13 @@ public class FooEntity {
   private String id;
 
   @Field(name = "name")
-  //@Indexed(name = "ttl_index", expireAfterSeconds=20)
   private String name;
 
   @Field(name = "description")
   private String description;
 
   @Field(name = "creation_date")
-  private LocalDate creationDate;
+  //@Indexed(name = "ttl_index", expireAfterSeconds=20)
+  private LocalDate creationDate = LocalDate.now();
 
 }
