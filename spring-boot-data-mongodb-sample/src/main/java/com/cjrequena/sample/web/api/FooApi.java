@@ -5,6 +5,7 @@ import com.cjrequena.sample.dto.FooDTO;
 import com.cjrequena.sample.exception.api.NotFoundApiException;
 import com.cjrequena.sample.exception.service.FooNotFoundServiceException;
 import com.cjrequena.sample.service.FooService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 import static com.cjrequena.sample.web.api.FooApi.ACCEPT_VERSION;

@@ -3,12 +3,12 @@ package com.cjrequena.sample.exception;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
