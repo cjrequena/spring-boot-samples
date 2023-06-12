@@ -45,8 +45,10 @@ public class FooApi {
   @Operation(
     summary = "Create a new foo.",
     description = "Create a new foo.",
-    parameters = {@Parameter(name= "accept-version", required = true, in = ParameterIn.HEADER,schema=@Schema(name = "accept-version", type = "string",implementation = String.class, allowableValues = {VND_SAMPLE_SERVICE_V1}))},
-    requestBody =  @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FooDTO.class)))
+    parameters = {
+      @Parameter(name = "Accept-Version", required = true, in = ParameterIn.HEADER, schema = @Schema(name = "Accept-Version", type = "string", implementation = String.class, allowableValues = {VND_SAMPLE_SERVICE_V1}))
+    },
+    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FooDTO.class)))
   )
   @ApiResponses(
     value = {

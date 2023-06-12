@@ -16,6 +16,8 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 /**
  * <p>
  * <p>
@@ -43,7 +45,7 @@ public class FooDTO {
   @NotNull(message = "name is a required field")
   @JsonProperty(value = "name", required = true)
   @Getter(onMethod = @__({@JsonProperty("name")}))
-  @Schema(name = "name", required = true)
+  @Schema(name = "name", requiredMode = REQUIRED)
   private String name;
 
   @JsonProperty(value = "description")
