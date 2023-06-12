@@ -1,5 +1,10 @@
 server.servlet.context-path: / # Context path of the application.
-server.port: ${SERVER_PORT:8080} # Server HTTP port.
+server.compression.enabled: true
+server.compression.mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+server.compression.min-response-size: 1024
+server.http2.enabled: true
+server.port: ${SERVER_PORT:8080}
+
 spring.application.name: '@project.artifactId@'
 spring.application.version: '@project.version@'
 spring.profiles.active: ${SPRING_PROFILES_ACTIVE:local}
@@ -30,12 +35,13 @@ management.info.git.mode: full # Mode to use to expose git information.
 ---
 spring.config.activate.on-profile: local
 
+# DATABASE
 spring.datasource.h2.url: jdbc:h2:mem:testdb;MODE=PostgreSQL
 spring.datasource.h2.driverClassName: org.h2.Driver
 spring.datasource.h2.username: sa
 spring.h2.console.enabled: true
 
-# JPA specific configs
+# JPA
 spring.jpa.open-in-view: false
 #spring.jpa.database-platform: org.hibernate.dialect.PostgreSQL95Dialect
 #spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQL95Dialect
@@ -47,5 +53,24 @@ spring.jpa.properties.hibernate.id.new_generator_mappings: false
 spring.jpa.properties.hibernate.search.autoregister_listeners: false
 spring.jpa.properties.hibernate.bytecode.use_reflection_optimizer: false
 
+# FLYWAY
 spring.flyway.enabled: true
 spring.flyway.locations: classpath:/db/migration
+
+# OPENAPI :: SPRINGDOC :: SWAGGER
+springdoc:
+  api-docs:
+    groups.enabled: true
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /swagger
+    display-request-duration: true
+    groups-order: DESC
+    operations-sorter: alpha
+    tags-sorter: alpha
+
+#
+server.compression:
+  enabled: true
+  mime-types: application/json,application/stream+json,application/x-ndjson
+  min-response-size: 1024
