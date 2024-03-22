@@ -15,7 +15,7 @@ public class SecurityConfiguration {
   @Autowired
   private SecurityApiKeyAuthenticationFilter securityApiKeyAuthenticationFilter;
 
-  public static final String[] PERMITTED_URL = new String[]{"/management/**"};
+  public static final String[] PERMITTED_URL = new String[] {"/management/**"};
 
   @Bean
   SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
@@ -23,14 +23,13 @@ public class SecurityConfiguration {
     return serverHttpSecurity
       .csrf(ServerHttpSecurity.CsrfSpec::disable)
       .addFilterBefore(securityApiKeyAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-      .authorizeExchange(exchanges ->
-        exchanges
-          .pathMatchers(PERMITTED_URL)
-          .permitAll()
-          .anyExchange()
-          .permitAll()
-        //.authenticated()
-      )
+//      .authorizeExchange(exchanges ->
+//        exchanges
+//          .pathMatchers(PERMITTED_URL)
+//          .permitAll()
+//          .anyExchange()
+//          .authenticated()
+//      )
       .build();
   }
 }
