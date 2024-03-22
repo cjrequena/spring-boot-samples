@@ -31,7 +31,7 @@ public class SecurityApiKeyAuthenticationFilter implements WebFilter {
     } else {
       // Reject the request and send an unauthorized error
       exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-      return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap("Unauthorized".getBytes())));
+      return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(HttpStatus.UNAUTHORIZED.getReasonPhrase().getBytes())));
     }
   }
 
