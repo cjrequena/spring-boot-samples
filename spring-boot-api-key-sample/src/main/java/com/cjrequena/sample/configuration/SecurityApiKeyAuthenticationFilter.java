@@ -1,5 +1,6 @@
 package com.cjrequena.sample.configuration;
 
+import com.cjrequena.sample.common.Constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,8 @@ public class SecurityApiKeyAuthenticationFilter implements WebFilter {
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
     // Get the API key and secret from request headers
-    String apiKey = exchange.getRequest().getHeaders().getFirst("X-API-KEY");
-    String apiSecret = exchange.getRequest().getHeaders().getFirst("X-API-SECRET");
+    String apiKey = exchange.getRequest().getHeaders().getFirst(Constants.HEADER_X_API_KEY);
+    String apiSecret = exchange.getRequest().getHeaders().getFirst(Constants.HEADER_X_API_SECRET);
 
     // Validate the key and secret
     if (this._apiKey.equals(apiKey) && this._apiSecret.equals(apiSecret)) {
