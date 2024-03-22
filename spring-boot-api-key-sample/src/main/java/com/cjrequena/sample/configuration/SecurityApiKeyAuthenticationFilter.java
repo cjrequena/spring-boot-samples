@@ -23,6 +23,7 @@ public class SecurityApiKeyAuthenticationFilter implements WebFilter {
     // Get the API key and secret from request headers
     String apiKey = exchange.getRequest().getHeaders().getFirst(Constants.HEADER_X_API_KEY);
     String apiSecret = exchange.getRequest().getHeaders().getFirst(Constants.HEADER_X_API_SECRET);
+    String path = exchange.getRequest().getPath().value();
 
     // Validate the key and secret
     if (this._apiKey.equals(apiKey) && this._apiSecret.equals(apiSecret)) {
