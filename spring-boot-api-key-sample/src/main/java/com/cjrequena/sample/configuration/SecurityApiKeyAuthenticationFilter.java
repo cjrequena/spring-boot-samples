@@ -9,6 +9,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import static com.cjrequena.sample.common.Constants.WHITELISTED_PATHS;
+
 @Component
 public class SecurityApiKeyAuthenticationFilter implements WebFilter {
   @Value("${api.key}")
@@ -24,6 +26,14 @@ public class SecurityApiKeyAuthenticationFilter implements WebFilter {
     String apiKey = exchange.getRequest().getHeaders().getFirst(Constants.HEADER_X_API_KEY);
     String apiSecret = exchange.getRequest().getHeaders().getFirst(Constants.HEADER_X_API_SECRET);
     String path = exchange.getRequest().getPath().value();
+
+    // Check if the requested path matches any whitelisted path
+    for (String whitelistedPath : WHITELISTED_PATHS) {
+      if (path.startsWith(whitelistedPath)) {
+        // If it matches, allow the request to proceed
+        return chain.filter(exchange);
+      }
+    }
 
     // Validate the key and secret
     if (this._apiKey.equals(apiKey) && this._apiSecret.equals(apiSecret)) {

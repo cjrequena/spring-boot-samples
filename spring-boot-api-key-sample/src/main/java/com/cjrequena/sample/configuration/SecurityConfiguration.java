@@ -16,8 +16,6 @@ public class SecurityConfiguration {
   @Autowired
   private SecurityApiKeyAuthenticationFilter securityApiKeyAuthenticationFilter;
 
-  public static final String[] PERMITTED_URL = new String[] {"/management/**"};
-
   @Bean
   SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
 
