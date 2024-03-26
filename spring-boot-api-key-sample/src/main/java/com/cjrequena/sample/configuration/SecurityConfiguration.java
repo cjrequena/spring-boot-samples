@@ -3,6 +3,7 @@ package com.cjrequena.sample.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -21,8 +22,6 @@ public class SecurityConfiguration {
   SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
 
     return serverHttpSecurity
-      .csrf(ServerHttpSecurity.CsrfSpec::disable)
-      .addFilterBefore(securityApiKeyAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
 //      .authorizeExchange(exchanges ->
 //        exchanges
 //          .pathMatchers(PERMITTED_URL)
@@ -30,6 +29,11 @@ public class SecurityConfiguration {
 //          .anyExchange()
 //          .authenticated()
 //      )
+      .addFilterAt(securityApiKeyAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+      .csrf(ServerHttpSecurity.CsrfSpec::disable)
+      .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+      .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+      .logout(ServerHttpSecurity.LogoutSpec::disable)
       .build();
   }
 }
