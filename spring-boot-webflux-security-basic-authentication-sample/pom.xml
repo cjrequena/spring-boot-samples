@@ -8,7 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>spring-boot-webflux-security-basic-authentication</artifactId>
+    <artifactId>spring-boot-webflux-security-basic-authentication-sample</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <properties>
