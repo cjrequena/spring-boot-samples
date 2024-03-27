@@ -22,6 +22,8 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity
+      .csrf(AbstractHttpConfigurer::disable)
+      .headers(headersConfigurer -> headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
       .authorizeHttpRequests(registry -> {
         //registry.requestMatchers("/home", "/register/**").permitAll();
         registry.requestMatchers(toH2Console()).permitAll();
@@ -35,8 +37,6 @@ public class SecurityConfiguration {
           .successHandler(new AuthenticationSuccessHandler())
           .permitAll();
       })
-      .headers(headersConfigurer -> headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-      .csrf(AbstractHttpConfigurer::disable)
       .build();
   }
 
