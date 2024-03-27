@@ -23,6 +23,6 @@ public class FooController {
 
   @GetMapping("/login")
   public String handleLogin() {
-    return "custom_login";
+    return "login";
   }
 }
