@@ -13,7 +13,8 @@ public class UserEntity {
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Column(name = "user_name")
   private String userName;
   private String password;
-  private String role; //Eg: ADMIN,USER
+  private String roles; //Eg: ADMIN,USER
 }

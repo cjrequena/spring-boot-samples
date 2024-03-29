@@ -32,7 +32,7 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
   entityManagerFactoryRef = "entityManagerFactoryH2",
   transactionManagerRef = "transactionManagerH2",
-  basePackages = {"com.cjrequena.sample.db.repository"}
+  basePackages = {"com.cjrequena.sample.repository"}
 )
 public class H2Configuration {
 
@@ -54,7 +54,7 @@ public class H2Configuration {
   public LocalContainerEntityManagerFactoryBean entityManagerFactoryH2(EntityManagerFactoryBuilder builder, @Qualifier("dataSourceH2") DataSource dataSource) {
     return builder
       .dataSource(dataSource)
-      .packages("com.cjrequena.sample.db.entity")
+      .packages("com.cjrequena.sample.model.entity")
       .persistenceUnit("chinook")
       .build();
   }
