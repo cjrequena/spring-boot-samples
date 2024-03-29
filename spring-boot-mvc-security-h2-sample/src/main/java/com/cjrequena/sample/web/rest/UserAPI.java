@@ -22,6 +22,7 @@ public class UserAPI {
     produces = {APPLICATION_JSON_VALUE}
   )
   public UserEntity createUser(@RequestBody UserEntity user) {
+    user.setRoles(user.getRoles().replaceAll("\\s",""));
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     return userRepository.save(user);
   }
