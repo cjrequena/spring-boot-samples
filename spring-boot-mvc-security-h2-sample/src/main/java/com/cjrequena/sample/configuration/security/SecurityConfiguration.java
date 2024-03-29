@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,25 +46,30 @@ public class SecurityConfiguration {
       .build();
   }
 
-  //  @Bean
-  //  public UserDetailsService userDetailsService() {
-  //    UserDetails normalUser = User.builder()
-  //      .username("admin")
-  //      .password(passwordEncoder().encode("admin"))
-  //      .roles("ADMIN", "USER")
-  //      .build();
-  //    UserDetails adminUser = User.builder()
-  //      .username("user")
-  //      .password(passwordEncoder().encode("user"))
-  //      .roles("USER")
-  //      .build();
-  //    return new InMemoryUserDetailsManager(normalUser, adminUser);
-  //  }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//      UserDetails normalUser = User.builder()
+//        .username("admin")
+//        .password(passwordEncoder().encode("admin"))
+//        .roles("ADMIN", "USER")
+//        .build();
+//      UserDetails adminUser = User.builder()
+//        .username("user")
+//        .password(passwordEncoder().encode("user"))
+//        .roles("USER")
+//        .build();
+//      return new InMemoryUserDetailsManager(normalUser, adminUser);
+//    }
+
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return this.customUserDetailsService;
+  }
 
   @Bean
   public AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(customUserDetailsService);
+    provider.setUserDetailsService(userDetailsService());
     provider.setPasswordEncoder(passwordEncoder());
     return provider;
   }
