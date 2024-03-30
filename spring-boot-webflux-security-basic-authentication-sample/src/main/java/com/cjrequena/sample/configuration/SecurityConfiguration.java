@@ -24,6 +24,10 @@ public class SecurityConfiguration {
   SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
 
     return serverHttpSecurity
+      .csrf(ServerHttpSecurity.CsrfSpec::disable)
+      .httpBasic(withDefaults())
+      .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+      .logout(ServerHttpSecurity.LogoutSpec::disable)
       .authorizeExchange(exchanges ->
         exchanges
           .pathMatchers(WHITELISTED_PATHS)
@@ -31,13 +35,6 @@ public class SecurityConfiguration {
           .anyExchange()
           .authenticated()
       )
-      .csrf(ServerHttpSecurity.CsrfSpec::disable)
-      .httpBasic(withDefaults())
-      .formLogin(withDefaults())
-      .logout(withDefaults())
-      //.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-      //.formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-      //.logout(ServerHttpSecurity.LogoutSpec::disable)
       .build();
   }
 
