@@ -1,22 +1,18 @@
 package com.cjrequena.sample.api.authentication;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.cjrequena.sample.security.JWTComponent;
 import com.cjrequena.sample.model.dto.AuthAccessTokenDTO;
+import com.cjrequena.sample.security.AccessTokenPrincipalUserDetails;
+import com.cjrequena.sample.service.AuthAccessTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import static com.cjrequena.sample.api.authentication.AuthAccessTokenAPI.ACCEPT_VERSION;
 import static com.cjrequena.sample.api.authentication.AuthAccessTokenAPI.ENDPOINT;
@@ -30,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthAccessTokenAPI {
 
-  private final JWTComponent jwtComponent;
+  private final AuthAccessTokenService authAccessTokenService;
 
   public static final String ENDPOINT = "/foo-service/api/auth/token";
   public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
@@ -39,24 +35,10 @@ public class AuthAccessTokenAPI {
     //path = "/auth/token",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<AuthAccessTokenDTO> accessToken() {
+  public ResponseEntity<AuthAccessTokenDTO> accessToken(@AuthenticationPrincipal AccessTokenPrincipalUserDetails accessTokenPrincipalUserDetails) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-
-    String clientId = "client-id";
-    Map<String, Object> claims = new HashMap<>();
-    claims.put(jwtComponent.CLAIM_EMAIL, "admin@admin.com");
-    claims.put(jwtComponent.CLAIM_ROLES, List.of("ADMIN", "USER"));
-    claims.put(jwtComponent.CLAIM_AUTHORITIES, List.of("ADMIN", "USER"));
-
-    DecodedJWT decodedJWT = jwtComponent.decode(jwtComponent.create(clientId, claims));
-
-    AuthAccessTokenDTO authAccessTokenDTO = new AuthAccessTokenDTO();
-    authAccessTokenDTO.setTokenType("Bearer");
-    authAccessTokenDTO.setClientId(decodedJWT.getSubject());
-    authAccessTokenDTO.setAccessToken(decodedJWT.getToken());
-    authAccessTokenDTO.setIssuedAt(decodedJWT.getIssuedAt().getTime());
-    authAccessTokenDTO.setExpiresAt(decodedJWT.getExpiresAt().getTime());
+    AuthAccessTokenDTO authAccessTokenDTO = authAccessTokenService.generateAccessToken(accessTokenPrincipalUserDetails);
     return new ResponseEntity<>(authAccessTokenDTO, responseHeaders, HttpStatus.OK);
   }
 }
