@@ -38,6 +38,7 @@
         <module>spring-boot-api-key-sample</module>
         <module>spring-boot-webflux-security-basic-authentication-sample</module>
         <module>spring-boot-mvc-security-h2-sample</module>
+        <module>spring-boot-security-jwt-sample</module>
     </modules>
     <dependencies>
         <dependency>
