@@ -43,7 +43,7 @@ public class AuthAccessTokenAPI {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
 
-    String clientId = UUID.randomUUID().toString();
+    String clientId = "client-id";
     Map<String, Object> claims = new HashMap<>();
     claims.put(jwtComponent.CLAIM_EMAIL, "admin@admin.com");
     claims.put(jwtComponent.CLAIM_ROLES, List.of("ADMIN", "USER"));
