@@ -32,11 +32,11 @@ public class AuthAccessTokenAPI {
 
   private final JWTComponent jwtComponent;
 
-  public static final String ENDPOINT = "/foo-service/api";
+  public static final String ENDPOINT = "/foo-service/api/auth/token";
   public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
 
   @PostMapping(
-    path = "/auth/token",
+    //path = "/auth/token",
     produces = {APPLICATION_JSON_VALUE}
   )
   public ResponseEntity<AuthAccessTokenDTO> accessToken() {

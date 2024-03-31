@@ -1,10 +1,13 @@
 package com.cjrequena.sample.security;
 
+import com.cjrequena.sample.api.authentication.AuthAccessTokenAPI;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,16 +22,24 @@ public class JWTApplicationPrincipalAuthenticationFilter extends OncePerRequestF
 
   private final JWTComponent jwtComponent;
 
-
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    extractTokenFromRequest(request)
-      .map(jwtComponent::decode)
-      .map(jwtComponent::convertToApplicationPrincipalUserDetails)
-      .map(ApplicationPrincipalAuthenticationToken::new)
-      .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
+    String path = request.getServletPath();
+    String authorization = request.getHeader("Authorization");
 
-    filterChain.doFilter(request, response);
+    if (StringUtils.hasText(authorization) && path.contains(AuthAccessTokenAPI.ENDPOINT) && authorization.startsWith("Basic ")) {
+      filterChain.doFilter(request, response);
+    } else if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+      extractTokenFromRequest(request)
+        .map(jwtComponent::decode)
+        .map(jwtComponent::convertToApplicationPrincipalUserDetails)
+        .map(ApplicationPrincipalAuthenticationToken::new)
+        .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
+      filterChain.doFilter(request, response);
+    } else {
+      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+      response.getWriter().write("Unauthorized");
+    }
   }
 
   private Optional<String> extractTokenFromRequest(HttpServletRequest request) {
