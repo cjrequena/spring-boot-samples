@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.cjrequena.sample.api.authentication.AuthAccessTokenAPI.ACCEPT_VERSION;
 import static com.cjrequena.sample.api.authentication.AuthAccessTokenAPI.ENDPOINT;
@@ -42,15 +43,13 @@ public class AuthAccessTokenAPI {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
 
-    String userId = "user-1";
-    String keyId = "key-1";
-
+    String clientId = UUID.randomUUID().toString();
     Map<String, Object> claims = new HashMap<>();
-    claims.put("email", "admin@admin.com");
-    claims.put("roles", List.of("ADMIN", "USER"));
-    claims.put("authorities", List.of("ADMIN", "USER"));
+    claims.put(jwtComponent.CLAIM_EMAIL, "admin@admin.com");
+    claims.put(jwtComponent.CLAIM_ROLES, List.of("ADMIN", "USER"));
+    claims.put(jwtComponent.CLAIM_AUTHORITIES, List.of("ADMIN", "USER"));
 
-    DecodedJWT decodedJWT = jwtComponent.decode(jwtComponent.create(keyId, userId, claims));
+    DecodedJWT decodedJWT = jwtComponent.decode(jwtComponent.create(clientId, claims));
 
     AuthAccessTokenDTO authAccessTokenDTO = new AuthAccessTokenDTO();
     authAccessTokenDTO.setTokenType("Bearer");

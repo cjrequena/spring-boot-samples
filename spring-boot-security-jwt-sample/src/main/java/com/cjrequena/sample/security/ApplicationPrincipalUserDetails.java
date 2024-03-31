@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class ApplicationPrincipalUserDetails implements UserDetails {
 
-  private final String id;
+  private final String clientId;
   private final String email;
   @JsonIgnore
   private final String password;
@@ -32,7 +32,7 @@ public class ApplicationPrincipalUserDetails implements UserDetails {
 
   @Override
   public String getUsername() {
-    return email;
+    return clientId;
   }
 
   @Override

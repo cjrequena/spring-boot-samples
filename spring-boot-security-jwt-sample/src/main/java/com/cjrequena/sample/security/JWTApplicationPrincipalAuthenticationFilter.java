@@ -28,7 +28,7 @@ public class JWTApplicationPrincipalAuthenticationFilter extends OncePerRequestF
       .map(ApplicationPrincipalAuthenticationToken::new)
       .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
 
-    filterChain.doFilter(request, response); // Very important not to forget this
+    filterChain.doFilter(request, response);
   }
 
   private Optional<String> extractTokenFromRequest(HttpServletRequest request) {
