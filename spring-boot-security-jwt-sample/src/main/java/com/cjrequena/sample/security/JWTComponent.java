@@ -16,6 +16,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JWTComponent {
 
+  public final String CLAIM_USER_ID = "user_id";
+  public final String CLAIM_USER_NAME = "user_name";
   public final String CLAIM_EMAIL = "email";
   public final String CLAIM_ROLES = "roles";
   public final String CLAIM_AUTHORITIES = "authorities";
@@ -23,12 +25,12 @@ public class JWTComponent {
   private final JWTConfigurationProperties jwtConfigurationProperties;
 
 
-  public String create(String clientId, Map<String, Object> claims) {
+  public String create(String userName, Map<String, Object> claims) {
     Instant now = Instant.now();
 
     return JWT
       .create()
-      .withSubject(clientId)
+      .withSubject(userName)
       .withIssuedAt(now)
       .withExpiresAt(now.plus(jwtConfigurationProperties.getTokenDuration()))
       .withPayload(claims)
@@ -54,7 +56,7 @@ public class JWTComponent {
       .asList(String.class);
 
     return ApplicationPrincipalUserDetails.builder()
-      .clientId(decodedJWT.getSubject())
+      .userName(decodedJWT.getSubject())
       .email(decodedJWT.getClaim(CLAIM_EMAIL).asString())
       .authorities(authorities)
       .roles(roles)

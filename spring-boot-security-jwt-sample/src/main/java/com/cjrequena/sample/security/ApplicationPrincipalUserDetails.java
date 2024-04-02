@@ -13,10 +13,11 @@ import java.util.List;
 @Builder
 public class ApplicationPrincipalUserDetails implements UserDetails {
 
-  private final String clientId;
-  private final String email;
+  private final Long userId;
+  private final String userName;
   @JsonIgnore
   private final String password;
+  private final String email;
   private final List<? extends GrantedAuthority> authorities;
   private final List<String> roles;
 
@@ -27,12 +28,12 @@ public class ApplicationPrincipalUserDetails implements UserDetails {
 
   @Override
   public String getPassword() {
-    return null;
+    return this.password;
   }
 
   @Override
   public String getUsername() {
-    return clientId;
+    return this.userName;
   }
 
   @Override

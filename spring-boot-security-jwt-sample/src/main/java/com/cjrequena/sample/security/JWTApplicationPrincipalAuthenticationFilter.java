@@ -15,6 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.cjrequena.sample.common.Constants.WHITELISTED_PATHS;
+
 @Component
 @RequiredArgsConstructor
 public class JWTApplicationPrincipalAuthenticationFilter extends OncePerRequestFilter {
@@ -25,6 +27,14 @@ public class JWTApplicationPrincipalAuthenticationFilter extends OncePerRequestF
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String path = request.getServletPath();
     String authorization = request.getHeader("Authorization");
+
+    // Check if the requested path matches any whitelisted path
+    for (String whitelistedPath : WHITELISTED_PATHS) {
+      if (path.startsWith(whitelistedPath.replace("/**",""))) {
+        // If it matches, allow the request to proceed
+        filterChain.doFilter(request, response);
+      }
+    }
 
     if (StringUtils.hasText(authorization) && path.contains(AuthAccessTokenAPI.ENDPOINT) && authorization.startsWith("Basic ")) {
       filterChain.doFilter(request, response);

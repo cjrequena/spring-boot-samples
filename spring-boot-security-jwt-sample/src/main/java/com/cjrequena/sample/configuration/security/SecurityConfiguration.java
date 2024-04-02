@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -35,10 +37,11 @@ public class SecurityConfiguration {
       .httpBasic(Customizer.withDefaults())
       .addFilterBefore(jwtApplicationPrincipalAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
       //.securityMatcher("/foo-service/**")
-      .authorizeHttpRequests(registry -> registry
-        .requestMatchers("/foo-service/api/fooes").hasAnyAuthority("authority-1","authority-2","authority-x")
-        .anyRequest().authenticated()
-      )
+      .authorizeHttpRequests(registry -> {
+        registry.requestMatchers(toH2Console()).permitAll();
+        registry.requestMatchers("/foo-service/api/fooes").hasAnyAuthority("authority-1", "authority-2", "authority-x")
+          .anyRequest().authenticated();
+      })
       .build();
   }
 

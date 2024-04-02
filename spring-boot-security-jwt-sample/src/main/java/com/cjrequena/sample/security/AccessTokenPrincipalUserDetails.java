@@ -13,10 +13,11 @@ import java.util.List;
 @Builder
 public class AccessTokenPrincipalUserDetails implements UserDetails {
 
-  private final String clientId;
-  private final String email;
+  private final Long userId;
+  private final String userName;
   @JsonIgnore
   private final String password;
+  private final String email;
   private final List<? extends GrantedAuthority> authorities;
   private final List<String> roles;
 
@@ -32,7 +33,7 @@ public class AccessTokenPrincipalUserDetails implements UserDetails {
 
   @Override
   public String getUsername() {
-    return clientId;
+    return this.userName;
   }
 
   @Override

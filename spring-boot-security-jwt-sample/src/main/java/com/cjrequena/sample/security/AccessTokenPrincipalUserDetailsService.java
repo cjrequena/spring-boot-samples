@@ -27,7 +27,8 @@ public class AccessTokenPrincipalUserDetailsService implements UserDetailsServic
     try {
       UserEntity userEntity = userService.retrieveUserName(userName).get();
       return AccessTokenPrincipalUserDetails.builder()
-        .clientId(userEntity.getUserName())
+        .userId(userEntity.getId())
+        .userName(userEntity.getUserName())
         .email(userEntity.getEmail())
         .password(userEntity.getPassword())
         .roles(getRoles(userEntity))
