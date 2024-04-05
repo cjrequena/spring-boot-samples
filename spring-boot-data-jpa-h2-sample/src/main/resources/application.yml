@@ -64,7 +64,7 @@ springdoc:
     groups.enabled: true
   swagger-ui:
     disable-swagger-default-url: true
-    path: /swagger
+    path: /swagger-ui.html
     display-request-duration: true
     groups-order: DESC
     operations-sorter: alpha
