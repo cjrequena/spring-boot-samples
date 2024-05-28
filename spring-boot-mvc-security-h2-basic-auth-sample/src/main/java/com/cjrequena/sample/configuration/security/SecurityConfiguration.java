@@ -33,8 +33,8 @@ public class SecurityConfiguration {
       .authorizeHttpRequests(registry -> {
         registry.requestMatchers(Constants.WHITELISTED_PATHS).permitAll();
         registry.requestMatchers(toH2Console()).permitAll();
-        registry.requestMatchers("/admin/**").hasRole("ADMIN");
-        registry.requestMatchers("/user/**").hasRole("USER");
+        registry.requestMatchers("/admin/**").hasAuthority("ADMIN");
+        registry.requestMatchers("/user/**").hasAuthority("USER");
         registry.anyRequest().authenticated();
       })
       .formLogin(httpSecurityFormLoginConfigurer -> {
