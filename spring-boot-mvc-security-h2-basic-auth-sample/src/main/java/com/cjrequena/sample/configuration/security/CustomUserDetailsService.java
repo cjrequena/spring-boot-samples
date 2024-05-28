@@ -27,6 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         .username(userEntity.getUserName())
         .password(userEntity.getPassword())
         .roles(getRoles(userEntity))
+        .authorities(getRoles(userEntity))
         .build();
     } else {
       throw new UsernameNotFoundException(userName);
