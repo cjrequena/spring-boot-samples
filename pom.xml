@@ -36,9 +36,9 @@
         <module>spring-boot-data-redis-sample</module>
         <module>spring-boot-data-mongodb-sample</module>
         <module>spring-boot-api-key-sample</module>
-        <module>spring-boot-webflux-security-basic-authentication-sample</module>
-        <module>spring-boot-mvc-security-h2-sample</module>
-        <module>spring-boot-security-jwt-sample</module>
+        <module>spring-boot-webflux-security-basic-auth-sample</module>
+        <module>spring-boot-mvc-security-h2-basic-auth-sample</module>
+        <module>spring-boot-web-security-jwt-auth-sample</module>
     </modules>
     <dependencies>
         <dependency>
