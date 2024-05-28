@@ -1,4 +1,4 @@
-package com.cjrequena.sample.security;
+package com.cjrequena.sample.configuration.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class AccessTokenPrincipalUserDetails implements UserDetails {
+public class BasicAuthUserDetails implements UserDetails {
 
   private final Long userId;
   private final String userName;

@@ -1,7 +1,7 @@
-package com.cjrequena.sample.api.authentication;
+package com.cjrequena.sample.api.auth;
 
 import com.cjrequena.sample.model.dto.AuthAccessTokenDTO;
-import com.cjrequena.sample.security.AccessTokenPrincipalUserDetails;
+import com.cjrequena.sample.configuration.security.BasicAuthUserDetails;
 import com.cjrequena.sample.service.AuthAccessTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.cjrequena.sample.api.authentication.AuthAccessTokenAPI.ACCEPT_VERSION;
-import static com.cjrequena.sample.api.authentication.AuthAccessTokenAPI.ENDPOINT;
+import static com.cjrequena.sample.api.auth.AuthAccessTokenAPI.ACCEPT_VERSION;
+import static com.cjrequena.sample.api.auth.AuthAccessTokenAPI.ENDPOINT;
 import static com.cjrequena.sample.common.Constants.VND_SAMPLE_SERVICE_V1;
 import static org.springframework.http.HttpHeaders.CACHE_CONTROL;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -35,10 +35,10 @@ public class AuthAccessTokenAPI {
     //path = "/auth/token",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<AuthAccessTokenDTO> accessToken(@AuthenticationPrincipal AccessTokenPrincipalUserDetails accessTokenPrincipalUserDetails) {
+  public ResponseEntity<AuthAccessTokenDTO> accessToken(@AuthenticationPrincipal BasicAuthUserDetails basicAuthUserDetails) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-    AuthAccessTokenDTO authAccessTokenDTO = authAccessTokenService.generateAccessToken(accessTokenPrincipalUserDetails);
+    AuthAccessTokenDTO authAccessTokenDTO = authAccessTokenService.generateAccessToken(basicAuthUserDetails);
     return new ResponseEntity<>(authAccessTokenDTO, responseHeaders, HttpStatus.OK);
   }
 }

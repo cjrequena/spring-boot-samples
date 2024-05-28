@@ -1,6 +1,6 @@
-package com.cjrequena.sample.security;
+package com.cjrequena.sample.configuration.security;
 
-import com.cjrequena.sample.api.authentication.AuthAccessTokenAPI;
+import com.cjrequena.sample.api.auth.AuthAccessTokenAPI;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import static com.cjrequena.sample.common.Constants.WHITELISTED_PATHS;
 
 @Component
 @RequiredArgsConstructor
-public class JWTApplicationPrincipalAuthenticationFilter extends OncePerRequestFilter {
+public class AuthenticationFilter extends OncePerRequestFilter {
 
   private final JWTComponent jwtComponent;
 
@@ -42,7 +42,7 @@ public class JWTApplicationPrincipalAuthenticationFilter extends OncePerRequestF
       extractTokenFromRequest(request)
         .map(jwtComponent::decode)
         .map(jwtComponent::convertToApplicationPrincipalUserDetails)
-        .map(ApplicationPrincipalAuthenticationToken::new)
+        .map(PrincipalAuthToken::new)
         .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
       filterChain.doFilter(request, response);
     } else {

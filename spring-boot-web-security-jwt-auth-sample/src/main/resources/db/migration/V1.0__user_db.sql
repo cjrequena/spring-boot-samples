@@ -7,4 +7,4 @@ CREATE TABLE T_USER (
   AUTHORITIES VARCHAR NOT NULL
 );
 
-INSERT INTO T_USER (USER_NAME, EMAIL, PASSWORD, ROLES, AUTHORITIES) VALUES ('admin', 'admin@admin.com','$2a$12$Nj6eI.GmEQQWu0CYGLL.XOe5n5vnS700FztswQqpSb2VJzVvXzuj6','admin,user','ROLE_admin, authority-1,authority-2')
+INSERT INTO T_USER (USER_NAME, EMAIL, PASSWORD, ROLES, AUTHORITIES) VALUES ('admin', 'admin@admin.com','$2a$12$8844i5RkN1SCkTIvVrHx5O5Oc2q3moz/FxyDgV/CmCR0QKdwer3Ze','admin,user','ROLE_admin, authority-1,authority-2') --admin, admin

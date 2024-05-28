@@ -1,4 +1,4 @@
-package com.cjrequena.sample.security;
+package com.cjrequena.sample.configuration.security;
 
 import com.cjrequena.sample.exception.service.UserNotFoundServiceException;
 import com.cjrequena.sample.model.entity.UserEntity;
@@ -17,16 +17,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AccessTokenPrincipalUserDetailsService implements UserDetailsService {
+public class BasicAuthUserDetailsService implements UserDetailsService {
 
   private final UserService userService;
 
   @Override
-  public AccessTokenPrincipalUserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+  public BasicAuthUserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
     Optional<UserEntity> userEntityOptional = null;
     try {
       UserEntity userEntity = userService.retrieveUserName(userName).get();
-      return AccessTokenPrincipalUserDetails.builder()
+      return BasicAuthUserDetails.builder()
         .userId(userEntity.getId())
         .userName(userEntity.getUserName())
         .email(userEntity.getEmail())

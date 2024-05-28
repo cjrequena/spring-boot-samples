@@ -1,9 +1,8 @@
-package com.cjrequena.sample.security;
+package com.cjrequena.sample.configuration.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.cjrequena.sample.configuration.security.JWTConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -43,7 +42,7 @@ public class JWTComponent {
       .verify(token);
   }
 
-  public ApplicationPrincipalUserDetails convertToApplicationPrincipalUserDetails(DecodedJWT decodedJWT) {
+  public PrincipalTokenAuthUserDetails convertToApplicationPrincipalUserDetails(DecodedJWT decodedJWT) {
     List<SimpleGrantedAuthority> authorities = decodedJWT
       .getClaim(CLAIM_AUTHORITIES)
       .asList(String.class)
@@ -55,7 +54,7 @@ public class JWTComponent {
       .getClaim(CLAIM_ROLES)
       .asList(String.class);
 
-    return ApplicationPrincipalUserDetails.builder()
+    return PrincipalTokenAuthUserDetails.builder()
       .userName(decodedJWT.getSubject())
       .email(decodedJWT.getClaim(CLAIM_EMAIL).asString())
       .authorities(authorities)

@@ -1,7 +1,5 @@
 package com.cjrequena.sample.configuration.security;
 
-import com.cjrequena.sample.security.AccessTokenPrincipalUserDetailsService;
-import com.cjrequena.sample.security.JWTApplicationPrincipalAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +22,8 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-  private final JWTApplicationPrincipalAuthenticationFilter jwtApplicationPrincipalAuthenticationFilter;
-  private final AccessTokenPrincipalUserDetailsService accessTokenPrincipalUserDetailsService;
+  private final AuthenticationFilter authenticationFilter;
+  private final BasicAuthUserDetailsService basicAuthUserDetailsService;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -35,7 +33,7 @@ public class SecurityConfiguration {
       .formLogin(AbstractHttpConfigurer::disable)
       .logout(AbstractHttpConfigurer::disable)
       .httpBasic(Customizer.withDefaults())
-      .addFilterBefore(jwtApplicationPrincipalAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+      .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
       //.securityMatcher("/foo-service/**")
       .authorizeHttpRequests(registry -> {
         registry.requestMatchers(toH2Console()).permitAll();
@@ -47,8 +45,8 @@ public class SecurityConfiguration {
   }
 
   @Bean
-  public AccessTokenPrincipalUserDetailsService accessTokenPrincipalUserDetails() {
-    return this.accessTokenPrincipalUserDetailsService;
+  public BasicAuthUserDetailsService accessTokenPrincipalUserDetails() {
+    return this.basicAuthUserDetailsService;
   }
 
   @Bean
