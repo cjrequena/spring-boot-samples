@@ -42,7 +42,7 @@ public class JWTComponent {
       .verify(token);
   }
 
-  public PrincipalTokenAuthUserDetails convertToApplicationPrincipalUserDetails(DecodedJWT decodedJWT) {
+  public PrincipalTokenAuthUserDetails convertToPrincipalTokenAuthUserDetails(DecodedJWT decodedJWT) {
     List<SimpleGrantedAuthority> authorities = decodedJWT
       .getClaim(CLAIM_AUTHORITIES)
       .asList(String.class)
