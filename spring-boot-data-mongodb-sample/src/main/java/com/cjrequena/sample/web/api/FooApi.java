@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
+import java.util.List;
 
 import static com.cjrequena.sample.web.api.FooApi.ACCEPT_VERSION;
 import static org.springframework.http.HttpHeaders.CACHE_CONTROL;
@@ -121,5 +123,8 @@ public class FooApi {
   public Flux<FooDTO> subscribe() {
     return this.fooService.subscribe();
   }
-
+  @GetMapping(path = "/fooes/subscribe", produces = APPLICATION_JSON_VALUE)
+  public Mono<List<FooDTO>> nonReactive() {
+    return this.fooService.subscribe().collectList().subscribeOn(Schedulers.boundedElastic());
+  }
 }

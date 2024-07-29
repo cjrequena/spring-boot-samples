@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+
 /**
  * <p>
  * <p>
@@ -81,6 +83,7 @@ public class FooService {
       .changeStream(FooEntity.class)
       .watchCollection("foo")
       .listen()
+      .take(Duration.ofMillis(9000))
       .map((event)->this.fooMapper.toDTO(event.getBody()))
       .doOnNext(log::info);
   }
