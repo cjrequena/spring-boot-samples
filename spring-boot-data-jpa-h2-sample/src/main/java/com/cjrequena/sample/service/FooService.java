@@ -45,7 +45,7 @@ public class FooService {
   public FooDTO retrieveById(Long id) throws FooNotFoundServiceException {
     Optional<FooEntity> optional = this.fooRepository.findById(id);
     if (!optional.isPresent()) {
-      throw new FooNotFoundServiceException("Foo Not Found");
+      throw new FooNotFoundServiceException("Foo with (ID=" + id + ") was not found");
     }
     return fooMapper.toDTO(optional.get());
   }

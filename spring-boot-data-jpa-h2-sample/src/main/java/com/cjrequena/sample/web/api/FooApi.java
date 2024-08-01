@@ -128,7 +128,7 @@ public class FooApi {
       FooDTO dto = this.fooService.retrieveById(id);
       return new ResponseEntity<>(dto, responseHeaders, HttpStatus.OK);
     } catch (FooNotFoundServiceException ex) {
-      throw new NotFoundApiException();
+      throw new NotFoundApiException(ex.getMessage());
     }
   }
 

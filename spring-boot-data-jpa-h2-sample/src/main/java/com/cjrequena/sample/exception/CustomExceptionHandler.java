@@ -69,7 +69,8 @@ public class CustomExceptionHandler {
   @ExceptionHandler({ApiException.class})
   @ResponseBody
   public ResponseEntity<Object> handleApiException(ApiException ex) {
-    log.error(EXCEPTION_LOG, ex.getMessage(), ex);
+    //log.error(EXCEPTION_LOG, ex.getMessage(), ex);
+    log.error(EXCEPTION_LOG, ex.getMessage());
     ErrorDTO errorDTO = new ErrorDTO();
     errorDTO.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
     errorDTO.setStatus(ex.getHttpStatus().value());

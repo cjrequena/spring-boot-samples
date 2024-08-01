@@ -127,6 +127,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.txt</include>
                     <include>**/*.sql</include>
+                    <include>**/*.ico</include>
                 </includes>
             </resource>
         </resources>
