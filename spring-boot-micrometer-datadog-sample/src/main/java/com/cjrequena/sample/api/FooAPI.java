@@ -31,10 +31,12 @@ public class FooAPI {
     path = "/fooes",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<String> retrieve() {
+  public ResponseEntity<String> fooes() {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-    return new ResponseEntity<>(this.fooService.retrieve(), responseHeaders, HttpStatus.OK);
+    //String response = this.fooService.sayHello();
+    String response = this.fooService.sayHello1();
+    return new ResponseEntity<>(response, responseHeaders, HttpStatus.OK);
   }
 
 }
