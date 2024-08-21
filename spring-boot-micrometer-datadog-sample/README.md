@@ -65,7 +65,7 @@ Set time preferences to 1 hour.
 }
 ```
 
-## DD_QUERY for
+## DD_QUERY for ACTIVE REQUESTS
 
 ```json
 {
