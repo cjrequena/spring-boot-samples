@@ -7,6 +7,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +20,9 @@ public class FooService {
   private final Counter sayHello1RequestsCounter;
   private final Timer sayHello1ResponseTimer;
   private final AtomicInteger activeSayHello1Requests;
+
+  @Autowired
+  private DataDogEventService dataDogEventService;
 
   public FooService(MeterRegistry registry) {
     sayHello1RequestsCounter = Counter.builder("say_hello1.requests.counted")
@@ -63,6 +67,8 @@ public class FooService {
     } finally {
       sayHello1RequestsCounter.increment();
       activeSayHello1Requests.decrementAndGet();
+      // Send warning
+      //this.dataDogEventService.warningEvent("warning.event.foo", "creating a foo warning.", Event.Priority.NORMAL,"warning.event.foo.tag");
       return "Hello Fooes";
     }
   }
