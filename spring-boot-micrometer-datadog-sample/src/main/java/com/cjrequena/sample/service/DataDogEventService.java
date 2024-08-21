@@ -51,44 +51,44 @@ public class DataDogEventService {
   }
 
   public void warningEvent(String title, String text, Event.Priority priority, String... tags) {
-    Event warningEvent = Event.builder()
+    Event event = Event.builder()
       .withTitle(title)
       .withText(text)
       .withDate(clock.millis())
       .withAlertType(Event.AlertType.WARNING)
       .withPriority(priority)
       .build();
-    statsDClient.recordEvent(warningEvent, tags);
+    statsDClient.recordEvent(event, tags);
   }
 
   public void errorEvent(String title, String text, Event.Priority priority, String... tags) {
-    Event warningEvent = Event.builder()
+    Event event = Event.builder()
       .withTitle(title)
       .withText(text)
       .withDate(clock.millis())
       .withAlertType(Event.AlertType.ERROR)
       .withPriority(priority)
       .build();
-    statsDClient.recordEvent(warningEvent, tags);
+    statsDClient.recordEvent(event, tags);
   }
 
   public void infoEvent(String title, String text, String... tags) {
-    Event warningEvent = Event.builder()
+    Event event = Event.builder()
       .withTitle(title)
       .withText(text)
       .withDate(clock.millis())
       .withAlertType(Event.AlertType.INFO)
       .build();
-    statsDClient.recordEvent(warningEvent, tags);
+    statsDClient.recordEvent(event, tags);
   }
 
   public void successEvent(String title, String text, String... tags) {
-    Event warningEvent = Event.builder()
+    Event event = Event.builder()
       .withTitle(title)
       .withText(text)
       .withDate(clock.millis())
       .withAlertType(Event.AlertType.SUCCESS)
       .build();
-    statsDClient.recordEvent(warningEvent, tags);
+    statsDClient.recordEvent(event, tags);
   }
 }
