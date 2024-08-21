@@ -37,7 +37,7 @@ Set time preferences to 1 hour.
 
 ```json
 {
-    "title": "REQUEST RECEIVED",
+    "title": "REQUESTS RECEIVED",
     "type": "query_value",
     "requests": [
         {
