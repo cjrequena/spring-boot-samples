@@ -53,11 +53,11 @@ springdoc:
 
 # Micrometer Datadog configuration.
 management.datadog.metrics.export.enabled: true
-management.datadog.metrics.export.api-key: "DD-APIKEY"
+management.datadog.metrics.export.api-key: "DD_API_KEY"
 management.datadog.metrics.export.uri: https://api.datadoghq.eu
 management.datadog.metrics.export.step: 30s
 #-- Micrometer Datadog configuration for local agent.
-management.statsd.metrics.export.enabled: false
+management.statsd.metrics.export.enabled: true
 management.statsd.metrics.export.host: localhost
 management.statsd.metrics.export.port: 8125
 management.statsd.metrics.export.protocol: udp

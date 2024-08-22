@@ -1,5 +1,6 @@
 package com.cjrequena.sample.service;
 
+import com.timgroup.statsd.Event;
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
@@ -68,7 +69,7 @@ public class FooService {
       sayHello1RequestsCounter.increment();
       activeSayHello1Requests.decrementAndGet();
       // Send warning
-      //this.dataDogEventService.warningEvent("warning.event.foo", "creating a foo warning.", Event.Priority.NORMAL,"warning.event.foo.tag");
+      this.dataDogEventService.warningEvent("warning.event.foo", "Creating a foo warning.", Event.Priority.NORMAL,"service:foo", "priority:NORMAL");
       return "Hello Fooes";
     }
   }

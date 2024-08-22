@@ -72,22 +72,24 @@ public class DataDogEventService {
     statsDClient.recordEvent(event, tags);
   }
 
-  public void infoEvent(String title, String text, String... tags) {
+  public void infoEvent(String title, String text, Event.Priority priority, String... tags) {
     Event event = Event.builder()
       .withTitle(title)
       .withText(text)
       .withDate(clock.millis())
       .withAlertType(Event.AlertType.INFO)
+      .withPriority(priority)
       .build();
     statsDClient.recordEvent(event, tags);
   }
 
-  public void successEvent(String title, String text, String... tags) {
+  public void successEvent(String title, String text, Event.Priority priority, String... tags) {
     Event event = Event.builder()
       .withTitle(title)
       .withText(text)
       .withDate(clock.millis())
       .withAlertType(Event.AlertType.SUCCESS)
+      .withPriority(priority)
       .build();
     statsDClient.recordEvent(event, tags);
   }
