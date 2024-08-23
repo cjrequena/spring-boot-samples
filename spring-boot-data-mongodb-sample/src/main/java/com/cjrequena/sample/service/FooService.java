@@ -83,7 +83,7 @@ public class FooService {
       .changeStream(FooEntity.class)
       .watchCollection("foo")
       .listen()
-      .take(Duration.ofMillis(9000))
+      .take(Duration.ofSeconds(15))
       .map((event)->this.fooMapper.toDTO(event.getBody()))
       .doOnNext(log::info);
   }
