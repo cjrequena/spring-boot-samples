@@ -42,7 +42,7 @@ public class JWTComponent {
       .verify(token);
   }
 
-  public PrincipalTokenAuthUserDetails convertToPrincipalTokenAuthUserDetails(DecodedJWT decodedJWT) {
+  public AuthUserDetails convertToAuthUserDetails(DecodedJWT decodedJWT) {
     List<SimpleGrantedAuthority> authorities = decodedJWT
       .getClaim(CLAIM_AUTHORITIES)
       .asList(String.class)
@@ -54,7 +54,7 @@ public class JWTComponent {
       .getClaim(CLAIM_ROLES)
       .asList(String.class);
 
-    return PrincipalTokenAuthUserDetails.builder()
+    return AuthUserDetails.builder()
       .userName(decodedJWT.getSubject())
       .email(decodedJWT.getClaim(CLAIM_EMAIL).asString())
       .authorities(authorities)

@@ -23,7 +23,7 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 public class SecurityConfiguration {
 
   private final AuthenticationFilter authenticationFilter;
-  private final BasicAuthUserDetailsService basicAuthUserDetailsService;
+  private final AuthUserDetailsService authUserDetailsService;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,8 +45,8 @@ public class SecurityConfiguration {
   }
 
   @Bean
-  public BasicAuthUserDetailsService accessTokenPrincipalUserDetails() {
-    return this.basicAuthUserDetailsService;
+  public AuthUserDetailsService accessTokenPrincipalUserDetails() {
+    return this.authUserDetailsService;
   }
 
   @Bean

@@ -17,16 +17,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class BasicAuthUserDetailsService implements UserDetailsService {
+public class AuthUserDetailsService implements UserDetailsService {
 
   private final UserService userService;
 
   @Override
-  public BasicAuthUserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+  public AuthUserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
     Optional<UserEntity> userEntityOptional = null;
     try {
-      UserEntity userEntity = userService.retrieveUserName(userName).get();
-      return BasicAuthUserDetails.builder()
+      UserEntity userEntity = userService.retrieveUser(userName).get();
+      return AuthUserDetails.builder()
         .userId(userEntity.getId())
         .userName(userEntity.getUserName())
         .email(userEntity.getEmail())

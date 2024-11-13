@@ -1,8 +1,8 @@
 package com.cjrequena.sample.api.auth;
 
+import com.cjrequena.sample.configuration.security.AuthUserDetails;
 import com.cjrequena.sample.model.dto.AuthAccessTokenDTO;
-import com.cjrequena.sample.configuration.security.BasicAuthUserDetails;
-import com.cjrequena.sample.service.AuthAccessTokenService;
+import com.cjrequena.sample.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthAccessTokenAPI {
 
-  private final AuthAccessTokenService authAccessTokenService;
+  private final UserService userService;
 
   public static final String ENDPOINT = "/foo-service/api/auth/token";
   public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
@@ -35,10 +35,10 @@ public class AuthAccessTokenAPI {
     //path = "/auth/token",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<AuthAccessTokenDTO> accessToken(@AuthenticationPrincipal BasicAuthUserDetails basicAuthUserDetails) {
+  public ResponseEntity<AuthAccessTokenDTO> accessToken(@AuthenticationPrincipal AuthUserDetails authUserDetails) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
-    AuthAccessTokenDTO authAccessTokenDTO = authAccessTokenService.generateAccessToken(basicAuthUserDetails);
+    AuthAccessTokenDTO authAccessTokenDTO = userService.generateAccessToken(authUserDetails);
     return new ResponseEntity<>(authAccessTokenDTO, responseHeaders, HttpStatus.OK);
   }
 }

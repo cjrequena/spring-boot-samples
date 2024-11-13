@@ -41,8 +41,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     } else if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
       extractTokenFromRequest(request)
         .map(jwtComponent::decode)
-        .map(jwtComponent::convertToPrincipalTokenAuthUserDetails)
-        .map(PrincipalAuthToken::new)
+        .map(jwtComponent::convertToAuthUserDetails)
+        .map(UserAuthToken::new)
         .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
       filterChain.doFilter(request, response);
     } else {

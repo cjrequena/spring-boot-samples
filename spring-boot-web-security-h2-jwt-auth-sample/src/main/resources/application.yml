@@ -3,7 +3,7 @@ server.compression.enabled: true
 server.compression.mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/stream+json,application/x-ndjson
 server.compression.min-response-size: 1024
 server.http2.enabled: true
-server.port: ${SERVER_PORT:9080}
+server.port: ${SERVER_PORT:8080}
 
 spring.application.name: '@project.artifactId@'
 spring.application.version: '@project.version@'

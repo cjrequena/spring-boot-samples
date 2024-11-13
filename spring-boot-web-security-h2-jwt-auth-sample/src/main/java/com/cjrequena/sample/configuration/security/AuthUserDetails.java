@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class PrincipalTokenAuthUserDetails implements UserDetails {
+public class AuthUserDetails implements UserDetails {
 
   private final Long userId;
   private final String userName;
@@ -28,7 +28,7 @@ public class PrincipalTokenAuthUserDetails implements UserDetails {
 
   @Override
   public String getPassword() {
-    return this.password;
+    return password;
   }
 
   @Override
