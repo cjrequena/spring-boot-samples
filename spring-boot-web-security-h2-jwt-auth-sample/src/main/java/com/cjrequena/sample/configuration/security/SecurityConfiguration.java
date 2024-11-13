@@ -39,20 +39,15 @@ public class SecurityConfiguration {
         registry.requestMatchers(toH2Console()).permitAll();
         registry.requestMatchers("/foo-service/api/fooes").hasAnyRole("admin");
         registry.requestMatchers("/foo-service/api/fooes").hasAnyAuthority("authority-1", "authority-2");
-        registry .anyRequest().authenticated();
+        registry.anyRequest().authenticated();
       })
       .build();
   }
 
   @Bean
-  public AuthUserDetailsService accessTokenPrincipalUserDetails() {
-    return this.authUserDetailsService;
-  }
-
-  @Bean
   public AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(accessTokenPrincipalUserDetails());
+    provider.setUserDetailsService(authUserDetailsService);
     provider.setPasswordEncoder(passwordEncoder());
     return provider;
   }
