@@ -15,7 +15,7 @@ management.endpoints.web.base-path: /management # Base path for Web endpoints. R
 management.endpoints.web.path-mapping.health: healthcheck
 # HEALTH ENDPOINT
 management.endpoint.health.cache.time-to-live: 0ms # Maximum time that a response can be cached.
-management.endpoint.health.enabled: true # Whether to enable the health endpoint.
+management.endpoint.health.access: unrestricted # Allows unrestricted access to the health endpoint
 management.endpoint.health.roles:  # Roles used to determine whether or not a user is authorized to be shown details. When empty, all authenticated users are authorized.
 management.endpoint.health.show-details: always # When to show full health details.
 management.health.circuitbreakers.enabled: true

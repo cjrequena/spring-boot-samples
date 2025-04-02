@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version>
+        <version>3.4.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -21,13 +21,16 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.version>3.9.9</maven.version>
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
-        <springdoc.version>2.6.0</springdoc.version>
+        <maven.version>3.9.9</maven.version>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
+        <spring-boot-dependencies.version>3.4.3</spring-boot-dependencies.version>
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webflux-ui -->
+        <springdoc.version>2.8.5</springdoc.version>
         <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
-        <org.mapstruct.version>1.6.2</org.mapstruct.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- https://mvnrepository.com/artifact/org.apache.johnzon/johnzon-core -->
         <johnzon-core.version>2.0.1</johnzon-core.version>
-        <!-- https://mvnrepository.com/artifact/jakarta.json/jakarta.json-api/2.1.1 -->
+        <!-- https://mvnrepository.com/artifact/jakarta.json/jakarta.json-api -->
         <jakarta.json-api.version>2.1.3</jakarta.json-api.version>
     </properties>
     <modules>
