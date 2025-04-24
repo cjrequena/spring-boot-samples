@@ -1,6 +1,7 @@
 package com.cjrequena.sample.service;
 
 import com.cjrequena.sample.domain.Book;
+import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
 import com.cjrequena.sample.mapper.BookMapper;
 import com.cjrequena.sample.repository.BookRepository;
 import jakarta.annotation.PostConstruct;
@@ -56,22 +57,23 @@ public class BookService {
     return bookCacheService.retrieveByAuthor(author);
   }
 
-  public void update(Book book) {
+  public void update(Book book) throws BookNotFoundServiceException {
     if (bookRepository.findById(book.getIsbn()).isPresent()) {
       bookRepository.save(bookMapper.toEntity(book));
       bookCacheService.removeByIsbn(book.getIsbn()); // Cleanly replace in cache
       bookCacheService.add(book);
     } else {
-      throw new IllegalArgumentException("Book with ISBN " + book.getIsbn() + " does not exist.");
+      throw new BookNotFoundServiceException("Book with ISBN " + book.getIsbn() + " was not Found");
     }
   }
 
-  public boolean deleteByIsbn(String isbn) {
+  public boolean deleteByIsbn(String isbn) throws BookNotFoundServiceException {
     bookCacheService.removeByIsbn(isbn);
     if (bookRepository.existsById(isbn)) {
       bookRepository.deleteById(isbn);
       return true;
+    }else{
+      throw new BookNotFoundServiceException("Book with ISBN " + isbn + " was not Found");
     }
-    return false;
   }
 }

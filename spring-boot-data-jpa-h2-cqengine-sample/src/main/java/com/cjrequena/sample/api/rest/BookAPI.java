@@ -2,9 +2,12 @@ package com.cjrequena.sample.api.rest;
 
 import com.cjrequena.sample.domain.Book;
 import com.cjrequena.sample.dto.BookDTO;
+import com.cjrequena.sample.exception.api.NotFoundApiException;
+import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
 import com.cjrequena.sample.mapper.BookMapper;
 import com.cjrequena.sample.service.BookService;
 import jakarta.validation.Valid;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,11 +55,14 @@ public class BookAPI {
     path = "/{isbn}",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<Void> update(@PathVariable(value = "isbn") String isbn, @Valid @RequestBody BookDTO dto) {
+  public ResponseEntity<Void> update(@PathVariable(value = "isbn") String isbn, @Valid @RequestBody BookDTO dto) throws NotFoundApiException {
     final Book book = this.bookMapper.toDomain(dto);
     book.setIsbn(isbn);
-    this.bookService.update(book);
-
+    try {
+      this.bookService.update(book);
+    } catch (BookNotFoundServiceException ex) {
+      throw new NotFoundApiException(ex.getMessage());
+    }
     //Headers
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set(CACHE_CONTROL, "no store, private, max-age=0");
@@ -64,7 +70,11 @@ public class BookAPI {
   }
 
   @DeleteMapping("/{isbn}")
-  public boolean deleteBook(@PathVariable String isbn) {
-    return bookService.deleteByIsbn(isbn);
+  public boolean deleteBook(@PathVariable String isbn) throws NotFoundApiException {
+    try {
+      return bookService.deleteByIsbn(isbn);
+    } catch (BookNotFoundServiceException ex) {
+      throw new NotFoundApiException(ex.getMessage());
+    }
   }
 }
