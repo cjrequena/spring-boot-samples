@@ -43,6 +43,7 @@
         <module>spring-boot-mvc-security-h2-basic-auth-sample</module>
         <module>spring-boot-web-security-h2-jwt-auth-sample</module>
         <module>spring-boot-micrometer-datadog-sample</module>
+        <module>spring-boot-data-jpa-h2-cqengine-sample</module>
     </modules>
     <dependencies>
         <dependency>

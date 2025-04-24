@@ -13,10 +13,10 @@ import static com.cjrequena.sample.common.Constants.WHITELISTED_PATHS;
 
 @Component
 public class SecurityApiKeyAuthenticationFilter implements WebFilter {
-  @Value("${api.key}")
+  @Value("${rest.key}")
   private String _apiKey;
 
-  @Value("${api.secret}")
+  @Value("${rest.secret}")
   private String _apiSecret;
 
   @Override

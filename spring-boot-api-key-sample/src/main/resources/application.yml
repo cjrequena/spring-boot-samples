@@ -54,5 +54,5 @@ server.compression:
   min-response-size: 1024
 
 #
-api.key: my-api-key
+api.key: my-rest-key
 api.secret: my-secret

@@ -22,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FooAPI {
 
-  public static final String ENDPOINT = "/foo-service/api/";
+  public static final String ENDPOINT = "/foo-service/rest/";
   public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
 
   @GetMapping(

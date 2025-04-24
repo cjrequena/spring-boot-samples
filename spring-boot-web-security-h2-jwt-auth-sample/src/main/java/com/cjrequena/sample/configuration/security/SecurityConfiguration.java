@@ -37,8 +37,8 @@ public class SecurityConfiguration {
       //.securityMatcher("/foo-service/**")
       .authorizeHttpRequests(registry -> {
         registry.requestMatchers(toH2Console()).permitAll();
-        registry.requestMatchers("/foo-service/api/fooes").hasAnyRole("admin");
-        registry.requestMatchers("/foo-service/api/fooes").hasAnyAuthority("authority-1", "authority-2");
+        registry.requestMatchers("/foo-service/rest/fooes").hasAnyRole("admin");
+        registry.requestMatchers("/foo-service/rest/fooes").hasAnyAuthority("authority-1", "authority-2");
         registry.anyRequest().authenticated();
       })
       .build();

@@ -28,7 +28,7 @@ public class AuthAccessTokenAPI {
 
   private final UserService userService;
 
-  public static final String ENDPOINT = "/foo-service/api/auth/token";
+  public static final String ENDPOINT = "/foo-service/rest/auth/token";
   public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
 
   @PostMapping(
