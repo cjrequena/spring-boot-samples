@@ -5,6 +5,7 @@ import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
 import com.cjrequena.sample.mapper.BookMapper;
 import com.cjrequena.sample.repository.BookRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,7 +18,7 @@ public class BookService {
   private final BookMapper bookMapper;
   private final BookCacheService bookCacheService;
 
-  public BookService(BookRepository bookRepository, BookMapper bookMapper, BookCacheService bookCacheService) {
+  public BookService(BookRepository bookRepository, BookMapper bookMapper, @Qualifier("bookCacheCQEngineService") BookCacheService bookCacheService) {
     this.bookRepository = bookRepository;
     this.bookMapper = bookMapper;
     this.bookCacheService = bookCacheService;

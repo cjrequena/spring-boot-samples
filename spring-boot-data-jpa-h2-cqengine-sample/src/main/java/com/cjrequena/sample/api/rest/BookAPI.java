@@ -7,7 +7,6 @@ import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
 import com.cjrequena.sample.mapper.BookMapper;
 import com.cjrequena.sample.service.BookService;
 import jakarta.validation.Valid;
-import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
