@@ -7,6 +7,7 @@ import com.cjrequena.sample.repository.BookRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -40,12 +41,13 @@ public class BookService {
     return bookCacheService.retrieve();
   }
 
-  public Book retrieveByIsbn(String isbn) {
+  public Book retrieveByIsbn(String isbn) throws BookNotFoundServiceException {
     Book book = bookCacheService.retrieveByIsbn(isbn);
     if (book == null) {
-      book = bookRepository.findById(isbn)
+      book = bookRepository
+        .findById(isbn)
         .map(bookMapper::toDomain)
-        .orElse(null);
+        .orElseThrow(()-> new BookNotFoundServiceException("Book not found with ISBN: " + isbn));
       if (book != null) {
         bookCacheService.add(book); // cache update
       }
@@ -54,7 +56,14 @@ public class BookService {
   }
 
   public List<Book> retrieveByAuthor(String author) {
-    return bookCacheService.retrieveByAuthor(author);
+    List<Book> books = bookCacheService.retrieveByAuthor(author);
+    if (books == null) {
+      books = bookRepository
+        .findByAuthor(author)
+        .map(bookMapper::toDomain)
+        .orElseGet(Collections::emptyList);
+    }
+    return books;
   }
 
   public void update(Book book) throws BookNotFoundServiceException {

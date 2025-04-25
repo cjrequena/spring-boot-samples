@@ -4,8 +4,10 @@ import com.cjrequena.sample.domain.Book;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
+import com.googlecode.cqengine.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,15 +35,17 @@ public class BookCacheService {
   }
 
   public List<Book> retrieve() {
-    return cache.stream().collect(Collectors.toList());
+    return new ArrayList<>(cache);
   }
 
   public Book retrieveByIsbn(String isbn) {
-    return cache.retrieve(equal(Book.ISBN, isbn)).stream().findFirst().orElse(null);
+    Query<Book> retrieveByIsbnQry = equal(Book.ISBN, isbn);
+    return cache.retrieve(retrieveByIsbnQry).stream().findFirst().orElse(null);
   }
 
   public List<Book> retrieveByAuthor(String author) {
-    return cache.retrieve(equal(Book.AUTHOR, author)).stream().collect(Collectors.toList());
+    Query<Book> retrieveByAuthorQry = equal(Book.AUTHOR, author);
+    return cache.retrieve(retrieveByAuthorQry).stream().collect(Collectors.toList());
   }
 
   public void removeByIsbn(String isbn) {
