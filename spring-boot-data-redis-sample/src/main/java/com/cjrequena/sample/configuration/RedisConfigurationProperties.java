@@ -59,8 +59,6 @@ public class RedisConfigurationProperties {
 
   private Cluster cluster;
 
-  private Jedis jedis;
-
   private Lettuce lettuce;
 
   @Data
@@ -88,7 +86,6 @@ public class RedisConfigurationProperties {
     private List<String> nodes;
   }
 
-
   /**
    *
    */
@@ -108,20 +105,6 @@ public class RedisConfigurationProperties {
     private Integer maxRedirects;
   }
 
-
-  /**
-   *
-   */
-  @Data
-  public static class Jedis {
-
-    /**
-     * Jedis pool configuration.
-     */
-    private Pool pool;
-
-  }
-
   /**
    *
    */
@@ -139,7 +122,5 @@ public class RedisConfigurationProperties {
     private Pool pool;
 
   }
-
-
 
 }
