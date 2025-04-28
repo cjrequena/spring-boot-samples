@@ -1,4 +1,4 @@
-package com.cjrequena.sample.service;
+package com.cjrequena.sample.repository.cache;
 
 import com.cjrequena.sample.domain.Book;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -6,17 +6,18 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @Qualifier("bookCacheCaffeineService")
-public class BookCacheCaffeineService implements BookCacheService{
+public class BookCacheCaffeineRepository implements CacheRepository<String,Book> {
 
   private final Cache<String, Book> cache;
 
-  public BookCacheCaffeineService() {
+  public BookCacheCaffeineRepository() {
     this.cache = Caffeine.newBuilder()
       .expireAfterAccess(1, TimeUnit.HOURS)
       .maximumSize(10_000)
@@ -34,21 +35,21 @@ public class BookCacheCaffeineService implements BookCacheService{
   }
 
   public List<Book> retrieve() {
-    return cache.asMap().values().stream().collect(Collectors.toList());
+    return new ArrayList<>(cache.asMap().values());
   }
 
-  public Book retrieveByIsbn(String isbn) {
+  public Book retrieveById(String isbn) {
     return cache.getIfPresent(isbn);
+  }
+
+  public void removeById(String isbn) {
+    cache.invalidate(isbn);
   }
 
   public List<Book> retrieveByAuthor(String author) {
     return cache.asMap().values().stream()
       .filter(book -> book.getAuthor().equalsIgnoreCase(author))
       .collect(Collectors.toList());
-  }
-
-  public void removeByIsbn(String isbn) {
-    cache.invalidate(isbn);
   }
 
   public boolean isEmpty() {

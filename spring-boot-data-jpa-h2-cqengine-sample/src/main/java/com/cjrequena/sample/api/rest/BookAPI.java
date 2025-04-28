@@ -43,7 +43,7 @@ public class BookAPI {
   @GetMapping("/{isbn}")
   public BookDTO retrieveByIsbn(@PathVariable String isbn) throws NotFoundApiException {
     try {
-      return this.bookMapper.toDTO(bookService.retrieveByIsbn(isbn));
+      return this.bookMapper.toDTO(bookService.retrieveById(isbn));
     } catch (BookNotFoundServiceException ex) {
       throw new NotFoundApiException(ex.getMessage());
     }

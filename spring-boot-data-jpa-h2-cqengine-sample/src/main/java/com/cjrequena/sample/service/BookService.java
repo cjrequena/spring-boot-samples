@@ -4,8 +4,8 @@ import com.cjrequena.sample.domain.Book;
 import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
 import com.cjrequena.sample.mapper.BookMapper;
 import com.cjrequena.sample.repository.BookRepository;
+import com.cjrequena.sample.repository.cache.BookCacheCQEngineRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -16,48 +16,58 @@ public class BookService {
 
   private final BookRepository bookRepository;
   private final BookMapper bookMapper;
-  private final BookCacheService bookCacheService;
+  private final BookCacheCQEngineRepository bookCacheRepository;
+  // private final BookCacheCaffeineRepository bookCacheRepository;
+  // CacheRepository<String,Book> bookCacheRepository;
 
-  public BookService(BookRepository bookRepository, BookMapper bookMapper, @Qualifier("bookCacheCQEngineService") BookCacheService bookCacheService) {
+  public BookService(
+    BookMapper bookMapper,
+    BookRepository bookRepository,
+    BookCacheCQEngineRepository bookCacheRepository
+    //BookCacheCaffeineRepository bookCacheRepository
+    //@Qualifier("bookCacheCQEngineService") CacheRepository<String, Book> bookCacheRepository
+    //@Qualifier("BookCacheCaffeineRepository") CacheRepository<String, Book> bookCacheRepository
+  ) {
     this.bookRepository = bookRepository;
     this.bookMapper = bookMapper;
-    this.bookCacheService = bookCacheService;
+    this.bookCacheRepository = bookCacheRepository;
+    //this.bookCacheRepository = cacheRepository;
   }
 
   @PostConstruct
   public void loadUpCache() {
     List<Book> books = this.bookMapper.toDomain(bookRepository.findAll());
-    bookCacheService.load(books);
+    bookCacheRepository.load(books);
   }
 
   public void create(Book book) {
     bookRepository.save(this.bookMapper.toEntity(book));
-    bookCacheService.add(book); // write-through
+    bookCacheRepository.add(book); // write-through
   }
 
   public List<Book> retrieve() {
-    if (bookCacheService.isEmpty()) {
+    if (bookCacheRepository.isEmpty()) {
       loadUpCache(); // recovery logic
     }
-    return bookCacheService.retrieve();
+    return bookCacheRepository.retrieve();
   }
 
-  public Book retrieveByIsbn(String isbn) throws BookNotFoundServiceException {
-    Book book = bookCacheService.retrieveByIsbn(isbn);
+  public Book retrieveById(String isbn) throws BookNotFoundServiceException {
+    Book book = bookCacheRepository.retrieveById(isbn);
     if (book == null) {
       book = bookRepository
         .findById(isbn)
         .map(bookMapper::toDomain)
-        .orElseThrow(()-> new BookNotFoundServiceException("Book not found with ISBN: " + isbn));
+        .orElseThrow(() -> new BookNotFoundServiceException("Book not found with ISBN: " + isbn));
       if (book != null) {
-        bookCacheService.add(book); // cache update
+        bookCacheRepository.add(book); // cache update
       }
     }
     return book;
   }
 
   public List<Book> retrieveByAuthor(String author) {
-    List<Book> books = bookCacheService.retrieveByAuthor(author);
+    List<Book> books = bookCacheRepository.retrieveByAuthor(author);
     if (books == null) {
       books = bookRepository
         .findByAuthor(author)
@@ -70,19 +80,19 @@ public class BookService {
   public void update(Book book) throws BookNotFoundServiceException {
     if (bookRepository.findById(book.getIsbn()).isPresent()) {
       bookRepository.save(bookMapper.toEntity(book));
-      bookCacheService.removeByIsbn(book.getIsbn()); // Cleanly replace in cache
-      bookCacheService.add(book);
+      bookCacheRepository.removeById(book.getIsbn()); // Cleanly replace in cache
+      bookCacheRepository.add(book);
     } else {
       throw new BookNotFoundServiceException("Book with ISBN " + book.getIsbn() + " was not Found");
     }
   }
 
   public boolean deleteByIsbn(String isbn) throws BookNotFoundServiceException {
-    bookCacheService.removeByIsbn(isbn);
+    bookCacheRepository.removeById(isbn);
     if (bookRepository.existsById(isbn)) {
       bookRepository.deleteById(isbn);
       return true;
-    }else{
+    } else {
       throw new BookNotFoundServiceException("Book with ISBN " + isbn + " was not Found");
     }
   }

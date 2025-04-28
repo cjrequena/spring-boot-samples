@@ -1,4 +1,4 @@
-package com.cjrequena.sample.service;
+package com.cjrequena.sample.repository.cache;
 
 import com.cjrequena.sample.domain.Book;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
@@ -18,11 +18,11 @@ import static com.googlecode.cqengine.query.QueryFactory.equal;
 @Service
 @Qualifier("bookCacheCQEngineService")
 @Primary
-public class BookCacheCQEngineService implements BookCacheService{
+public class BookCacheCQEngineRepository implements CacheRepository<String, Book> {
 
   private final IndexedCollection<Book> cache = new ConcurrentIndexedCollection<>();
 
-  public BookCacheCQEngineService() {
+  public BookCacheCQEngineRepository() {
     cache.addIndex(HashIndex.onAttribute(Book.ISBN));
     cache.addIndex(HashIndex.onAttribute(Book.TITLE));
     cache.addIndex(HashIndex.onAttribute(Book.AUTHOR));
@@ -42,18 +42,18 @@ public class BookCacheCQEngineService implements BookCacheService{
     return new ArrayList<>(cache);
   }
 
-  public Book retrieveByIsbn(String isbn) {
+  public Book retrieveById(String isbn) {
     Query<Book> retrieveByIsbnQry = equal(Book.ISBN, isbn);
     return cache.retrieve(retrieveByIsbnQry).stream().findFirst().orElse(null);
+  }
+
+  public void removeById(String isbn) {
+    cache.removeIf(book -> book.getIsbn().equals(isbn));
   }
 
   public List<Book> retrieveByAuthor(String author) {
     Query<Book> retrieveByAuthorQry = equal(Book.AUTHOR, author);
     return cache.retrieve(retrieveByAuthorQry).stream().collect(Collectors.toList());
-  }
-
-  public void removeByIsbn(String isbn) {
-    cache.removeIf(book -> book.getIsbn().equals(isbn));
   }
 
   public boolean isEmpty() {
