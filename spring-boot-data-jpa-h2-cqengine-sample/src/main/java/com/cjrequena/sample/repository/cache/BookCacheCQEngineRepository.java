@@ -5,9 +5,10 @@ import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.query.Query;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +16,10 @@ import java.util.stream.Collectors;
 
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 
-@Service
+@Repository
 @Qualifier("bookCacheCQEngineService")
 @Primary
+@Log4j2
 public class BookCacheCQEngineRepository implements CacheRepository<String, Book> {
 
   private final IndexedCollection<Book> cache = new ConcurrentIndexedCollection<>();
@@ -31,7 +33,8 @@ public class BookCacheCQEngineRepository implements CacheRepository<String, Book
   public void load(List<Book> books) {
     cache.clear();
     cache.addAll(books);
-    System.out.println("Cache loaded with " + books.size() + " books.");
+    log.info("CQEngine cache loaded with {} books.", books.size());
+
   }
 
   public void add(Book book) {

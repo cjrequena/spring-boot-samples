@@ -1,7 +1,8 @@
 package com.cjrequena.sample.configuration;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -13,19 +14,20 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
-@Slf4j
+@Log4j2
 @Configuration
 @EnableRedisRepositories
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RedisConfiguration {
 
   private final RedisConfigurationProperties redisConfigurationProperties;
 
-  @Bean
+  @Bean("lettuceConnectionFactory")
   @Primary
   public LettuceConnectionFactory redisConnectionFactory() {
     if (redisConfigurationProperties.getCluster() != null &&
@@ -66,22 +68,27 @@ public class RedisConfiguration {
   }
 
   @Bean
-  public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory connectionFactory) {
+  public RedisTemplate redisTemplate(LettuceConnectionFactory connectionFactory) {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
+    StringRedisSerializer stringSerializer = new StringRedisSerializer();
+    GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
+
     template.setConnectionFactory(connectionFactory);
-    template.setKeySerializer(new StringRedisSerializer());
-    template.setHashKeySerializer(new StringRedisSerializer());
-    template.setValueSerializer(new StringRedisSerializer());
-    template.setHashValueSerializer(new StringRedisSerializer());
+    template.setKeySerializer(stringSerializer);
+    template.setHashKeySerializer(stringSerializer);
+    template.setValueSerializer(jsonSerializer);
+    template.setHashValueSerializer(jsonSerializer);
     return template;
   }
 
-  @Bean
+  @Bean("stringRedisTemplate")
   public StringRedisTemplate stringRedisTemplate(LettuceConnectionFactory connectionFactory) {
     StringRedisTemplate template = new StringRedisTemplate();
+    StringRedisSerializer stringSerializer = new StringRedisSerializer();
+    GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
     template.setConnectionFactory(connectionFactory);
-    template.setKeySerializer(new StringRedisSerializer());
-    template.setValueSerializer(new StringRedisSerializer());
+    template.setKeySerializer(stringSerializer);
+    template.setValueSerializer(jsonSerializer);
     return template;
   }
 }

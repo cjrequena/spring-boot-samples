@@ -3,16 +3,18 @@ package com.cjrequena.sample.repository.cache;
 import com.cjrequena.sample.domain.Book;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Service
+@Repository
 @Qualifier("bookCacheCaffeineService")
+@Log4j2
 public class BookCacheCaffeineRepository implements CacheRepository<String,Book> {
 
   private final Cache<String, Book> cache;
@@ -27,7 +29,8 @@ public class BookCacheCaffeineRepository implements CacheRepository<String,Book>
   public void load(List<Book> books) {
     cache.invalidateAll(); // Clear cache
     books.forEach(book -> cache.put(book.getIsbn(), book));
-    System.out.println("Cache loaded with " + books.size() + " books.");
+    log.info("Caffeine cache loaded with {} books.", books.size());
+
   }
 
   public void add(Book book) {
