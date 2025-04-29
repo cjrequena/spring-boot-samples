@@ -71,3 +71,5 @@ spring.jpa.properties.hibernate.bytecode.use_reflection_optimizer: false
 # FLYWAY
 spring.flyway.enabled: true
 spring.flyway.locations: classpath:/db/migration
+
+spring.cache.type: redis

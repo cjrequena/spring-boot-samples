@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class BookCacheRedisRepository implements CacheRepository<String, Book>{
 
-  private static final String CACHE_PREFIX = "book:";
+  private static final String CACHE_PREFIX = "books:";
 
   private final RedisTemplate<String, Book> redisTemplate;
   private final ValueOperations<String, Book> valueOps;
