@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -22,10 +23,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.version>3.9.9</maven.version>
         <maven.version>3.9.9</maven.version>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
-        <spring-boot-dependencies.version>3.4.3</spring-boot-dependencies.version>
         <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webflux-ui -->
-        <springdoc.version>2.8.5</springdoc.version>
+        <springdoc.version>2.8.6</springdoc.version>
         <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- https://mvnrepository.com/artifact/org.apache.johnzon/johnzon-core -->
@@ -44,6 +43,7 @@
         <module>spring-boot-web-security-h2-jwt-auth-sample</module>
         <module>spring-boot-micrometer-datadog-sample</module>
         <module>spring-boot-data-jpa-h2-cqengine-sample</module>
+        <module>spring-boot-websocket-sample</module>
     </modules>
     <dependencies>
         <dependency>

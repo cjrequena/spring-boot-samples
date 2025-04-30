@@ -14,6 +14,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
@@ -35,7 +36,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @JsonTypeName("foo")
 @Schema(name = "Foo", description = "FooDTO")
 @XmlRootElement
-public class FooDTO {
+public class FooDTO implements Serializable {
 
   @JsonProperty(value = "id")
   @Getter(onMethod = @__({@JsonProperty("id")}))

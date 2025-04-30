@@ -1,7 +1,7 @@
 package com.cjrequena.sample.mapper;
 
-import com.cjrequena.sample.db.entity.FooEntity;
 import com.cjrequena.sample.dto.FooDTO;
+import entity.FooEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 

@@ -1,4 +1,4 @@
-package com.cjrequena.sample.db.repository;
+package com.cjrequena.sample.repository;
 
 import com.cjrequena.sample.db.entity.FooEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

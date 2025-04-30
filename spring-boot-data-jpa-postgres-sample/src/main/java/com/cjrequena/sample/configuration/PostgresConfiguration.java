@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
   entityManagerFactoryRef = "entityManagerFactoryPostgres",
   transactionManagerRef = "transactionManagerPostgres",
-  basePackages = {"com.cjrequena.sample.db.repository"}
+  basePackages = {"com.cjrequena.sample.repository"}
 )
 public class PostgresConfiguration {
 
@@ -46,7 +46,7 @@ public class PostgresConfiguration {
   public LocalContainerEntityManagerFactoryBean entityManagerFactoryPostgres(EntityManagerFactoryBuilder builder, @Qualifier("dataSourcePostgres") DataSource dataSource) {
     return builder
       .dataSource(dataSource)
-      .packages("com.cjrequena.sample.db.entity")
+      .packages("com.cjrequena.sample.entity")
       .persistenceUnit("jpa-unit")
       .build();
   }

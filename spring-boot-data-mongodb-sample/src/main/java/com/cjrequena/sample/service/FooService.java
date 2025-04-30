@@ -1,17 +1,20 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.db.entity.FooEntity;
-import com.cjrequena.sample.db.repository.FooRepository;
 import com.cjrequena.sample.dto.FooDTO;
 import com.cjrequena.sample.exception.service.FooNotFoundServiceException;
 import com.cjrequena.sample.exception.service.ServiceException;
 import com.cjrequena.sample.mapper.FooMapper;
+import com.cjrequena.sample.repository.FooRepository;
+import entity.FooEntity;
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonPatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +87,20 @@ public class FooService {
       .watchCollection("foo")
       .listen()
       .take(Duration.ofSeconds(15))
+      .map((event)->this.fooMapper.toDTO(event.getBody()))
+      .doOnNext(log::info);
+  }
+
+
+  public Flux<FooDTO> subscribeById(String id){
+    Aggregation matchOperation = Aggregation.newAggregation(
+      Aggregation.match(Criteria.where("documentKey._id").is(new ObjectId(id)))
+    );
+    return reactiveMongoTemplate
+      .changeStream(FooEntity.class)
+      .watchCollection("foo")
+      .listen()
+      .take(Duration.ofSeconds(60))
       .map((event)->this.fooMapper.toDTO(event.getBody()))
       .doOnNext(log::info);
   }

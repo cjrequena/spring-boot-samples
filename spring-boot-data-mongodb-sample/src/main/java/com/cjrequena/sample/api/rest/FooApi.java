@@ -1,4 +1,4 @@
-package com.cjrequena.sample.web.api;
+package com.cjrequena.sample.api.rest;
 
 import com.cjrequena.sample.common.Constants;
 import com.cjrequena.sample.dto.FooDTO;
@@ -21,7 +21,7 @@ import reactor.core.scheduler.Schedulers;
 import java.net.URI;
 import java.util.List;
 
-import static com.cjrequena.sample.web.api.FooApi.ACCEPT_VERSION;
+import static com.cjrequena.sample.api.rest.FooApi.ACCEPT_VERSION;
 import static org.springframework.http.HttpHeaders.CACHE_CONTROL;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -30,7 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FooApi {
 
-  public static final String ENDPOINT = "/foo-service/rest/";
+  public static final String ENDPOINT = "/foo-service/api";
   public static final String ACCEPT_VERSION = "Accept-Version=" + Constants.VND_SAMPLE_SERVICE_V1;
 
   private final FooService fooService;
@@ -118,13 +118,24 @@ public class FooApi {
       });
   }
 
-
   @GetMapping(path = "/fooes/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<FooDTO> subscribe() {
     return this.fooService.subscribe();
   }
+
   @GetMapping(path = "/fooes/subscribe", produces = APPLICATION_JSON_VALUE)
   public Mono<List<FooDTO>> nonReactive() {
     return this.fooService.subscribe().collectList().subscribeOn(Schedulers.boundedElastic());
   }
+
+  @GetMapping(path = "/fooes/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<FooDTO> subscribeById(@PathVariable(value = "id") String id) {
+    return this.fooService.subscribeById(id);
+  }
+
+  @GetMapping(path = "/fooes/subscribe/{id}", produces = APPLICATION_JSON_VALUE)
+  public Mono<List<FooDTO>> subscribeByIdReactive(@PathVariable(value = "id") String id) {
+    return this.fooService.subscribeById(id).collectList().subscribeOn(Schedulers.boundedElastic());
+  }
+
 }

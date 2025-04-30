@@ -1,6 +1,6 @@
-package com.cjrequena.sample.db.repository;
+package com.cjrequena.sample.repository;
 
-import com.cjrequena.sample.db.entity.FooEntity;
+import entity.FooEntity;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 public interface FooRepository extends ReactiveMongoRepository<FooEntity, String> {
