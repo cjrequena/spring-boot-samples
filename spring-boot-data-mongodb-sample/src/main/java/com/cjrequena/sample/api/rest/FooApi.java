@@ -124,7 +124,7 @@ public class FooApi {
   }
 
   @GetMapping(path = "/fooes/subscribe", produces = APPLICATION_JSON_VALUE)
-  public Mono<List<FooDTO>> nonReactive() {
+  public Mono<List<FooDTO>> subscribeMono() {
     return this.fooService.subscribe().collectList().subscribeOn(Schedulers.boundedElastic());
   }
 
@@ -134,7 +134,7 @@ public class FooApi {
   }
 
   @GetMapping(path = "/fooes/subscribe/{id}", produces = APPLICATION_JSON_VALUE)
-  public Mono<List<FooDTO>> subscribeByIdReactive(@PathVariable(value = "id") String id) {
+  public Mono<List<FooDTO>> subscribeByIdMono(@PathVariable(value = "id") String id) {
     return this.fooService.subscribeById(id).collectList().subscribeOn(Schedulers.boundedElastic());
   }
 
