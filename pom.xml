@@ -44,6 +44,7 @@
         <module>spring-boot-micrometer-datadog-sample</module>
         <module>spring-boot-data-jpa-h2-cqengine-sample</module>
         <module>spring-boot-websocket-sample</module>
+        <module>spring-boot-sse-sample</module>
     </modules>
     <dependencies>
         <dependency>
