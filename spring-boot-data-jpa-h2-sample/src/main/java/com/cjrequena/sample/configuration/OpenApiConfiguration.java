@@ -39,7 +39,7 @@ public class OpenApiConfiguration {
     public GroupedOpenApi groupOpenApi() {
         return GroupedOpenApi.builder()
                 .group("v1")
-                .packagesToScan("com.cjrequena.sample.web.rest")
+                .packagesToScan("com.cjrequena.sample.rest.rest")
                 .build();
     }
 }
