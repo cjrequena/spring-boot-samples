@@ -1,10 +1,11 @@
 package com.cjrequena.sample.configuration;
 
-import com.cjrequena.sample.adapter.out.persistence.CustomerPersistenceAdapter;
+import com.cjrequena.sample.adapter.in.api.rest.CustomerAPIAdapter;
+import com.cjrequena.sample.adapter.out.persistence.CustomerJpaAdapter;
 import com.cjrequena.sample.adapter.out.persistence.repository.CustomerJpaRepository;
 import com.cjrequena.sample.application.service.CustomerService;
-import com.cjrequena.sample.domain.port.in.CustomerServicePort;
-import com.cjrequena.sample.domain.port.out.CustomerRepositoryPort;
+import com.cjrequena.sample.domain.port.in.CustomerAPIPort;
+import com.cjrequena.sample.domain.port.out.CustomerJpaPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,12 +13,12 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationConfiguration {
 
     @Bean
-    public CustomerRepositoryPort customerRepositoryPort(CustomerJpaRepository repository) {
-        return new CustomerPersistenceAdapter(repository);
+    public CustomerJpaPort customerJpaPort(CustomerJpaRepository repository) {
+        return new CustomerJpaAdapter(repository);
     }
 
     @Bean
-    public CustomerServicePort customerServicePort(CustomerRepositoryPort customerRepositoryPort) {
-        return new CustomerService(customerRepositoryPort);
+    public CustomerAPIPort customerAPIPort(CustomerService customerService) {
+        return new CustomerAPIAdapter(customerService);
     }
 }

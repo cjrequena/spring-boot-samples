@@ -3,13 +3,13 @@ package com.cjrequena.sample.adapter.out.persistence;
 import com.cjrequena.sample.adapter.out.persistence.entity.CustomerEntity;
 import com.cjrequena.sample.adapter.out.persistence.repository.CustomerJpaRepository;
 import com.cjrequena.sample.domain.model.Customer;
-import com.cjrequena.sample.domain.port.out.CustomerRepositoryPort;
+import com.cjrequena.sample.domain.port.out.CustomerJpaPort;
 
-public class CustomerPersistenceAdapter implements CustomerRepositoryPort {
+public class CustomerJpaAdapter implements CustomerJpaPort {
 
     private final CustomerJpaRepository customerJpaRepository;
 
-    public CustomerPersistenceAdapter(CustomerJpaRepository customerJpaRepository) {
+    public CustomerJpaAdapter(CustomerJpaRepository customerJpaRepository) {
         this.customerJpaRepository = customerJpaRepository;
     }
 

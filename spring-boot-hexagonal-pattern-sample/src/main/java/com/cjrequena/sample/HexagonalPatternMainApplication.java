@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {
   "com.cjrequena.sample.adapter",
-  "com.cjrequena.sample.configuration"
+  "com.cjrequena.sample.configuration",
+  "com.cjrequena.sample.application"
 })
 public class HexagonalPatternMainApplication {
   public static void main(String[] args) {

@@ -1,19 +1,19 @@
 package com.cjrequena.sample.application.service;
 
 import com.cjrequena.sample.domain.model.Customer;
-import com.cjrequena.sample.domain.port.in.CustomerServicePort;
-import com.cjrequena.sample.domain.port.out.CustomerRepositoryPort;
+import com.cjrequena.sample.domain.port.out.CustomerJpaPort;
+import org.springframework.stereotype.Service;
 
-public class CustomerService implements CustomerServicePort {
+@Service
+public class CustomerService  {
 
-    private final CustomerRepositoryPort customerRepositoryPort;
+    private final CustomerJpaPort customerJpaPort;
 
-    public CustomerService(CustomerRepositoryPort customerRepositoryPort) {
-        this.customerRepositoryPort = customerRepositoryPort;
+    public CustomerService(CustomerJpaPort customerJpaPort) {
+        this.customerJpaPort = customerJpaPort;
     }
 
-    @Override
-    public Customer createCustomer(Customer customer) {
-        return customerRepositoryPort.save(customer);
+    public Customer create(Customer customer) {
+        return customerJpaPort.save(customer);
     }
 }
