@@ -18,7 +18,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public CustomerRestPort customerAPIPort(CustomerService customerService) {
+    public CustomerRestPort customerRestPort(CustomerService customerService) {
         return new CustomerRestAdapter(customerService);
     }
 }
