@@ -5,6 +5,7 @@ import com.cjrequena.sample.adapter.out.persistence.repository.CustomerJpaReposi
 import com.cjrequena.sample.domain.model.Customer;
 import com.cjrequena.sample.domain.port.out.persistence.CustomerJpaPort;
 
+
 public class CustomerJpaAdapter implements CustomerJpaPort {
 
     private final CustomerJpaRepository customerJpaRepository;
