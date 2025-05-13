@@ -1,4 +1,4 @@
-package com.cjrequena.sample.domain.port.out;
+package com.cjrequena.sample.domain.port.out.persistence;
 
 import com.cjrequena.sample.domain.model.Customer;
 

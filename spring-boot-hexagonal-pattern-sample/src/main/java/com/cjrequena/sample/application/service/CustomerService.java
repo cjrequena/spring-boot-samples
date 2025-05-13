@@ -1,7 +1,7 @@
 package com.cjrequena.sample.application.service;
 
 import com.cjrequena.sample.domain.model.Customer;
-import com.cjrequena.sample.domain.port.out.CustomerJpaPort;
+import com.cjrequena.sample.domain.port.out.persistence.CustomerJpaPort;
 import org.springframework.stereotype.Service;
 
 @Service
