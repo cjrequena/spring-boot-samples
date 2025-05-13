@@ -1,4 +1,4 @@
-package com.cjrequena.sample.db.entity;
+package com.cjrequena.sample.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

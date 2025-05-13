@@ -1,7 +1,7 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.db.entity.FooEntity;
 import com.cjrequena.sample.dto.FooDTO;
+import com.cjrequena.sample.entity.FooEntity;
 import com.cjrequena.sample.exception.service.FooNotFoundServiceException;
 import com.cjrequena.sample.exception.service.ServiceException;
 import com.cjrequena.sample.mapper.FooMapper;
