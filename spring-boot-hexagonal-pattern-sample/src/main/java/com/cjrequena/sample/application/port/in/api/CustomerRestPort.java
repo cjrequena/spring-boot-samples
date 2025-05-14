@@ -1,4 +1,4 @@
-package com.cjrequena.sample.domain.port.in.api;
+package com.cjrequena.sample.application.port.in.api;
 
 import com.cjrequena.sample.domain.model.Customer;
 

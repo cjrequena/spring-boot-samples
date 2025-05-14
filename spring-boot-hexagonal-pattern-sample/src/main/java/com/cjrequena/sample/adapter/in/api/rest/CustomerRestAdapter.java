@@ -1,9 +1,8 @@
 package com.cjrequena.sample.adapter.in.api.rest;
 
+import com.cjrequena.sample.application.port.in.api.CustomerRestPort;
 import com.cjrequena.sample.application.service.CustomerService;
 import com.cjrequena.sample.domain.model.Customer;
-import com.cjrequena.sample.domain.port.in.api.CustomerRestPort;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
