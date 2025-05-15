@@ -45,6 +45,7 @@
         <module>spring-boot-data-jpa-h2-cqengine-sample</module>
         <module>spring-boot-websocket-sample</module>
         <module>spring-boot-hexagonal-pattern-sample</module>
+        <module>spring-boot-drools-sample</module>
     </modules>
     <dependencies>
         <dependency>

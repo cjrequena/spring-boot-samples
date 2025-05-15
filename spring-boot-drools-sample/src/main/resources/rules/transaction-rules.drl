@@ -1,0 +1,74 @@
+package com.cjrequena.sample.rules
+
+import com.cjrequena.sample.domain.Transaction
+import com.cjrequena.sample.domain.Account
+
+// Rule 1: Reject withdrawals that exceed account balance for standard accounts
+rule "Reject overdraft for standard accounts"
+    salience 100  // Highest priority
+    when
+        $transaction: Transaction(type == "WITHDRAWAL", status == null, account.isPremium == false)
+        Account(balance < $transaction.amount) from $transaction.account
+    then
+        $transaction.setStatus("REJECTED");
+        $transaction.setReason("Insufficient funds");
+        System.out.println("Rejected transaction: Insufficient funds");
+        drools.halt(); // Stop further rule processing for this transaction
+end
+
+// Rule 2: Allow overdraft up to 500 for premium accounts
+rule "Allow overdraft for premium accounts"
+    salience 90
+    when
+        $transaction: Transaction(type == "WITHDRAWAL", status == null, account.isPremium == true)
+        Account(balance - $transaction.amount >= -500) from $transaction.account
+    then
+        $transaction.setStatus("COMPLETED");
+        System.out.println("Approved premium withdrawal with potential overdraft");
+        drools.halt();
+end
+
+// Rule 3: Reject large cash withdrawals (>1000) without premium account
+rule "Reject large cash withdrawals for standard accounts"
+    salience 80
+    when
+        $transaction: Transaction(type == "WITHDRAWAL", status == null, amount > 1000, account.isPremium == false)
+    then
+        $transaction.setStatus("REJECTED");
+        $transaction.setReason("Large withdrawal requires premium account");
+        System.out.println("Rejected transaction: Large withdrawal requires premium account");
+        drools.halt();
+end
+
+// Rule 4: Approve standard withdrawals within balance
+rule "Approve standard withdrawals within balance"
+    salience 70
+    when
+        $transaction: Transaction(type == "WITHDRAWAL", status == null, account.isPremium == false)
+        Account(balance >= $transaction.amount) from $transaction.account
+    then
+        $transaction.setStatus("COMPLETED");
+        System.out.println("Approved standard withdrawal");
+        drools.halt();
+end
+
+// Rule 5: Approve all deposits
+rule "Approve all deposits"
+    salience 60
+    when
+        $transaction: Transaction(type == "DEPOSIT", status == null)
+    then
+        $transaction.setStatus("COMPLETED");
+        System.out.println("Approved deposit");
+        drools.halt();
+end
+
+// Rule 6: Default rejection for other transactions
+rule "Default rejection"
+    when
+        $transaction: Transaction(status == null)
+    then
+        $transaction.setStatus("REJECTED");
+        $transaction.setReason("Transaction type not supported");
+        System.out.println("Rejected transaction: Type not supported");
+end
