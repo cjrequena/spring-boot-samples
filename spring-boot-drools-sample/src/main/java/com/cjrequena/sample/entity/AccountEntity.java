@@ -1,4 +1,4 @@
-package com.cjrequena.sample.domain;
+package com.cjrequena.sample.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,10 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "account")
-public class Account {
+public class AccountEntity {
+
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String accountNumber;
     private String customerName;
     private double balance;
@@ -23,5 +26,5 @@ public class Account {
     private boolean isPremium;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transaction> transactions;
+    private List<TransactionEntity> transactions;
 }

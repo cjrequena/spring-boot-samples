@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 @Service
-public class BankingService {
+public class AccountService {
     
     @Autowired
     private AccountRepository accountRepository;
@@ -18,7 +20,7 @@ public class BankingService {
     private RulesService rulesService;
     
     @Transactional
-    public Transaction processTransaction(Transaction transaction) {
+    public Transaction process(Transaction transaction) {
         // Apply business rules
         transaction = rulesService.applyRules(transaction);
         
@@ -30,13 +32,19 @@ public class BankingService {
             } else if ("WITHDRAWAL".equals(transaction.getType())) {
                 account.setBalance(account.getBalance() - transaction.getAmount());
             }
+
+            if (account.getTransactions() == null) {
+                account.setTransactions(new ArrayList<>());
+            }
+
+            account.getTransactions().add(transaction);
             accountRepository.save(account);
         }
         
         return transaction;
     }
     
-    public Account createAccount(Account account) {
+    public Account create(Account account) {
         return accountRepository.save(account);
     }
     
