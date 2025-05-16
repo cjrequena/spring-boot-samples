@@ -7,21 +7,21 @@ import com.cjrequena.sample.domain.Account
 rule "Reject overdraft for standard accounts"
     salience 100  // Highest priority
     when
-        $transaction: Transaction(type == "WITHDRAWAL", status == null, account.isPremium == false)
-        Account(balance < $transaction.amount) from $transaction.account
+        $transaction: Transaction(type == "WITHDRAWAL", status == null)
+        $account: Account(premium == false, balance < $transaction.amount)
     then
         $transaction.setStatus("REJECTED");
         $transaction.setReason("Insufficient funds");
         System.out.println("Rejected transaction: Insufficient funds");
-        drools.halt(); // Stop further rule processing for this transaction
+        drools.halt();
 end
 
 // Rule 2: Allow overdraft up to 500 for premium accounts
 rule "Allow overdraft for premium accounts"
     salience 90
     when
-        $transaction: Transaction(type == "WITHDRAWAL", status == null, account.isPremium == true)
-        Account(balance - $transaction.amount >= -500) from $transaction.account
+        $transaction: Transaction(type == "WITHDRAWAL", status == null)
+        $account: Account(premium == true, balance - $transaction.amount >= -500)
     then
         $transaction.setStatus("COMPLETED");
         System.out.println("Approved premium withdrawal with potential overdraft");
@@ -32,7 +32,8 @@ end
 rule "Reject large cash withdrawals for standard accounts"
     salience 80
     when
-        $transaction: Transaction(type == "WITHDRAWAL", status == null, amount > 1000, account.isPremium == false)
+        $transaction: Transaction(type == "WITHDRAWAL", status == null, amount > 1000)
+        $account: Account(premium == false)
     then
         $transaction.setStatus("REJECTED");
         $transaction.setReason("Large withdrawal requires premium account");
@@ -44,8 +45,8 @@ end
 rule "Approve standard withdrawals within balance"
     salience 70
     when
-        $transaction: Transaction(type == "WITHDRAWAL", status == null, account.isPremium == false)
-        Account(balance >= $transaction.amount) from $transaction.account
+        $transaction: Transaction(type == "WITHDRAWAL", status == null)
+        $account: Account(premium == false, balance >= $transaction.amount)
     then
         $transaction.setStatus("COMPLETED");
         System.out.println("Approved standard withdrawal");

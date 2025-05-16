@@ -3,13 +3,18 @@ package com.cjrequena.sample;
 import com.cjrequena.sample.domain.Account;
 import com.cjrequena.sample.domain.Transaction;
 import com.cjrequena.sample.service.AccountService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MainApplication {
+
+  private final AccountService accountService;
 
   public static void main(String[] args) {
     SpringApplication.run(MainApplication.class, args);
@@ -50,23 +55,26 @@ public class MainApplication {
   private void testWithdrawal(AccountService accountService, Account account, double amount) {
     System.out.println("\nAttempting withdrawal of " + amount + " from account " + account.getAccountNumber());
     Transaction t = new Transaction();
-    t.setAccount(account);
+    t.setAccountId(account.getId());
     t.setAmount(amount);
     t.setType("WITHDRAWAL");
     t = accountService.process(t);
     System.out.println("Result: " + t.getStatus() +
       (t.getReason() != null ? " (" + t.getReason() + ")" : ""));
+    account = this.accountService.retrieveByAccountNumber(account.getAccountNumber());
     System.out.println("New balance: " + account.getBalance());
   }
+
 
   private void testDeposit(AccountService accountService, Account account, double amount) {
     System.out.println("\nAttempting deposit of " + amount + " to account " + account.getAccountNumber());
     Transaction t = new Transaction();
-    t.setAccount(account);
+    t.setAccountId(account.getId());
     t.setAmount(amount);
     t.setType("DEPOSIT");
     t = accountService.process(t);
     System.out.println("Result: " + t.getStatus());
+    account = this.accountService.retrieveByAccountNumber(account.getAccountNumber());
     System.out.println("New balance: " + account.getBalance());
   }
 }

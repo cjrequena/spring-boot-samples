@@ -20,8 +20,8 @@ public class Account {
     private String customerName;
     private double balance;
     private String accountType; // SAVINGS, CHECKING, etc.
-    private boolean isPremium;
+    private boolean premium;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 }
