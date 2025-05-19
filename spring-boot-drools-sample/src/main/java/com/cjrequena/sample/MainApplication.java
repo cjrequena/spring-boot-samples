@@ -2,6 +2,8 @@ package com.cjrequena.sample;
 
 import com.cjrequena.sample.domain.Account;
 import com.cjrequena.sample.domain.Transaction;
+import com.cjrequena.sample.exception.service.AccountNotFoundServiceException;
+import com.cjrequena.sample.exception.service.OptimisticConcurrencyServiceException;
 import com.cjrequena.sample.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +54,9 @@ public class MainApplication {
     };
   }
 
-  private void testWithdrawal(AccountService accountService, Account account, double amount) {
+  private void testWithdrawal(AccountService accountService, Account account, double amount) throws AccountNotFoundServiceException, OptimisticConcurrencyServiceException {
     System.out.println("\nAttempting withdrawal of " + amount + " from account " + account.getAccountNumber());
+    account = this.accountService.retrieveByAccountNumber(account.getAccountNumber());
     Transaction t = new Transaction();
     t.setAccountId(account.getId());
     t.setAmount(amount);
@@ -66,8 +69,9 @@ public class MainApplication {
   }
 
 
-  private void testDeposit(AccountService accountService, Account account, double amount) {
+  private void testDeposit(AccountService accountService, Account account, double amount) throws AccountNotFoundServiceException, OptimisticConcurrencyServiceException {
     System.out.println("\nAttempting deposit of " + amount + " to account " + account.getAccountNumber());
+    account = this.accountService.retrieveByAccountNumber(account.getAccountNumber());
     Transaction t = new Transaction();
     t.setAccountId(account.getId());
     t.setAmount(amount);

@@ -1,16 +1,13 @@
 package com.cjrequena.sample.configuration;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
-import java.text.SimpleDateFormat;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -33,32 +30,35 @@ public class JacksonConfiguration {
   //  spring.jackson.mapper.ACCEPT_CASE_INSENSITIVE_PROPERTIES=true
   //  spring.jackson.defaultPropertyInclusion=NON_NULL
 
-  /**
-   * Jackson builder.
-   * @return the jackson2 object mapper builder
-   */
-  @Bean
-  public Jackson2ObjectMapperBuilder jacksonBuilder() {
+  public static Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
     final Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+    builder.indentOutput(false);
+    builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     return builder;
   }
 
-  @Bean(name = {"objectMapper"})
-  @Primary
-  ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-    return builder
+  public static ObjectMapper buildPrimaryObjectMapper() {
+    ObjectMapper objectMapper = jackson2ObjectMapperBuilder()
       .serializationInclusion(NON_NULL)
       .serializationInclusion(NON_EMPTY)
       .failOnEmptyBeans(false)
       .failOnUnknownProperties(false)
-      .featuresToEnable(
-        MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES,
-        DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-      .featuresToDisable(
-        SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-        MapperFeature.AUTO_DETECT_IS_GETTERS)
-      .build()
-      .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm"))
-      .registerModule(new JavaTimeModule());
+      .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+      .featuresToDisable(MapperFeature.DEFAULT_VIEW_INCLUSION, DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
+      .simpleDateFormat("yyyy-MM-dd")
+      .modules(new JavaTimeModule())
+      .build();
+
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
+    return objectMapper;
   }
+
+  @Bean(name = {"primaryObjectMapper"})
+  @Primary
+  public ObjectMapper primaryObjectMapper() {
+    return buildPrimaryObjectMapper();
+  }
+
 }
