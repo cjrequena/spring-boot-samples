@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -20,17 +22,19 @@ public class AccountService {
     private final RuleService ruleService;
 
 
-    /**
-     * Create a new account.
-     */
     public Account create(Account account) {
         log.info("Creating account for customer: {}", account.getCustomerName());
         return accountRepository.save(account);
     }
 
-    /**
-     * Retrieve an account by account number.
-     */
+    public Optional<Account> retrieveById(Long accountId) {
+        return accountRepository.findById(accountId);
+    }
+
+    public List<Account> retrieve(String accountNumber) {
+        return accountRepository.findAll();
+    }
+
     public Account retrieveByAccountNumber(String accountNumber) {
         log.debug("Retrieving account by account number: {}", accountNumber);
         return accountRepository.findByAccountNumber(accountNumber);
