@@ -1,0 +1,10 @@
+---- Sample premium account
+--INSERT INTO account (account_number, customer_name, balance, account_type, is_premium)
+--VALUES ('PREMIUM123', 'Premium Customer', 5000.00, 'CHECKING', TRUE);
+--
+---- Sample standard accounts
+--INSERT INTO account (account_number, customer_name, balance, account_type, is_premium)
+--VALUES ('STD1001', 'Standard Customer 1', 1000.00, 'SAVINGS', FALSE);
+--
+--INSERT INTO account (account_number, customer_name, balance, account_type, is_premium)
+--VALUES ('STD2002', 'Standard Customer 2', 250.00, 'CHECKING', FALSE);

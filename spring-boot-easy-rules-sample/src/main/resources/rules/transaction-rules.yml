@@ -1,0 +1,70 @@
+rules:
+  - name: "Reject overdraft for standard accounts"
+    description: "Reject withdrawals that exceed account balance for standard accounts"
+    priority: 1
+    condition: |
+      transaction.type == "WITHDRAWAL" and
+      transaction.status == null and
+      not account.premium and
+      account.balance < transaction.amount
+    actions:
+      - transaction.status = "REJECTED"
+      - transaction.reason = "Insufficient funds"
+      - print("Rejected transaction: Insufficient funds")
+
+  - name: "Allow overdraft for premium accounts"
+    description: "Allow overdraft up to 500 for premium accounts"
+    priority: 2
+    condition: |
+      transaction.type == "WITHDRAWAL" and
+      transaction.status == null and
+      account.premium and
+      (account.balance - transaction.amount) >= -500
+    actions:
+      - transaction.status = "COMPLETED"
+      - print("Approved premium withdrawal with potential overdraft")
+
+  - name: "Reject large cash withdrawals for standard accounts"
+    description: "Reject large cash withdrawals (>1000) without premium account"
+    priority: 3
+    condition: |
+      transaction.type == "WITHDRAWAL" and
+      transaction.status == null and
+      transaction.amount > 1000 and
+      not account.premium
+    actions:
+      - transaction.status = "REJECTED"
+      - transaction.reason = "Large withdrawal requires premium account"
+      - print("Rejected transaction: Large withdrawal requires premium account")
+
+  - name: "Approve standard withdrawals within balance"
+    description: "Approve standard withdrawals if within balance"
+    priority: 4
+    condition: |
+      transaction.type == "WITHDRAWAL" and
+      transaction.status == null and
+      not account.premium and
+      account.balance >= transaction.amount
+    actions:
+      - transaction.status = "COMPLETED"
+      - print("Approved standard withdrawal")
+
+  - name: "Approve all deposits"
+    description: "Allow all deposit transactions"
+    priority: 5
+    condition: |
+      transaction.type == "DEPOSIT" and
+      transaction.status == null
+    actions:
+      - transaction.status = "COMPLETED"
+      - print("Approved deposit")
+
+  - name: "Default rejection"
+    description: "Fallback for unsupported or incomplete transactions"
+    priority: 6
+    condition: |
+      transaction.status == null
+    actions:
+      - transaction.status = "REJECTED"
+      - transaction.reason = "Transaction type not supported"
+      - print("Rejected transaction: Type not supported")
