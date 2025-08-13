@@ -13,12 +13,12 @@ public class FooController {
 
   @GetMapping("/admin/home")
   public String handleAdminHome() {
-    return "admin_home";
+    return "admin-home";
   }
 
   @GetMapping("/user/home")
   public String handleUserHome() {
-    return "user_home";
+    return "user-home";
   }
 
   @GetMapping("/login")
