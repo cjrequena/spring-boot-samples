@@ -5,6 +5,6 @@ import com.cjrequena.sample.infrastructure.adapter.in.rest.dto.CustomerDTO;
 
 public interface CreateCustomerUseCase {
 
-   CustomerDTO create(Customer customer);
+   Customer create(Customer customer);
 
 }

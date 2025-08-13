@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor(onConstructor=@__(@Autowired))
-public class CustomerRestController implements CreateCustomerUseCase {
+public class CustomerRestController  {
 
   private final CustomerService customerService;
+  private final CreateCustomerUseCase createCustomerUseCase;
   private final CustomerMapper customerMapper;
 
   @PostMapping
   public CustomerDTO create(@RequestBody Customer customer) {
-    customer = customerService.create(customer);
+    customer = createCustomerUseCase.create(customer);
     return this.customerMapper.toDTO(customer);
   }
 }
