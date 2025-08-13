@@ -1,4 +1,4 @@
-package com.cjrequena.sample.domain.port.out.persistence.jpa.repository;
+package com.cjrequena.sample.domain.port.out.persistence.repository;
 
 import com.cjrequena.sample.infrastructure.adapter.out.persistence.jpa.entity.CustomerEntity;
 import org.springframework.stereotype.Repository;

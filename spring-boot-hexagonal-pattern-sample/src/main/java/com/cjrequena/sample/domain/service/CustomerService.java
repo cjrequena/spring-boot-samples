@@ -1,4 +1,4 @@
-package com.cjrequena.sample.application.service;
+package com.cjrequena.sample.domain.service;
 
 import com.cjrequena.sample.domain.mapper.CustomerMapper;
 import com.cjrequena.sample.domain.model.aggregate.Customer;
