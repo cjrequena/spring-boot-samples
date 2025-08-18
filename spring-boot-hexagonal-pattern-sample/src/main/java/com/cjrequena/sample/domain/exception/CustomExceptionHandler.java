@@ -7,7 +7,6 @@ import com.cjrequena.sample.shared.common.dto.ErrorDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,17 +41,16 @@ public class CustomExceptionHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDTO);
   }
 
-  @ExceptionHandler({ObjectOptimisticLockingFailureException.class})
-  @ResponseStatus(value = HttpStatus.CONFLICT)
-  @ResponseBody
-  public ResponseEntity<Object> handleOptimisticLockingFailureException(ObjectOptimisticLockingFailureException ex) {
-    log.debug(EXCEPTION_LOG, ex.getMessage(), ex);
+  @ExceptionHandler({RuntimeException.class})
+  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+  public ResponseEntity<Object> unhandledRuntimeExceptions(Exception ex) {
+    log.error(EXCEPTION_LOG, ex.getMessage(), ex);
     ErrorDTO errorDTO = new ErrorDTO();
     errorDTO.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
-    errorDTO.setStatus(HttpStatus.CONFLICT.value());
+    errorDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     errorDTO.setErrorCode(ex.getClass().getSimpleName());
-    errorDTO.setMessage("Optimistic concurrency control error");
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDTO);
+    errorDTO.setMessage(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDTO);
   }
 
   @ExceptionHandler({DomainException.class})

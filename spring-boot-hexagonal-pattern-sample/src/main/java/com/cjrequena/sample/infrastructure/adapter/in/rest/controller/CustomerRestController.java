@@ -6,6 +6,7 @@ import com.cjrequena.sample.domain.exception.rest.NotFoundException;
 import com.cjrequena.sample.domain.mapper.CustomerMapper;
 import com.cjrequena.sample.domain.model.aggregate.Customer;
 import com.cjrequena.sample.domain.port.in.customer.CreateCustomerUseCase;
+import com.cjrequena.sample.domain.port.in.customer.RetrieveCustomerUseCase;
 import com.cjrequena.sample.infrastructure.adapter.in.rest.dto.CustomerDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class CustomerRestController {
 
   private final CustomerService customerService;
   private final CreateCustomerUseCase createCustomerUseCase;
+  private final RetrieveCustomerUseCase retrieveCustomerUseCase;
   private final CustomerMapper customerMapper;
 
   @PostMapping(
@@ -41,7 +43,7 @@ public class CustomerRestController {
     path = "",
     produces = {APPLICATION_JSON_VALUE}
   )  public ResponseEntity<List<CustomerDTO>> retrieve() {
-    final List<Customer> customerList = this.customerService.retrieve();
+    final List<Customer> customerList = this.retrieveCustomerUseCase.retrieve();
     final List<CustomerDTO> customerDTOList = this.customerMapper.toDTOList(customerList);
     HttpHeaders responseHeaders = new HttpHeaders();
     return new ResponseEntity<>(customerDTOList, responseHeaders, HttpStatus.OK);
@@ -53,7 +55,7 @@ public class CustomerRestController {
   )
   public ResponseEntity<CustomerDTO> retrieveById(@PathVariable("customerId")  Long id) {
     try {
-      final CustomerDTO customerDTO = this.customerMapper.toDTO(this.customerService.retrieveById(id));
+      final CustomerDTO customerDTO = this.customerMapper.toDTO(this.retrieveCustomerUseCase.retrieveById(id));
       HttpHeaders responseHeaders = new HttpHeaders();
       return new ResponseEntity<>(customerDTO, responseHeaders, HttpStatus.OK);
     } catch (CustomerNotFoundException ex) {
