@@ -3,7 +3,7 @@ package com.cjrequena.sample.infrastructure.adapter.in.rest.controller;
 import com.cjrequena.sample.domain.mapper.CustomerMapper;
 import com.cjrequena.sample.domain.model.aggregate.Customer;
 import com.cjrequena.sample.domain.port.in.customer.CreateCustomerUseCase;
-import com.cjrequena.sample.domain.service.CustomerService;
+import com.cjrequena.sample.application.service.CustomerService;
 import com.cjrequena.sample.infrastructure.adapter.in.rest.dto.CustomerDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,8 @@ public class CustomerRestController  {
   private final CustomerMapper customerMapper;
 
   @PostMapping
-  public CustomerDTO create(@RequestBody Customer customer) {
+  public CustomerDTO create(@RequestBody CustomerDTO customerDTO) {
+    Customer customer = customerMapper.toAggregate(customerDTO);
     customer = createCustomerUseCase.create(customer);
     return this.customerMapper.toDTO(customer);
   }

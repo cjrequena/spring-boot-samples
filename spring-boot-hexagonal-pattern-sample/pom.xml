@@ -13,7 +13,7 @@
     <version>1.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main-class>com.cjrequena.sample.application.HexagonalPatternMainApplication</main-class>
+        <main-class>com.cjrequena.sample.HexagonalPatternMainApplication</main-class>
     </properties>
     <dependencies>
         <dependency>
