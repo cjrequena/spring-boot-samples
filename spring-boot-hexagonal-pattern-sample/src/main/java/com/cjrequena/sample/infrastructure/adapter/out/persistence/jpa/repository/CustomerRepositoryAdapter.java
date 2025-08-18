@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
@@ -14,5 +17,15 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   @Override
   public CustomerEntity save(CustomerEntity entity) {
     return this.customerRepository.save(entity);
+  }
+
+  @Override
+  public List<CustomerEntity> retrieve() {
+    return this.customerRepository.findAll();
+  }
+
+  @Override
+  public Optional<CustomerEntity> retrieveById(Long id) {
+    return this.customerRepository.findById(id);
   }
 }

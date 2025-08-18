@@ -1,6 +1,6 @@
 package com.cjrequena.sample.domain.model.vo;
 
-import com.cjrequena.sample.domain.exception.service.InvalidEmailServiceException;
+import com.cjrequena.sample.domain.exception.domain.InvalidEmailException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -20,7 +20,7 @@ public record EmailVO(String email) {
 
   public EmailVO {
     if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
-      throw new InvalidEmailServiceException("Invalid email format: " + email);
+      throw new InvalidEmailException("Invalid email format: " + email);
     }
   }
 }
