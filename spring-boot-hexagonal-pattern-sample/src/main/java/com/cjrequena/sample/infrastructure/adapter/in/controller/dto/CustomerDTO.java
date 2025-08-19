@@ -1,4 +1,4 @@
-package com.cjrequena.sample.infrastructure.adapter.in.rest.dto;
+package com.cjrequena.sample.infrastructure.adapter.in.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -2,7 +2,7 @@ package com.cjrequena.sample.domain.mapper;
 
 import com.cjrequena.sample.domain.model.aggregate.Customer;
 import com.cjrequena.sample.domain.model.vo.EmailVO;
-import com.cjrequena.sample.infrastructure.adapter.in.rest.dto.CustomerDTO;
+import com.cjrequena.sample.infrastructure.adapter.in.controller.dto.CustomerDTO;
 import com.cjrequena.sample.infrastructure.adapter.out.persistence.jpa.entity.CustomerEntity;
 import org.mapstruct.*;
 

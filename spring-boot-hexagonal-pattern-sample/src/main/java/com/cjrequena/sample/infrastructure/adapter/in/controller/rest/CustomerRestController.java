@@ -1,4 +1,4 @@
-package com.cjrequena.sample.infrastructure.adapter.in.rest.controller;
+package com.cjrequena.sample.infrastructure.adapter.in.controller.rest;
 
 import com.cjrequena.sample.application.service.CustomerService;
 import com.cjrequena.sample.domain.exception.domain.CustomerNotFoundException;
@@ -7,7 +7,7 @@ import com.cjrequena.sample.domain.mapper.CustomerMapper;
 import com.cjrequena.sample.domain.model.aggregate.Customer;
 import com.cjrequena.sample.domain.port.in.customer.CreateCustomerUseCase;
 import com.cjrequena.sample.domain.port.in.customer.RetrieveCustomerUseCase;
-import com.cjrequena.sample.infrastructure.adapter.in.rest.dto.CustomerDTO;
+import com.cjrequena.sample.infrastructure.adapter.in.controller.dto.CustomerDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
