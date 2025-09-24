@@ -1,7 +1,7 @@
 package com.cjrequena.sample.domain.exception.domain;
 
 
-public class MapperException extends RuntimeDomainException {
+public class MapperException extends DomainRuntimeException {
 
   public MapperException(Throwable ex) {
     super(ex);

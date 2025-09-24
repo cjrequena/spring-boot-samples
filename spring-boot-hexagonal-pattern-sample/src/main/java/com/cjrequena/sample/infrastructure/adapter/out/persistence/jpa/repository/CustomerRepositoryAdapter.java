@@ -12,20 +12,20 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
-  private final CustomerRepository customerRepository;
+  private final CustomerJpaRepository customerJpaRepository;
 
   @Override
   public CustomerEntity save(CustomerEntity entity) {
-    return this.customerRepository.save(entity);
+    return this.customerJpaRepository.save(entity);
   }
 
   @Override
   public List<CustomerEntity> retrieve() {
-    return this.customerRepository.findAll();
+    return this.customerJpaRepository.findAll();
   }
 
   @Override
   public Optional<CustomerEntity> retrieveById(Long id) {
-    return this.customerRepository.findById(id);
+    return this.customerJpaRepository.findById(id);
   }
 }

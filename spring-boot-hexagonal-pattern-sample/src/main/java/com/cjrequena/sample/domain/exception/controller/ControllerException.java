@@ -1,11 +1,17 @@
-package com.cjrequena.sample.domain.exception.rest;
+package com.cjrequena.sample.domain.exception.controller;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
+/**
+ *
+ * <p></p>
+ * <p></p>
+ * @author cjrequena
+ */
 @ToString
-public abstract class RuntimeRestException extends RuntimeException {
+public abstract class ControllerException extends Exception {
   @Getter
   private final HttpStatus httpStatus;
 
@@ -13,7 +19,7 @@ public abstract class RuntimeRestException extends RuntimeException {
    * Constructor
    * @param httpStatus status code
    */
-  public RuntimeRestException(HttpStatus httpStatus) {
+  public ControllerException(HttpStatus httpStatus) {
     super(httpStatus.getReasonPhrase());
     this.httpStatus = httpStatus;
   }
@@ -23,7 +29,7 @@ public abstract class RuntimeRestException extends RuntimeException {
    * @param httpStatus status code
    * @param message Custom message
    */
-  public RuntimeRestException(HttpStatus httpStatus, String message) {
+  public ControllerException(HttpStatus httpStatus, String message) {
     super(message);
     this.httpStatus = httpStatus;
   }
@@ -34,7 +40,7 @@ public abstract class RuntimeRestException extends RuntimeException {
    * @param message custom message
    * @param throwable Exception
    */
-  public RuntimeRestException(HttpStatus httpStatus, String message, Throwable throwable) {
+  public ControllerException(HttpStatus httpStatus, String message, Throwable throwable) {
     super(message, throwable);
     this.httpStatus = httpStatus;
   }

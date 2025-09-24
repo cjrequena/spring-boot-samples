@@ -8,7 +8,7 @@ package com.cjrequena.sample.shared.common.util;
  *
  * @author cjrequena
  */
-public class Constants {
+public class Constant {
   /** */
   public static final String VND_SAMPLE_SERVICE_V1 = "application/vnd.sample-service.v1";
   public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";

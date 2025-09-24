@@ -6,7 +6,7 @@ package com.cjrequena.sample.domain.exception.domain;
  * <p></p>
  * @author cjrequena
  */
-public class CustomerNotFoundException extends RuntimeDomainException {
+public class CustomerNotFoundException extends DomainRuntimeException {
   public CustomerNotFoundException(String message) {
     super(message);
   }

@@ -1,8 +1,6 @@
-package com.cjrequena.sample.domain.exception;
+package com.cjrequena.sample.domain.exception.controller;
 
 import com.cjrequena.sample.domain.exception.domain.DomainException;
-import com.cjrequena.sample.domain.exception.rest.RestException;
-import com.cjrequena.sample.domain.exception.rest.RuntimeRestException;
 import com.cjrequena.sample.shared.common.dto.ErrorDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.cjrequena.sample.shared.common.util.Constants.DATE_TIME_FORMAT;
+import static com.cjrequena.sample.shared.common.util.Constant.DATE_TIME_FORMAT;
 
 /**
  *
@@ -66,9 +64,9 @@ public class CustomExceptionHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDTO);
   }
 
-  @ExceptionHandler({RestException.class})
+  @ExceptionHandler({ControllerException.class})
   @ResponseBody
-  public ResponseEntity<Object> handleApiException(RestException ex) {
+  public ResponseEntity<Object> handleControllerException(ControllerException ex) {
     //log.error(EXCEPTION_LOG, ex.getMessage(), ex);
     log.error(EXCEPTION_LOG, ex.getMessage());
     ErrorDTO errorDTO = new ErrorDTO();
@@ -79,9 +77,9 @@ public class CustomExceptionHandler {
     return ResponseEntity.status(ex.getHttpStatus()).body(errorDTO);
   }
 
-  @ExceptionHandler({RuntimeRestException.class})
+  @ExceptionHandler({ControllerRuntimeException.class})
   @ResponseBody
-  public ResponseEntity<Object> handleRuntimeApiException(RuntimeRestException ex) {
+  public ResponseEntity<Object> handleControllerRuntimeException(ControllerRuntimeException ex) {
     //log.error(EXCEPTION_LOG, ex.getMessage(), ex);
     log.error(EXCEPTION_LOG, ex.getMessage());
     ErrorDTO errorDTO = new ErrorDTO();
