@@ -8,15 +8,23 @@
 
 ### Create
 ```bash
-
+    curl --location 'http://localhost:8080/foo-service/api/customers' \
+    --header 'Accept-Version: application/vnd.sample-service.v1' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "name": "Janet Yost",
+        "email":"Isaac_Kilback@hotmail.com"
+    }'
 ```
 ### RetrieveById
 ```bash
-
+    curl --location 'http://localhost:8080/foo-service/api/customers/1' \
+    --header 'Accept-Version: application/vnd.sample-service.v1'
 ```
 ### RetrieveAll
 ```bash
-
+    curl --location 'http://localhost:8080/foo-service/api/customers' \
+    --header 'Accept-Version: application/vnd.sample-service.v1'
 ```
 
 ## Grpc interface
