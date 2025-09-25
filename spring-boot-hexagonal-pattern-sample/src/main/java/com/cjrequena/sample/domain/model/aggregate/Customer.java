@@ -1,26 +1,31 @@
 package com.cjrequena.sample.domain.model.aggregate;
 
 import com.cjrequena.sample.domain.model.vo.EmailVO;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.jackson.Jacksonized;
+
+import java.time.OffsetDateTime;
 
 @Getter
-@Builder
 @ToString(callSuper = true)
-@Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Customer {
-  private Long id;
-  private String name;
-  private EmailVO email;
+  private final Long id;
+  private final String name;
+  private final EmailVO email;
+  private final OffsetDateTime createdAt;
+  private final OffsetDateTime updatedAt;
+  private final Long version;
+
+  @Builder
+  public Customer(Long id, String name, EmailVO email, OffsetDateTime createdAt, OffsetDateTime updatedAt, Long version) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.version = version;
+  }
 
   /**
    * Gets the email as a string for convenience.

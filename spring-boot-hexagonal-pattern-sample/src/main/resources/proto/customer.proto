@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package com.cjrequena.sample.grpc.service;
+
+option java_package = "com.cjrequena.sample.grpc.customer";
+option java_outer_classname = "CustomerProto";
+option java_multiple_files = true;
+
+message Email {
+  string email = 3;
+}
+
+// Customer message based on CustomerDTO
+message Customer {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  int64 created_at = 4; // Unix timestamp
+  int64 updated_at = 5; // Unix timestamp
+  int64 version = 6;
+}
+// ----------------------------------------
+// Request messages
+// ----------------------------------------
+message CreateCustomerRequest {
+  Customer customer = 1;
+}
+
+message RetrieveCustomerByIdRequest {
+  string id = 1; // UUID as string
+}
+
+message RetrieveCustomersRequest {
+  // Empty for now, could add pagination later
+}
+
+message UpdateCustomerRequest {
+  Customer customer = 1;
+}
+
+message DeleteCustomerRequest {
+  string id = 1; // UUID as string
+}
+// ----------------------------------------
+// Response messages
+// ----------------------------------------
+message CreateCustomerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RetrieveCustomerByIdResponse {
+  Customer customer = 1;
+}
+
+message RetrieveCustomersResponse {
+  repeated Customer customers = 1;
+}
+
+message UpdateCustomerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteCustomerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ----------------------------------------
+// Customer Service Definition
+// ----------------------------------------
+service CustomerService {
+  // Basic CRUD operations
+  rpc CreateCustomer(CreateCustomerRequest) returns (CreateCustomerResponse);
+  rpc RetrieveCustomerById(RetrieveCustomerByIdRequest) returns (RetrieveCustomerByIdResponse);
+  rpc RetrieveCustomers(RetrieveCustomersRequest) returns (RetrieveCustomersResponse);
+  rpc UpdateCustomer(UpdateCustomerRequest) returns (UpdateCustomerResponse);
+  rpc DeleteCustomer(DeleteCustomerRequest) returns (DeleteCustomerResponse);
+
+}

@@ -1,6 +1,5 @@
 package com.cjrequena.sample.infrastructure.adapter.in.controller.rest;
 
-import com.cjrequena.sample.application.service.CustomerService;
 import com.cjrequena.sample.domain.exception.controller.NotFoundException;
 import com.cjrequena.sample.domain.exception.domain.CustomerNotFoundException;
 import com.cjrequena.sample.domain.mapper.CustomerMapper;
@@ -30,7 +29,6 @@ public class CustomerRestController {
   public static final String ENDPOINT = "/foo-service/api/";
   public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
 
-  private final CustomerService customerService;
   private final CreateCustomerUseCase createCustomerUseCase;
   private final RetrieveCustomerUseCase retrieveCustomerUseCase;
   private final CustomerMapper customerMapper;

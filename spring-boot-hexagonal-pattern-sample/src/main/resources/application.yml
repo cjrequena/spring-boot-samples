@@ -76,3 +76,11 @@ server.compression:
   enabled: true
   mime-types: application/json,application/stream+json,application/x-ndjson
   min-response-size: 1024
+
+#------------------------------
+# gRPC configurations
+#------------------------------
+grpc:
+  server:
+    port: 18080
+    enable-reflection: true # Enables gRPC reflection for tools like grpcurl

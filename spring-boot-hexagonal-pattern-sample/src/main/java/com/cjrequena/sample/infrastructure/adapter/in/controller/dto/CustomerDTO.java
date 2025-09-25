@@ -10,6 +10,10 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.OffsetDateTime;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -29,4 +33,10 @@ import lombok.extern.jackson.Jacksonized;
   private Long id;
   private String name;
   private String email;
+  @Schema(accessMode = READ_ONLY)
+  private OffsetDateTime createdAt;
+  @Schema(accessMode = READ_ONLY)
+  private OffsetDateTime updatedAt;
+  @Schema(accessMode = READ_ONLY)
+  private Long version;
 }
