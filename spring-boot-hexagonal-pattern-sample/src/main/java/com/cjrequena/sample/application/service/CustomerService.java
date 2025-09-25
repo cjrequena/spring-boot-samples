@@ -30,7 +30,7 @@ public class CustomerService implements CreateCustomerUseCase, RetrieveCustomerU
   public Customer create(Customer customer) {
     CustomerEntity entity = this.customerMapper.toEntity(customer);
     entity = customerRepositoryAdapter.save(entity);
-    return this.customerMapper.toAggregate(entity);
+    return this.customerMapper.toCustomerDomain(entity);
   }
 
   @Override
@@ -38,7 +38,7 @@ public class CustomerService implements CreateCustomerUseCase, RetrieveCustomerU
     return this.customerRepositoryAdapter
       .retrieve()
       .stream()
-      .map(this.customerMapper::toAggregate)
+      .map(this.customerMapper::toCustomerDomain)
       .toList();
   }
 
@@ -46,7 +46,7 @@ public class CustomerService implements CreateCustomerUseCase, RetrieveCustomerU
   public Customer retrieveById(Long id) {
     return this.customerRepositoryAdapter
       .retrieveById(id)
-      .map(this.customerMapper::toAggregate)
+      .map(this.customerMapper::toCustomerDomain)
       .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + id));
   }
 }

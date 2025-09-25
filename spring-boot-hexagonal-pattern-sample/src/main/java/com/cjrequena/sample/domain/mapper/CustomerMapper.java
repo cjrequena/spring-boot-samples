@@ -6,6 +6,7 @@ import com.cjrequena.sample.infrastructure.adapter.in.controller.dto.CustomerDTO
 import com.cjrequena.sample.infrastructure.adapter.out.persistence.jpa.entity.CustomerEntity;
 import org.mapstruct.*;
 
+import java.time.*;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public interface CustomerMapper {
    * @return Customer domain aggregate
    */
   @Mapping(target = "email", source = "email", qualifiedByName = "stringToEmailVO")
-  Customer toAggregate(CustomerDTO customerDTO);
+  Customer toCustomerDomain(CustomerDTO customerDTO);
 
   /**
    * Maps list of Customer domain aggregates to CustomerDTO list.
@@ -56,7 +57,7 @@ public interface CustomerMapper {
    * @param customerDTOs list of DTOs
    * @return list of domain Customers
    */
-  List<Customer> toAggregateList(List<CustomerDTO> customerDTOs);
+  List<Customer> toCustomerDomainList(List<CustomerDTO> customerDTOs);
 
   // ========================================
   // Customer Domain <-> CustomerEntity Mappings
@@ -78,7 +79,7 @@ public interface CustomerMapper {
    * @return Customer domain aggregate
    */
   @Mapping(target = "email", source = "email", qualifiedByName = "stringToEmailVO")
-  Customer toAggregate(CustomerEntity customerEntity);
+  Customer toCustomerDomain(CustomerEntity customerEntity);
 
   /**
    * Maps list of Customer domain aggregates to CustomerEntity list.
@@ -94,7 +95,7 @@ public interface CustomerMapper {
    * @param customerEntities list of entities
    * @return list of domain Customers
    */
-  List<Customer> toAggregateFromEntityList(List<CustomerEntity> customerEntities);
+  List<Customer> toCustomerDomainFromEntityList(List<CustomerEntity> customerEntities);
 
   // ========================================
   // CustomerDTO <-> CustomerEntity Mappings (if needed)
@@ -107,7 +108,7 @@ public interface CustomerMapper {
    * @param customerDTO the DTO
    * @return CustomerEntity for persistence
    */
-  CustomerEntity dtoToEntity(CustomerDTO customerDTO);
+  CustomerEntity toEntity(CustomerDTO customerDTO);
 
   /**
    * Maps CustomerEntity directly to CustomerDTO.
@@ -116,7 +117,18 @@ public interface CustomerMapper {
    * @param customerEntity the entity
    * @return CustomerDTO for API responses
    */
-  CustomerDTO entityToDTO(CustomerEntity customerEntity);
+  CustomerDTO toDTO(CustomerEntity customerEntity);
+
+  // ========================================
+  // Grpc::Proto <-> Domain Mappings
+  // ========================================
+  @Mapping(source = "email", target = "email", qualifiedByName = "stringToEmailVO")
+  com.cjrequena.sample.domain.model.aggregate.Customer toCustomerDomain(com.cjrequena.sample.grpc.customer.CustomerGrpc customerGrpc);
+
+  @Mapping(source = "email", target = "email", qualifiedByName = "emailVOToString")
+  com.cjrequena.sample.grpc.customer.CustomerGrpc toCustomerGrpc(com.cjrequena.sample.domain.model.aggregate.Customer customer);
+
+  List<com.cjrequena.sample.grpc.customer.CustomerGrpc> toCustomerGrpcList(List<com.cjrequena.sample.domain.model.aggregate.Customer> customers);
 
   // ========================================
   // Update Mappings
@@ -217,5 +229,29 @@ public interface CustomerMapper {
       .id(customer.getId())
       .name(customer.getName())
       .email(emailVOToString(customer.getEmail()));
+  }
+
+  // ========================================
+  // Custom Mappings
+  // ========================================
+
+  default LocalDate mapToLocalDate(long epochMillis) {
+    return Instant.ofEpochMilli(epochMillis)
+      .atZone(ZoneId.systemDefault())
+      .toLocalDate();
+  }
+
+  default long mapFromLocalDate(LocalDate date) {
+    return date.atStartOfDay(ZoneId.systemDefault())
+      .toInstant()
+      .toEpochMilli();
+  }
+
+  default OffsetDateTime mapToOffsetDateTime(long value) {
+    return Instant.ofEpochMilli(value).atOffset(ZoneOffset.UTC);
+  }
+
+  default long mapFromOffsetDateTime(OffsetDateTime value) {
+    return value.toInstant().toEpochMilli();
   }
 }

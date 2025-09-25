@@ -38,7 +38,7 @@ public class CustomerRestController {
     produces = {APPLICATION_JSON_VALUE}
   )
   public CustomerDTO create(@RequestBody CustomerDTO customerDTO) {
-    Customer customer = customerMapper.toAggregate(customerDTO);
+    Customer customer = customerMapper.toCustomerDomain(customerDTO);
     customer = createCustomerUseCase.create(customer);
     return this.customerMapper.toDTO(customer);
   }

@@ -1,15 +1,21 @@
 package com.cjrequena.sample.infrastructure.adapter.in.grpc;
 
+import com.cjrequena.sample.domain.exception.domain.CustomerNotFoundException;
+import com.cjrequena.sample.domain.exception.domain.GrpcExceptionHandler;
 import com.cjrequena.sample.domain.mapper.CustomerMapper;
+import com.cjrequena.sample.domain.model.aggregate.Customer;
 import com.cjrequena.sample.domain.model.vo.EmailVO;
 import com.cjrequena.sample.domain.port.in.customer.CreateCustomerUseCase;
 import com.cjrequena.sample.domain.port.in.customer.RetrieveCustomerUseCase;
 import com.cjrequena.sample.grpc.customer.*;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Log4j2
 @GrpcService
@@ -18,12 +24,13 @@ public class CustomerServiceGrpc extends com.cjrequena.sample.grpc.customer.Cust
 
   private final CreateCustomerUseCase createCustomerUseCase;
   private final RetrieveCustomerUseCase retrieveCustomerUseCase;
+  private final GrpcExceptionHandler grpcExceptionHandler;
   private final CustomerMapper customerMapper;
 
   @Override
   public void createCustomer(CreateCustomerRequest request, StreamObserver<CreateCustomerResponse> responseObserver) {
-    com.cjrequena.sample.grpc.customer.Customer customerGrpc = request.getCustomer();
-    com.cjrequena.sample.domain.model.aggregate.Customer customer = com.cjrequena.sample.domain.model.aggregate.Customer
+    CustomerGrpc customerGrpc = request.getCustomer();
+    Customer customer = Customer
       .builder()
       .name(customerGrpc.getName())
       .email(EmailVO
@@ -43,12 +50,33 @@ public class CustomerServiceGrpc extends com.cjrequena.sample.grpc.customer.Cust
 
   @Override
   public void retrieveCustomerById(RetrieveCustomerByIdRequest request, StreamObserver<RetrieveCustomerByIdResponse> responseObserver) {
-    super.retrieveCustomerById(request, responseObserver);
+    final Long customerId = request.getId();
+    try {
+      final Customer customer = this.retrieveCustomerUseCase.retrieveById(customerId);
+      final CustomerGrpc customerGrpc = this.customerMapper.toCustomerGrpc(customer);
+      RetrieveCustomerByIdResponse response = RetrieveCustomerByIdResponse
+        .newBuilder()
+        .setCustomer(customerGrpc)
+        .build();
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    } catch (CustomerNotFoundException ex) {
+      String errorMessage = String.format("The customer :: %s :: was not found", customerId);
+      final StatusRuntimeException err = this.grpcExceptionHandler.buildErrorResponse(new CustomerNotFoundException(errorMessage));
+      responseObserver.onError(err);
+    }
   }
 
   @Override
   public void retrieveCustomers(RetrieveCustomersRequest request, StreamObserver<RetrieveCustomersResponse> responseObserver) {
-    super.retrieveCustomers(request, responseObserver);
+    final List<Customer> customerList = this.retrieveCustomerUseCase.retrieve();
+    final List<CustomerGrpc> customerGrpcList = this.customerMapper.toCustomerGrpcList(customerList);
+    RetrieveCustomersResponse response = RetrieveCustomersResponse
+      .newBuilder()
+      .addAllCustomers(customerGrpcList)
+      .build();
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
   }
 
   @Override

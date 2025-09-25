@@ -10,8 +10,8 @@ message Email {
   string email = 3;
 }
 
-// Customer message based on CustomerDTO
-message Customer {
+//
+message CustomerGrpc {
   int64 id = 1;
   string name = 2;
   string email = 3;
@@ -23,11 +23,11 @@ message Customer {
 // Request messages
 // ----------------------------------------
 message CreateCustomerRequest {
-  Customer customer = 1;
+  CustomerGrpc customer = 1;
 }
 
 message RetrieveCustomerByIdRequest {
-  string id = 1; // UUID as string
+  int64 id = 1; // UUID as string
 }
 
 message RetrieveCustomersRequest {
@@ -35,11 +35,11 @@ message RetrieveCustomersRequest {
 }
 
 message UpdateCustomerRequest {
-  Customer customer = 1;
+  CustomerGrpc customer = 1;
 }
 
 message DeleteCustomerRequest {
-  string id = 1; // UUID as string
+  int64 id = 1; // UUID as string
 }
 // ----------------------------------------
 // Response messages
@@ -50,11 +50,11 @@ message CreateCustomerResponse {
 }
 
 message RetrieveCustomerByIdResponse {
-  Customer customer = 1;
+  CustomerGrpc customer = 1;
 }
 
 message RetrieveCustomersResponse {
-  repeated Customer customers = 1;
+  repeated CustomerGrpc customers = 1;
 }
 
 message UpdateCustomerResponse {
