@@ -29,7 +29,7 @@
       localhost:18080 com.cjrequena.sample.grpc.service.CustomerService/CreateCustomer
 ```
 
-### RetirveById
+### RetrieveById
 
 ```bash
     grpcurl --plaintext \
