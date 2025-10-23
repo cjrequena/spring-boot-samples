@@ -1,4 +1,4 @@
-package entity;
+package com.cjrequena.sample.entity;
 
 import lombok.Getter;
 import lombok.Setter;

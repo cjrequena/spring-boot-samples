@@ -47,6 +47,7 @@
         <module>spring-boot-hexagonal-pattern-sample</module>
         <module>spring-boot-drools-sample</module>
         <module>spring-boot-easy-rules-sample</module>
+        <module>spring-boot-tdd-sample</module>
     </modules>
     <dependencies>
         <dependency>

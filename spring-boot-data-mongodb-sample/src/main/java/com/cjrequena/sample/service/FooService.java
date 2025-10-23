@@ -5,7 +5,7 @@ import com.cjrequena.sample.exception.service.FooNotFoundServiceException;
 import com.cjrequena.sample.exception.service.ServiceException;
 import com.cjrequena.sample.mapper.FooMapper;
 import com.cjrequena.sample.repository.FooRepository;
-import entity.FooEntity;
+import com.cjrequena.sample.entity.FooEntity;
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonPatch;
 import lombok.RequiredArgsConstructor;

@@ -39,8 +39,8 @@ spring.config.activate.on-profile: local
 #  password: root
 #  authentication-database: admin
 spring.data.mongodb:
-  #uri: mongodb://root:root@127.0.0.1:27017/foodb?authSource=admin
-  uri: mongodb://127.0.0.1:27017/foodb?authSource=admin #ReplicaSet
+  uri: mongodb://root:root@127.0.0.1:27017/foodb?authSource=admin
+  #uri: mongodb://127.0.0.1:27017/foodb?authSource=admin #ReplicaSet
   auto-index-creation: true
 
 
