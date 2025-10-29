@@ -3,13 +3,11 @@ package com.cjrequena.sample.service;
 import com.cjrequena.sample.controller.excepption.ResourceNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
-import com.cjrequena.sample.domain.model.aggregate.OrderItem;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.domain.model.vo.Money;
 import com.cjrequena.sample.domain.model.vo.OrderNumber;
 import com.cjrequena.sample.persistence.entity.CustomerEntity;
 import com.cjrequena.sample.persistence.entity.OrderEntity;
-import com.cjrequena.sample.persistence.entity.OrderItemEntity;
 import com.cjrequena.sample.persistence.jpa.repository.CustomerRepository;
 import com.cjrequena.sample.persistence.jpa.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,16 +58,6 @@ class OrderServiceImplTest {
       .email("john.doe@example.com")
       .build();
 
-    OrderItem orderItem = OrderItem
-      .builder()
-      .id(1L)
-      .productName("Test Product")
-      .sku("TEST-001")
-      .quantity(2)
-      .unitPrice(Money.of(50.00))
-      .subtotal(Money.of(100.00))
-      .build();
-
     testOrder = Order
       .builder()
       .id(1L)
@@ -79,17 +66,6 @@ class OrderServiceImplTest {
       .status(OrderStatus.PENDING)
       .totalAmount(Money.of(100.00))
       .customerId(1L)
-      .items(new ArrayList<>(List.of(orderItem)))
-      .build();
-
-    OrderItemEntity itemEntity = OrderItemEntity
-      .builder()
-      .id(1L)
-      .productName("Test Product")
-      .sku("TEST-001")
-      .quantity(2)
-      .unitPrice(BigDecimal.valueOf(50.00))
-      .subtotal(BigDecimal.valueOf(100.00))
       .build();
 
     testOrderEntity = OrderEntity
@@ -100,7 +76,6 @@ class OrderServiceImplTest {
       .status(OrderStatus.PENDING)
       .totalAmount(BigDecimal.valueOf(100.00))
       .customer(testCustomer)
-      .items(new ArrayList<>(List.of(itemEntity)))
       .build();
   }
 
@@ -145,7 +120,7 @@ class OrderServiceImplTest {
   @DisplayName("Should get order by id successfully")
   void testGetOrderById_Success() {
     // Given
-    when(orderRepository.findByIdWithItems(1L)).thenReturn(Optional.of(testOrderEntity));
+    when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrderEntity));
     when(orderMapper.toDomain(any(OrderEntity.class))).thenReturn(testOrder);
 
     // When
@@ -156,7 +131,7 @@ class OrderServiceImplTest {
     assertThat(foundOrder.getId()).isEqualTo(1L);
     assertThat(foundOrder.getOrderNumber().getValue()).isEqualTo("ORD-20250101-00001");
 
-    verify(orderRepository).findByIdWithItems(1L);
+    verify(orderRepository).findById(1L);
     verify(orderMapper).toDomain(testOrderEntity);
   }
 
@@ -164,14 +139,14 @@ class OrderServiceImplTest {
   @DisplayName("Should throw exception when order not found by id")
   void testGetOrderById_NotFound() {
     // Given
-    when(orderRepository.findByIdWithItems(1L)).thenReturn(Optional.empty());
+    when(orderRepository.findById(1L)).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> orderService.getOrderById(1L))
       .isInstanceOf(ResourceNotFoundException.class)
       .hasMessageContaining("Order not found with id: 1");
 
-    verify(orderRepository).findByIdWithItems(1L);
+    verify(orderRepository).findById(1L);
   }
 
   @Test
@@ -196,11 +171,9 @@ class OrderServiceImplTest {
   @DisplayName("Should update order successfully")
   void testUpdateOrder_Success() {
     // Given
-    when(orderRepository.findByIdWithItems(1L)).thenReturn(Optional.of(testOrderEntity));
+    when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrderEntity));
     when(orderRepository.save(any(OrderEntity.class))).thenReturn(testOrderEntity);
     when(orderMapper.toDomain(any(OrderEntity.class))).thenReturn(testOrder);
-    when(orderMapper.toItemEntity(any(OrderItem.class)))
-      .thenReturn(testOrderEntity.getItems().get(0));
 
     // When
     Order updatedOrder = orderService.updateOrder(1L, testOrder);
@@ -209,7 +182,7 @@ class OrderServiceImplTest {
     assertThat(updatedOrder).isNotNull();
     assertThat(updatedOrder.getId()).isEqualTo(1L);
 
-    verify(orderRepository).findByIdWithItems(1L);
+    verify(orderRepository).findById(1L);
     verify(orderRepository).save(any(OrderEntity.class));
   }
 

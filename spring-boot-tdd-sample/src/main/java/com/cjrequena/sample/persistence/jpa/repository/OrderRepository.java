@@ -26,8 +26,5 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
         @Param("endDate") LocalDateTime endDate
     );
 
-    @Query("SELECT o FROM OrderEntity o JOIN FETCH o.items WHERE o.id = :id")
-    Optional<OrderEntity> findByIdWithItems(@Param("id") Long id);
-
     boolean existsByOrderNumber(String orderNumber);
 }

@@ -6,9 +6,6 @@ import com.cjrequena.sample.domain.model.vo.OrderNumber;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 @Builder
@@ -32,38 +29,13 @@ public class Order {
 
   private Long customerId;
 
-  @Builder.Default
-  private List<OrderItem> items = new ArrayList<>();
-
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
-  public void addItem(OrderItem item) {
-    if (item == null) {
-      throw new IllegalArgumentException("Order item cannot be null");
-    }
-    this.items.add(item);
-    recalculateTotalAmount();
-  }
-
-  public void removeItem(OrderItem item) {
-    this.items.remove(item);
-    recalculateTotalAmount();
-  }
 
   public void updateStatus(OrderStatus newStatus) {
     validateStatusTransition(this.status, newStatus);
     this.status = newStatus;
-  }
-
-  public List<OrderItem> getItems() {
-    return Collections.unmodifiableList(items);
-  }
-
-  private void recalculateTotalAmount() {
-    this.totalAmount = items.stream()
-      .map(OrderItem::getSubtotal)
-      .reduce(Money.zero(), Money::add);
   }
 
   private void validateStatusTransition(OrderStatus current, OrderStatus next) {

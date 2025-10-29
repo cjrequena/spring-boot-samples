@@ -1,11 +1,9 @@
 package com.cjrequena.sample.controller.rest;
 
 import com.cjrequena.sample.controller.dto.OrderDTO;
-import com.cjrequena.sample.controller.dto.OrderItemDTO;
 import com.cjrequena.sample.controller.excepption.GlobalExceptionHandler;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
-import com.cjrequena.sample.domain.model.aggregate.OrderItem;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.domain.model.vo.Money;
 import com.cjrequena.sample.domain.model.vo.OrderNumber;
@@ -24,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -57,14 +54,6 @@ class OrderControllerTest {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        OrderItemDTO itemDTO = OrderItemDTO.builder()
-                .productName("Test Product")
-                .sku("TEST-001")
-                .quantity(2)
-                .unitPrice(BigDecimal.valueOf(50.00))
-                .subtotal(BigDecimal.valueOf(100.00))
-                .build();
-
         testOrderDTO = OrderDTO.builder()
                 .id(1L)
                 .orderNumber("ORD-20250101-00001")
@@ -72,16 +61,8 @@ class OrderControllerTest {
                 .status(OrderStatus.PENDING)
                 .totalAmount(BigDecimal.valueOf(100.00))
                 .customerId(1L)
-                .items(List.of(itemDTO))
                 .build();
 
-        OrderItem orderItem = OrderItem.builder()
-                .productName("Test Product")
-                .sku("TEST-001")
-                .quantity(2)
-                .unitPrice(Money.of(50.00))
-                .subtotal(Money.of(100.00))
-                .build();
 
         testOrder = Order.builder()
                 .id(1L)
@@ -90,7 +71,6 @@ class OrderControllerTest {
                 .status(OrderStatus.PENDING)
                 .totalAmount(Money.of(100.00))
                 .customerId(1L)
-                .items(new ArrayList<>(List.of(orderItem)))
                 .build();
     }
 
@@ -118,7 +98,6 @@ class OrderControllerTest {
         // Given
         OrderDTO invalidOrder = OrderDTO.builder()
                 .customerId(1L)
-                .items(List.of()) // Empty items list
                 .build();
 
         // When & Then
@@ -205,7 +184,6 @@ class OrderControllerTest {
                 .status(OrderStatus.PAID)
                 .totalAmount(testOrder.getTotalAmount())
                 .customerId(testOrder.getCustomerId())
-                .items(testOrder.getItems())
                 .build();
 
         OrderDTO updatedDTO = OrderDTO.builder()
@@ -215,7 +193,6 @@ class OrderControllerTest {
                 .status(OrderStatus.PAID)
                 .totalAmount(testOrderDTO.getTotalAmount())
                 .customerId(testOrderDTO.getCustomerId())
-                .items(testOrderDTO.getItems())
                 .build();
 
         when(orderService.updateOrderStatus(1L, OrderStatus.PAID)).thenReturn(updatedOrder);

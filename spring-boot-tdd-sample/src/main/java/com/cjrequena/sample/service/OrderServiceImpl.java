@@ -32,22 +32,14 @@ public class OrderServiceImpl implements OrderService {
   private final CustomerRepository customerRepository;
   private final OrderMapper orderMapper;
 
-  //    public OrderServiceImpl(OrderRepository orderRepository,
-  //                           CustomerRepository customerRepository,
-  //                           OrderMapper orderMapper) {
-  //        this.orderRepository = orderRepository;
-  //        this.customerRepository = customerRepository;
-  //        this.orderMapper = orderMapper;
-  //        this.objectMapper = new ObjectMapper();
-  //        this.objectMapper.registerModule(new JavaTimeModule());
-  //    }
-
   @Override
   public Order createOrder(Order order) {
     log.debug("Creating new order: {}", order);
+
     final long customerId = order.getCustomerId();
-    // Validate customer exists
-    CustomerEntity customer = customerRepository
+
+    // Validate customerEntity exists
+    CustomerEntity customerEntity = customerRepository
       .findById(order.getCustomerId())
       .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
 
@@ -59,37 +51,34 @@ public class OrderServiceImpl implements OrderService {
         .status(order.getStatus())
         .totalAmount(order.getTotalAmount())
         .customerId(order.getCustomerId())
-        .items(order.getItems())
         .build();
     }
 
-    OrderEntity entity = orderMapper.toEntity(order);
-    entity.setCustomer(customer);
+    OrderEntity orderEntity = orderMapper.toEntity(order);
+    orderEntity.setCustomer(customerEntity);
 
-    // Set bidirectional relationships for items
-    entity.getItems().forEach(item -> item.setOrder(entity));
-    entity.recalculateTotalAmount();
-
-    OrderEntity savedEntity = orderRepository.save(entity);
-    log.info("Order created successfully with id: {}", savedEntity.getId());
-
-    return orderMapper.toDomain(savedEntity);
+    OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
+    log.info("Order created successfully with id: {}", savedOrderEntity.getId());
+    return orderMapper.toDomain(savedOrderEntity);
   }
 
   @Override
   @Transactional(readOnly = true)
   public Order getOrderById(Long id) {
     log.debug("Fetching order with id: {}", id);
-    OrderEntity entity = orderRepository.findByIdWithItems(id)
+    OrderEntity orderEntity = orderRepository
+      .findById(id)
       .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
-    return orderMapper.toDomain(entity);
+    return orderMapper.toDomain(orderEntity);
   }
 
   @Override
   @Transactional(readOnly = true)
   public List<Order> getAllOrders() {
     log.debug("Fetching all orders");
-    return orderRepository.findAll().stream()
+    return orderRepository
+      .findAll()
+      .stream()
       .map(orderMapper::toDomain)
       .collect(Collectors.toList());
   }
@@ -98,32 +87,32 @@ public class OrderServiceImpl implements OrderService {
   public Order updateOrder(Long id, Order order) {
     log.debug("Updating order with id: {}", id);
 
-    OrderEntity existingEntity = orderRepository.findByIdWithItems(id)
+    OrderEntity existingOrderEntity = orderRepository
+      .findById(id)
       .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
 
     // Validate customer if changed
-    if (!existingEntity.getCustomer().getId().equals(order.getCustomerId())) {
-      CustomerEntity customer = customerRepository.findById(order.getCustomerId())
-        .orElseThrow(() -> new ResourceNotFoundException(
-          "Customer not found with id: " + order.getCustomerId()));
-      existingEntity.setCustomer(customer);
+    if (!existingOrderEntity.getCustomer().getId().equals(order.getCustomerId())) {
+      CustomerEntity customerEntity = customerRepository
+        .findById(order.getCustomerId())
+        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + order.getCustomerId()));
+      existingOrderEntity.setCustomer(customerEntity);
     }
 
     // Update fields
-    existingEntity.setOrderNumber(order.getOrderNumber().getValue());
-    existingEntity.setOrderDate(order.getOrderDate());
-    existingEntity.setStatus(order.getStatus());
+    existingOrderEntity.setOrderNumber(order.getOrderNumber().getValue());
+    existingOrderEntity.setOrderDate(order.getOrderDate());
+    existingOrderEntity.setStatus(order.getStatus());
 
-    // Update items
-    existingEntity.getItems().clear();
-    order.getItems().forEach(item -> {
-      var itemEntity = orderMapper.toItemEntity(item);
-      existingEntity.addItem(itemEntity);
-    });
+//    // Update items
+//    existingOrderEntity.getItems().clear();
+//    order.getItems().forEach(item -> {
+//      var itemEntity = orderMapper.toItemEntity(item);
+//      existingOrderEntity.addItem(itemEntity);
+//    });
 
-    OrderEntity updatedEntity = orderRepository.save(existingEntity);
+    OrderEntity updatedEntity = orderRepository.save(existingOrderEntity);
     log.info("Order updated successfully with id: {}", id);
-
     return orderMapper.toDomain(updatedEntity);
   }
 
@@ -140,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
       // Convert back to Order
       //Order patchedOrder = objectMapper.treeToValue(patched, Order.class);
-      Order patchedOrder = JsonUtil.jsonNodeToObject(patched,Order.class);
+      Order patchedOrder = JsonUtil.jsonNodeToObject(patched, Order.class);
 
       // Update the order
       return updateOrder(id, patchedOrder);
@@ -167,7 +156,9 @@ public class OrderServiceImpl implements OrderService {
   @Transactional(readOnly = true)
   public List<Order> getOrdersByStatus(OrderStatus status) {
     log.debug("Fetching orders with status: {}", status);
-    return orderRepository.findByStatus(status).stream()
+    return orderRepository
+      .findByStatus(status)
+      .stream()
       .map(orderMapper::toDomain)
       .collect(Collectors.toList());
   }
@@ -181,7 +172,9 @@ public class OrderServiceImpl implements OrderService {
       throw new ResourceNotFoundException("Customer not found with id: " + customerId);
     }
 
-    return orderRepository.findByCustomerId(customerId).stream()
+    return orderRepository
+      .findByCustomerId(customerId)
+      .stream()
       .map(orderMapper::toDomain)
       .collect(Collectors.toList());
   }
@@ -190,16 +183,17 @@ public class OrderServiceImpl implements OrderService {
   public Order updateOrderStatus(Long id, OrderStatus status) {
     log.debug("Updating order status for id: {} to {}", id, status);
 
-    OrderEntity entity = orderRepository.findById(id)
+    OrderEntity orderEntity = orderRepository
+      .findById(id)
       .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
 
-    Order order = orderMapper.toDomain(entity);
+    Order order = orderMapper.toDomain(orderEntity);
     order.updateStatus(status);
 
-    entity.setStatus(status);
-    OrderEntity updatedEntity = orderRepository.save(entity);
+    orderEntity.setStatus(status);
+    OrderEntity updatedOrderEntity = orderRepository.save(orderEntity);
 
     log.info("Order status updated successfully for id: {}", id);
-    return orderMapper.toDomain(updatedEntity);
+    return orderMapper.toDomain(updatedOrderEntity);
   }
 }

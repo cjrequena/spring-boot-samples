@@ -2,8 +2,10 @@ package com.cjrequena.sample.controller.dto;
 
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -21,8 +22,7 @@ public class OrderDTO {
 
     private Long id;
 
-    @Pattern(regexp = "^ORD-\\d{8}-\\d{5}$", 
-             message = "Order number must match format: ORD-YYYYMMDD-XXXXX")
+    @Pattern(regexp = "^ORD-\\d{8}-\\d{5}$", message = "Order number must match format: ORD-YYYYMMDD-XXXXX")
     private String orderNumber;
 
     @NotNull(message = "Order date is required")
@@ -39,11 +39,6 @@ public class OrderDTO {
 
     @NotNull(message = "Customer ID is required")
     private Long customerId;
-
-    @NotNull(message = "Items list is required")
-    @Size(min = 1, message = "Order must have at least one item")
-    @Valid
-    private List<OrderItemDTO> items;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;

@@ -6,8 +6,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "orders", indexes = {
@@ -43,10 +41,6 @@ public class OrderEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<OrderItemEntity> items = new ArrayList<>();
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -68,24 +62,6 @@ public class OrderEntity {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public void addItem(OrderItemEntity item) {
-        items.add(item);
-        item.setOrder(this);
-        recalculateTotalAmount();
-    }
-
-    public void removeItem(OrderItemEntity item) {
-        items.remove(item);
-        item.setOrder(null);
-        recalculateTotalAmount();
-    }
-
-    public void recalculateTotalAmount() {
-        this.totalAmount = items.stream()
-          .map(item -> item.getSubtotal() != null ? item.getSubtotal() : BigDecimal.ZERO)
-          .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 }

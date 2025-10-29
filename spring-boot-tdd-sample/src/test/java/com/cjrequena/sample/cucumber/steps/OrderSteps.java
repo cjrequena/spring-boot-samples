@@ -1,7 +1,6 @@
 package com.cjrequena.sample.cucumber.steps;
 
 import com.cjrequena.sample.controller.dto.OrderDTO;
-import com.cjrequena.sample.controller.dto.OrderItemDTO;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.persistence.entity.CustomerEntity;
 import com.cjrequena.sample.persistence.jpa.repository.CustomerRepository;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,19 +74,11 @@ public class OrderSteps {
 
   @Given("I have order details with status {string}")
   public void iHaveOrderDetailsWithStatus(String status) {
-    OrderItemDTO itemDTO = OrderItemDTO.builder()
-      .productName("Test Product")
-      .sku("TEST-001")
-      .quantity(2)
-      .unitPrice(BigDecimal.valueOf(50.00))
-      .build();
-
     currentOrderDTO = OrderDTO.builder()
       .orderDate(LocalDateTime.now())
       .status(OrderStatus.valueOf(status))
       .totalAmount(BigDecimal.valueOf(100.00))
       .customerId(testCustomer.getId())
-      .items(List.of(itemDTO))
       .build();
   }
 
@@ -123,48 +113,6 @@ public class OrderSteps {
     iCreateANewOrder();
   }
 
-  @Given("I have invalid order details with empty items")
-  public void iHaveInvalidOrderDetailsWithEmptyItems() {
-    currentOrderDTO = OrderDTO.builder()
-      .orderDate(LocalDateTime.now())
-      .status(OrderStatus.PENDING)
-      .totalAmount(BigDecimal.ZERO)
-      .customerId(testCustomer.getId())
-      .items(List.of())
-      .build();
-  }
-
-  @Given("I have order details with multiple items:")
-  public void iHaveOrderDetailsWithMultipleItems(DataTable dataTable) {
-    List<OrderItemDTO> items = new ArrayList<>();
-    BigDecimal totalAmount = BigDecimal.ZERO;
-
-    for (Map<String, String> row : dataTable.asMaps()) {
-      BigDecimal unitPrice = new BigDecimal(row.get("unitPrice"));
-      int quantity = Integer.parseInt(row.get("quantity"));
-      BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
-
-      OrderItemDTO item = OrderItemDTO.builder()
-        .productName(row.get("productName"))
-        .sku(row.get("sku"))
-        .quantity(quantity)
-        .unitPrice(unitPrice)
-        .subtotal(subtotal)
-        .build();
-
-      items.add(item);
-      totalAmount = totalAmount.add(subtotal);
-    }
-
-    currentOrderDTO = OrderDTO.builder()
-      .orderDate(LocalDateTime.now())
-      .status(OrderStatus.PENDING)
-      .totalAmount(totalAmount)
-      .customerId(testCustomer.getId())
-      .items(items)
-      .build();
-  }
-
   @Given("multiple orders exist for the customer")
   public void multipleOrdersExistForTheCustomer() throws Exception {
     for (int i = 0; i < 3; i++) {
@@ -173,71 +121,14 @@ public class OrderSteps {
     }
   }
 
-  @Given("I have order details with one item:")
-  public void iHaveOrderDetailsWithOneItem(DataTable dataTable) {
-    Map<String, String> row = dataTable.asMaps().get(0);
-    BigDecimal unitPrice = new BigDecimal(row.get("unitPrice"));
-    int quantity = Integer.parseInt(row.get("quantity"));
-
-    OrderItemDTO item = OrderItemDTO.builder()
-      .productName(row.get("productName"))
-      .sku(row.get("sku"))
-      .quantity(quantity)
-      .unitPrice(unitPrice)
-      .build();
-
-    currentOrderDTO = OrderDTO.builder()
-      .orderDate(LocalDateTime.now())
-      .status(OrderStatus.PENDING)
-      .totalAmount(unitPrice.multiply(BigDecimal.valueOf(quantity)))
-      .customerId(testCustomer.getId())
-      .items(List.of(item))
-      .build();
-  }
-
   @Given("I have order details without customer")
   public void iHaveOrderDetailsWithoutCustomer() {
-    OrderItemDTO itemDTO = OrderItemDTO.builder()
-      .productName("Test Product")
-      .sku("TEST-001")
-      .quantity(1)
-      .unitPrice(BigDecimal.valueOf(10.00))
-      .build();
-
     currentOrderDTO = OrderDTO.builder()
       .orderDate(LocalDateTime.now())
       .status(OrderStatus.PENDING)
       .totalAmount(BigDecimal.valueOf(10.00))
       .customerId(null)
-      .items(List.of(itemDTO))
       .build();
-  }
-
-  @Given("I have order details with invalid item:")
-  public void iHaveOrderDetailsWithInvalidItem(DataTable dataTable) {
-    Map<String, String> row = dataTable.asMaps().get(0);
-
-    try {
-      BigDecimal unitPrice = new BigDecimal(row.get("unitPrice"));
-      int quantity = Integer.parseInt(row.get("quantity"));
-
-      OrderItemDTO item = OrderItemDTO.builder()
-        .productName(row.get("productName"))
-        .sku(row.get("sku"))
-        .quantity(quantity)
-        .unitPrice(unitPrice)
-        .build();
-
-      currentOrderDTO = OrderDTO.builder()
-        .orderDate(LocalDateTime.now())
-        .status(OrderStatus.PENDING)
-        .totalAmount(unitPrice.multiply(BigDecimal.valueOf(quantity)))
-        .customerId(testCustomer.getId())
-        .items(List.of(item))
-        .build();
-    } catch (Exception e) {
-      // Invalid data will be caught during validation
-    }
   }
 
   // When Steps
@@ -345,43 +236,6 @@ public class OrderSteps {
     }
   }
 
-  @When("I update the order with new items:")
-  public void iUpdateTheOrderWithNewItems(DataTable dataTable) throws Exception {
-    List<OrderItemDTO> items = new ArrayList<>();
-    BigDecimal totalAmount = BigDecimal.ZERO;
-
-    for (Map<String, String> row : dataTable.asMaps()) {
-      BigDecimal unitPrice = new BigDecimal(row.get("unitPrice"));
-      int quantity = Integer.parseInt(row.get("quantity"));
-      BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
-
-      OrderItemDTO item = OrderItemDTO.builder()
-        .productName(row.get("productName"))
-        .sku(row.get("sku"))
-        .quantity(quantity)
-        .unitPrice(unitPrice)
-        .subtotal(subtotal)
-        .build();
-
-      items.add(item);
-      totalAmount = totalAmount.add(subtotal);
-    }
-
-    createdOrder.setItems(items);
-    createdOrder.setTotalAmount(totalAmount);
-
-    lastResult = mockMvc.perform(put("/api/orders/" + createdOrder.getId())
-      .contentType(MediaType.APPLICATION_JSON)
-      .content(objectMapper.writeValueAsString(createdOrder)));
-
-    MvcResult result = lastResult.andReturn();
-    if (result.getResponse().getStatus() == 200) {
-      createdOrder = objectMapper.readValue(
-        result.getResponse().getContentAsString(),
-        OrderDTO.class);
-    }
-  }
-
   @When("I attempt to delete an order with id {int}")
   public void iAttemptToDeleteAnOrderWithId(int orderId) throws Exception {
     lastResult = mockMvc.perform(delete("/api/orders/" + orderId));
@@ -481,20 +335,6 @@ public class OrderSteps {
   @Then("I should receive an error message")
   public void iShouldReceiveAnErrorMessage() throws Exception {
     lastResult.andExpect(jsonPath("$.message").exists());
-  }
-
-  @Then("the order should have {int} items")
-  public void theOrderShouldHaveItems(int itemCount) {
-    assertThat(createdOrder.getItems()).hasSize(itemCount);
-  }
-
-  @Then("the order total should be calculated correctly")
-  public void theOrderTotalShouldBeCalculatedCorrectly() {
-    BigDecimal calculatedTotal = createdOrder.getItems().stream()
-      .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-      .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    assertThat(createdOrder.getTotalAmount()).isEqualByComparingTo(calculatedTotal);
   }
 
   @Then("I should receive all orders for that customer")

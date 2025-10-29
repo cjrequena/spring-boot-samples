@@ -1,94 +1,65 @@
 package com.cjrequena.sample.domain.mapper;
 
 import com.cjrequena.sample.controller.dto.OrderDTO;
-import com.cjrequena.sample.controller.dto.OrderItemDTO;
 import com.cjrequena.sample.domain.model.aggregate.Order;
-import com.cjrequena.sample.domain.model.aggregate.OrderItem;
 import com.cjrequena.sample.domain.model.vo.Money;
 import com.cjrequena.sample.domain.model.vo.OrderNumber;
 import com.cjrequena.sample.persistence.entity.OrderEntity;
-import com.cjrequena.sample.persistence.entity.OrderItemEntity;
 import org.mapstruct.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Mapper(componentModel = "spring", 
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring",
+  unmappedTargetPolicy = ReportingPolicy.IGNORE,
+  nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface OrderMapper {
 
-    // Domain <-> Entity mappings
-    
-    @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "orderNumberToString")
-    @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "moneyToBigDecimal")
-    @Mapping(source = "customerId", target = "customer.id")
-    @Mapping(source = "items", target = "items")
-    OrderEntity toEntity(Order order);
+  // Domain <-> Entity mappings
 
-    @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "stringToOrderNumber")
-    @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "bigDecimalToMoney")
-    @Mapping(source = "customer.id", target = "customerId")
-    @Mapping(source = "items", target = "items")
-    Order toDomain(OrderEntity entity);
+  @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "orderNumberToString")
+  @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "moneyToBigDecimal")
+  @Mapping(source = "customerId", target = "customer.id")
+  OrderEntity toEntity(Order order);
 
-    List<Order> toDomainList(List<OrderEntity> entities);
+  @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "stringToOrderNumber")
+  @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "bigDecimalToMoney")
+  @Mapping(source = "customer.id", target = "customerId")
+  Order toDomain(OrderEntity entity);
 
-    // OrderItem mappings
-    
-    @Mapping(source = "unitPrice", target = "unitPrice", qualifiedByName = "moneyToBigDecimal")
-    @Mapping(source = "subtotal", target = "subtotal", qualifiedByName = "moneyToBigDecimal")
-    OrderItemEntity toItemEntity(OrderItem item);
+  List<Order> toDomainList(List<OrderEntity> entities);
 
-    @Mapping(source = "unitPrice", target = "unitPrice", qualifiedByName = "bigDecimalToMoney")
-    @Mapping(source = "subtotal", target = "subtotal", qualifiedByName = "bigDecimalToMoney")
-    OrderItem toItemDomain(OrderItemEntity entity);
+  // DTO <-> Domain mappings
 
-    List<OrderItem> toItemDomainList(List<OrderItemEntity> entities);
+  @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "stringToOrderNumber")
+  @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "bigDecimalToMoney")
+  Order toDomainFromDTO(OrderDTO dto);
 
-    // DTO <-> Domain mappings
-    
-    @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "stringToOrderNumber")
-    @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "bigDecimalToMoney")
-    @Mapping(source = "items", target = "items")
-    Order toDomainFromDTO(OrderDTO dto);
+  @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "orderNumberToString")
+  @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "moneyToBigDecimal")
+  OrderDTO toDTO(Order order);
 
-    @Mapping(source = "orderNumber", target = "orderNumber", qualifiedByName = "orderNumberToString")
-    @Mapping(source = "totalAmount", target = "totalAmount", qualifiedByName = "moneyToBigDecimal")
-    @Mapping(source = "items", target = "items")
-    OrderDTO toDTO(Order order);
+  List<OrderDTO> toDTOList(List<Order> orders);
 
-    List<OrderDTO> toDTOList(List<Order> orders);
+  // Custom mapping methods
 
-    // OrderItem DTO mappings
-    
-    @Mapping(source = "unitPrice", target = "unitPrice", qualifiedByName = "bigDecimalToMoney")
-    @Mapping(source = "subtotal", target = "subtotal", qualifiedByName = "bigDecimalToMoney")
-    OrderItem toItemDomainFromDTO(OrderItemDTO dto);
+  @Named("orderNumberToString")
+  default String orderNumberToString(OrderNumber orderNumber) {
+    return orderNumber != null ? orderNumber.getValue() : null;
+  }
 
-    @Mapping(source = "unitPrice", target = "unitPrice", qualifiedByName = "moneyToBigDecimal")
-    @Mapping(source = "subtotal", target = "subtotal", qualifiedByName = "moneyToBigDecimal")
-    OrderItemDTO toItemDTO(OrderItem item);
+  @Named("stringToOrderNumber")
+  default OrderNumber stringToOrderNumber(String value) {
+    return value != null ? OrderNumber.of(value) : null;
+  }
 
-    // Custom mapping methods
-    
-    @Named("orderNumberToString")
-    default String orderNumberToString(OrderNumber orderNumber) {
-        return orderNumber != null ? orderNumber.getValue() : null;
-    }
+  @Named("moneyToBigDecimal")
+  default BigDecimal moneyToBigDecimal(Money money) {
+    return money != null ? money.getAmount() : null;
+  }
 
-    @Named("stringToOrderNumber")
-    default OrderNumber stringToOrderNumber(String value) {
-        return value != null ? OrderNumber.of(value) : null;
-    }
-
-    @Named("moneyToBigDecimal")
-    default BigDecimal moneyToBigDecimal(Money money) {
-        return money != null ? money.getAmount() : null;
-    }
-
-    @Named("bigDecimalToMoney")
-    default Money bigDecimalToMoney(BigDecimal amount) {
-        return amount != null ? Money.of(amount) : null;
-    }
+  @Named("bigDecimalToMoney")
+  default Money bigDecimalToMoney(BigDecimal amount) {
+    return amount != null ? Money.of(amount) : null;
+  }
 }
