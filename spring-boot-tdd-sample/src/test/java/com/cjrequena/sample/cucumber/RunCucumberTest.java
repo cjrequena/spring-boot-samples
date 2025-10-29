@@ -9,10 +9,12 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
-@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.cjrequena.sample.cucumber.steps")
+//@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.cjrequena.sample.cucumber.steps")
+@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.cjrequena.sample.cucumber.steps, com.cjrequena.sample.configuration")
 @ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber-reports.html, json:target/cucumber.json")
 @ConfigurationParameter(key = Constants.FILTER_TAGS_PROPERTY_NAME, value = "not @Ignore")
 @ConfigurationParameter(key = Constants.EXECUTION_DRY_RUN_PROPERTY_NAME, value = "false")
 @ConfigurationParameter(key = Constants.FEATURES_PROPERTY_NAME, value = "src/test/resources/features")
-public class CucumberIntegrationTest {
+
+public class RunCucumberTest {
 }
