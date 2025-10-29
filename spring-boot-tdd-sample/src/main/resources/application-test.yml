@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: order-management-test
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+server:
+  port: 0
+
+logging:
+  level:
+    com.example.ordermanagement: INFO
+    org.hibernate.SQL: ERROR
+    org.springframework: WARN
+    org.springframework.test: INFO
