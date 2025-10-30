@@ -6,7 +6,6 @@ import com.cjrequena.sample.persistence.entity.CustomerEntity;
 import com.cjrequena.sample.persistence.jpa.repository.CustomerRepository;
 import com.cjrequena.sample.persistence.jpa.repository.OrderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,17 +39,15 @@ class OrderControllerIT {
   @Autowired
   private CustomerRepository customerRepository;
 
+  @Autowired
   private ObjectMapper objectMapper;
+
   private CustomerEntity testCustomer;
 
   @BeforeEach
   void setUp() {
-    objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-
     orderRepository.deleteAll();
     customerRepository.deleteAll();
-
     testCustomer = CustomerEntity.builder()
       .firstName("John")
       .lastName("Doe")
@@ -77,9 +74,9 @@ class OrderControllerIT {
         .content(objectMapper.writeValueAsString(orderDTO)))
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.id").exists())
-      .andExpect(jsonPath("$.orderNumber").exists())
+      .andExpect(jsonPath("$.order_number").exists())
       .andExpect(jsonPath("$.status").value("PENDING"))
-      .andExpect(jsonPath("$.customerId").value(testCustomer.getId()));
+      .andExpect(jsonPath("$.customer_id").value(testCustomer.getId()));
   }
 
   @Test
@@ -105,7 +102,7 @@ class OrderControllerIT {
     mockMvc.perform(get("/api/orders/{id}", createdOrder.getId()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.id").value(createdOrder.getId()))
-      .andExpect(jsonPath("$.orderNumber").value(createdOrder.getOrderNumber()));
+      .andExpect(jsonPath("$.order_number").value(createdOrder.getOrderNumber()));
   }
 
   @Test
@@ -269,7 +266,7 @@ class OrderControllerIT {
         .param("customerId", testCustomer.getId().toString()))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-      .andExpect(jsonPath("$[0].customerId").value(testCustomer.getId()));
+      .andExpect(jsonPath("$[0].customer_id").value(testCustomer.getId()));
   }
 
   @Test
@@ -286,7 +283,7 @@ class OrderControllerIT {
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(invalidOrder)))
       .andExpect(status().isBadRequest())
-      .andExpect(jsonPath("$.validationErrors").isArray());
+      .andExpect(jsonPath("$.validation_errors").isArray());
   }
 
   @Test
@@ -331,22 +328,22 @@ class OrderControllerIT {
       .andExpect(jsonPath("$.status").value("DELIVERED"));
   }
 
-      @Test
-      @DisplayName("Should return 404 when updating non-existent order")
-      void testUpdateOrder_NotFound() throws Exception {
-          // Given
-          OrderDTO orderDTO = OrderDTO.builder()
-                  .orderNumber("ORD-20250101-99999")
-                  .orderDate(LocalDateTime.now())
-                  .status(OrderStatus.PENDING)
-                  .totalAmount(BigDecimal.valueOf(100.00))
-                  .customerId(testCustomer.getId())
-                  .build();
+  @Test
+  @DisplayName("Should return 404 when updating non-existent order")
+  void testUpdateOrder_NotFound() throws Exception {
+    // Given
+    OrderDTO orderDTO = OrderDTO.builder()
+      .orderNumber("ORD-20250101-99999")
+      .orderDate(LocalDateTime.now())
+      .status(OrderStatus.PENDING)
+      .totalAmount(BigDecimal.valueOf(100.00))
+      .customerId(testCustomer.getId())
+      .build();
 
-          // When & Then
-          mockMvc.perform(put("/api/orders/99999")
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .content(objectMapper.writeValueAsString(orderDTO)))
-                  .andExpect(status().isNotFound());
-      }
+    // When & Then
+    mockMvc.perform(put("/api/orders/99999")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(orderDTO)))
+      .andExpect(status().isNotFound());
+  }
 }

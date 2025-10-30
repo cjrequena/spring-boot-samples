@@ -8,7 +8,9 @@ Feature: Pepito
       | firstName | lastName | email                |
       | John      | Doe      | john.doe@example.com |
 
-  Scenario: Hello world
-    Given the app is running
-    When I say hello
-    Then I should get "Hello, World!"
+  Scenario: Create a new order successfully
+    Given I have order details with status "PENDING"
+    When I create a new order
+    Then the order should be created successfully
+    And the order should have status "PENDING"
+    And the order should have a valid order number

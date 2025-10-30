@@ -17,7 +17,7 @@ import java.util.Base64;
 public final class JsonUtil {
 
   // region === ObjectMapper Initialization ===
-  private static final ObjectMapper objectMapper = ApplicationContextProvider.getContext().getBean("primaryObjectMapper", ObjectMapper.class);
+  private static final ObjectMapper objectMapper = ApplicationContextProvider.getContext().getBean("objectMapper", ObjectMapper.class);
 
   private JsonUtil() {
     // Prevent instantiation

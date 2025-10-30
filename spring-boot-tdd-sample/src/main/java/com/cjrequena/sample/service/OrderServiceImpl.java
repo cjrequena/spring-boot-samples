@@ -104,13 +104,6 @@ public class OrderServiceImpl implements OrderService {
     existingOrderEntity.setOrderDate(order.getOrderDate());
     existingOrderEntity.setStatus(order.getStatus());
 
-//    // Update items
-//    existingOrderEntity.getItems().clear();
-//    order.getItems().forEach(item -> {
-//      var itemEntity = orderMapper.toItemEntity(item);
-//      existingOrderEntity.addItem(itemEntity);
-//    });
-
     OrderEntity updatedEntity = orderRepository.save(existingOrderEntity);
     log.info("Order updated successfully with id: {}", id);
     return orderMapper.toDomain(updatedEntity);
