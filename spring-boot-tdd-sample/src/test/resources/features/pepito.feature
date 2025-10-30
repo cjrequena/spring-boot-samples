@@ -6,7 +6,7 @@ Feature: Pepito
   Background:
     Given A customer exists with the following details:
       | firstName | lastName | email                |
-      | John      | Doe      | john.doe@example.com |
+      | John      | Doe      | john.doe@example-bdd.com |
 
   Scenario: Create a new order successfully
     Given I have order details with status "PENDING"

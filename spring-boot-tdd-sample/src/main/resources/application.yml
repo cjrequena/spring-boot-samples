@@ -45,9 +45,10 @@ spring.h2.console.path: "/h2-console"
 
 # JPA
 spring.jpa.open-in-view: false
-spring.jpa.hibernate.ddl-auto: none
+#spring.jpa.hibernate.ddl-auto: none
+spring.jpa.hibernate.ddl-auto: create-drop
 spring.jpa.properties.hibernate:
-  dialect: org.hibernate.dialect.PostgreSQLDialect
+  #dialect: org.hibernate.dialect.PostgreSQLDialect
   show_sql: false
   format_sql: true
   use_sql: true
