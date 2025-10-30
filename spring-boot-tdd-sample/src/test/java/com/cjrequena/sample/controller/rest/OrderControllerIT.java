@@ -51,7 +51,7 @@ class OrderControllerIT {
     testCustomer = CustomerEntity.builder()
       .firstName("John")
       .lastName("Doe")
-      .email("john.doe@example.com")
+      .email("john.doe@example-it.com")
       .phoneNumber("1234567890")
       .build();
     testCustomer = customerRepository.save(testCustomer);

@@ -10,11 +10,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,16 +30,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @CucumberContextConfiguration
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PepitoSteps {
 
-  private final TestRestTemplate restTemplate;
-  private String response;
+  @Autowired
+  private MockMvc mockMvc;
 
-  private final MockMvc mockMvc;
-  private final CustomerRepository customerRepository;
-  private final OrderRepository orderRepository;
-  private final ObjectMapper objectMapper;
+  @Autowired
+  private CustomerRepository customerRepository;
+
+  @Autowired
+  private OrderRepository orderRepository;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   private CustomerEntity testCustomer;
   private OrderDTO currentOrderDTO;
