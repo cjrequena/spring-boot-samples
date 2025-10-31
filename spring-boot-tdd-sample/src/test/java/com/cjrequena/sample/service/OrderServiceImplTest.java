@@ -1,5 +1,6 @@
 package com.cjrequena.sample.service;
 
+import com.cjrequena.sample.domain.excepption.CustomertNotFoundException;
 import com.cjrequena.sample.domain.excepption.ResourceNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
@@ -109,7 +110,7 @@ class OrderServiceImplTest {
 
     // When & Then
     assertThatThrownBy(() -> orderService.create(testOrder))
-      .isInstanceOf(ResourceNotFoundException.class)
+      .isInstanceOf(CustomertNotFoundException.class)
       .hasMessageContaining("Customer not found with id: 1");
 
     verify(customerRepository).findById(1L);

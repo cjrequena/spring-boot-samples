@@ -1,5 +1,6 @@
 package com.cjrequena.sample.service;
 
+import com.cjrequena.sample.domain.excepption.CustomertNotFoundException;
 import com.cjrequena.sample.domain.excepption.ResourceNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
@@ -41,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
     // Validate customerEntity exists
     CustomerEntity customerEntity = customerRepository
       .findById(order.getCustomerId())
-      .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+      .orElseThrow(() -> new CustomertNotFoundException("Customer not found with id: " + customerId));
 
     // Generate order number if not provided
     if (order.getOrderNumber() == null) {

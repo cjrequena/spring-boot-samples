@@ -1,7 +1,9 @@
 package com.cjrequena.sample.controller.rest;
 
 import com.cjrequena.sample.controller.dto.OrderDTO;
+import com.cjrequena.sample.controller.excepption.BadRequestException;
 import com.cjrequena.sample.controller.excepption.NotFoundException;
+import com.cjrequena.sample.domain.excepption.CustomertNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
@@ -27,13 +29,17 @@ public class OrderController {
 
   @PostMapping
   public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderDTO orderDTO) {
-    log.info("REST request to create order");
+    try {
+      log.info("REST request to create order");
 
-    Order order = orderMapper.toDomainFromDTO(orderDTO);
-    Order createdOrder = orderService.create(order);
-    OrderDTO responseDTO = orderMapper.toDTO(createdOrder);
+      Order order = orderMapper.toDomainFromDTO(orderDTO);
+      Order createdOrder = orderService.create(order);
+      OrderDTO responseDTO = orderMapper.toDTO(createdOrder);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    } catch (CustomertNotFoundException ex) {
+      throw new BadRequestException(ex.getMessage(), ex);
+    }
   }
 
   @GetMapping("/{id}")

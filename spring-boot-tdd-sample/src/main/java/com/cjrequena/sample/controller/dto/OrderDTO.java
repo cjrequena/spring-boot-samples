@@ -1,6 +1,7 @@
 package com.cjrequena.sample.controller.dto;
 
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
+import com.cjrequena.sample.shared.common.util.Constant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -26,7 +27,7 @@ public class OrderDTO {
     private String orderNumber;
 
     @NotNull(message = "Order date is required")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = Constant.ISO_LOCAL_DATE_TIME)
     private LocalDateTime orderDate;
 
     @NotNull(message = "Status is required")
