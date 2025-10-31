@@ -38,3 +38,21 @@ Feature: Pepito
     When I delete the order
     Then The order should be deleted successfully
     And The order should not be found when requested
+
+  Scenario: Get orders by status
+    Given Multiple orders exist with different statuses
+    When I request orders with status "PENDING"
+    Then I should receive only orders with status "PENDING"
+
+  Scenario: Create order with invalid data
+    Given I have invalid order with invalid amount
+    When I attempt to create the order
+    Then The order creation should fail
+    And I should receive a validation error
+
+  Scenario: Update order status through multiple transitions
+    Given An order exists with status "PENDING"
+    When I update the order status to "PAID"
+    And I update the order status to "SHIPPED"
+    And I update the order status to "DELIVERED"
+    Then The order should have status "DELIVERED"

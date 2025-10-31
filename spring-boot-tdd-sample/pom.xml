@@ -251,7 +251,7 @@
                     <skipTests>${skipUnitTests}</skipTests>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
-                        <exclude>**/RunCucumber*Test.java</exclude>
+                        <exclude>**/*RunCucumber*IT.java</exclude>
                     </excludes>
                     <!--suppress UnresolvedMavenProperty -->
                     <argLine>
@@ -268,7 +268,7 @@
                     <skipTests>${skipIntegrationTests}</skipTests>
                     <includes>
                         <include>**/*IT.java</include>
-                        <include>**/RunCucumber*Test.java</include>
+                        <exclude>**/*RunCucumber*IT.java</exclude>
                     </includes>
                 </configuration>
                 <executions>

@@ -1,5 +1,6 @@
 package com.cjrequena.sample.controller.excepption;
 
+import com.cjrequena.sample.domain.excepption.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,36 +8,49 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.cjrequena.sample.shared.common.util.Constant.DATE_TIME_FORMAT;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
-            ResourceNotFoundException ex,
-            HttpServletRequest request) {
-        
-        log.error("Resource not found: {}", ex.getMessage());
-        
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+    private static final String EXCEPTION_LOG = "Exception {}";
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorDTO> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        log.info(EXCEPTION_LOG, ex.getMessage());
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
                 .status(HttpStatus.NOT_FOUND.value())
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .errorCode(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
-        
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler({ControllerException.class})
+    @ResponseBody
+    public ResponseEntity<Object> handleControllerException(ControllerException ex) {
+        log.error(EXCEPTION_LOG, ex.getMessage());
+        ErrorDTO errorDTO = new ErrorDTO();
+        errorDTO.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        errorDTO.setStatus(ex.getHttpStatus().value());
+        errorDTO.setErrorCode(ex.getClass().getSimpleName());
+        errorDTO.setMessage(ex.getMessage());
+        return ResponseEntity.status(ex.getHttpStatus()).body(errorDTO);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(
+    public ResponseEntity<ErrorDTO> handleValidationException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request) {
         
@@ -48,10 +62,10 @@ public class GlobalExceptionHandler {
                 .map(this::mapToValidationError)
                 .collect(Collectors.toList());
         
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
                 .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .errorCode(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message("Validation failed for one or more fields")
                 .path(request.getRequestURI())
                 .validationErrors(validationErrors)
@@ -61,16 +75,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+    public ResponseEntity<ErrorDTO> handleIllegalArgumentException(
             IllegalArgumentException ex,
             HttpServletRequest request) {
         
         log.error("Illegal argument: {}", ex.getMessage());
         
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
                 .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .errorCode(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
@@ -79,16 +93,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(
+    public ResponseEntity<ErrorDTO> handleIllegalStateException(
             IllegalStateException ex,
             HttpServletRequest request) {
         
         log.error("Illegal state: {}", ex.getMessage());
         
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
                 .status(HttpStatus.CONFLICT.value())
-                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .errorCode(HttpStatus.CONFLICT.getReasonPhrase())
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
@@ -97,16 +111,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(
+    public ResponseEntity<ErrorDTO> handleGenericException(
             Exception ex,
             HttpServletRequest request) {
         
         log.error("Unexpected error occurred", ex);
         
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+        ErrorDTO error = ErrorDTO.builder()
+                .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .message("An unexpected error occurred")
                 .path(request.getRequestURI())
                 .build();

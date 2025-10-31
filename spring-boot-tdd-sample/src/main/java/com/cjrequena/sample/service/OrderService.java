@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface OrderService {
     
-    Order createOrder(Order order);
+    Order create(Order order);
     
     Order getOrderById(Long id);
     

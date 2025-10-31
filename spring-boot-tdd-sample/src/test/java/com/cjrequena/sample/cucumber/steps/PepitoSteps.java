@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @CucumberContextConfiguration
@@ -44,7 +45,7 @@ public class PepitoSteps {
   @Autowired
   private ObjectMapper objectMapper;
 
-  private CustomerEntity testCustomer;
+  private CustomerEntity customer;
   private OrderDTO currentOrderDTO;
   private ResultActions lastResult;
   private OrderDTO createdOrder;
@@ -57,14 +58,14 @@ public class PepitoSteps {
   @Given("A customer exists with the following details:")
   public void a_customer_exists_with_the_following_details(io.cucumber.datatable.DataTable dataTable) {
     Map<String, String> customerData = dataTable.asMaps().get(0);
-    testCustomer = CustomerEntity
+    customer = CustomerEntity
       .builder()
       .firstName(customerData.get("firstName"))
       .lastName(customerData.get("lastName"))
       .email(customerData.get("email"))
       .phoneNumber("1234567890")
       .build();
-    testCustomer = customerRepository.save(testCustomer);
+    customer = customerRepository.save(customer);
   }
 
   @Given("I have order details with status {string}")
@@ -73,7 +74,7 @@ public class PepitoSteps {
       .orderDate(LocalDateTime.now())
       .status(OrderStatus.valueOf(status))
       .totalAmount(BigDecimal.valueOf(100.00))
-      .customerId(testCustomer.getId())
+      .customerId(customer.getId())
       .build();
   }
 
@@ -97,6 +98,25 @@ public class PepitoSteps {
     i_have_order_details_with_status(status);
     i_create_a_new_order();
     the_order_should_be_created_successfully();
+  }
+
+  @Given("Multiple orders exist with different statuses")
+  public void multiple_orders_exist_with_different_statuses() throws Exception {
+    i_have_order_details_with_status("PENDING");
+    i_create_a_new_order();
+
+    i_have_order_details_with_status("PAID");
+    i_create_a_new_order();
+  }
+
+  @Given("I have invalid order with invalid amount")
+  public void i_have_invalid_order_number() {
+    currentOrderDTO = OrderDTO.builder()
+      .orderDate(LocalDateTime.now())
+      .status(OrderStatus.valueOf("PENDING"))
+      .totalAmount(BigDecimal.valueOf(-100.00))
+      .customerId(customer.getId())
+      .build();
   }
 
   // ------------------------------
@@ -159,6 +179,29 @@ public class PepitoSteps {
     lastResult = mockMvc.perform(delete("/api/orders/" + createdOrder.getId()));
   }
 
+  @When("I request orders with status {string}")
+  public void i_request_orders_with_status(String status) throws Exception {
+    lastResult = mockMvc
+      .perform(get("/api/orders")
+        .param("status", status));
+
+    MvcResult result = lastResult.andReturn();
+    if (result.getResponse().getStatus() == 200) {
+      retrievedOrders = List.of(objectMapper.readValue(result.getResponse().getContentAsString(), OrderDTO[].class));
+    }
+  }
+
+  @When("I attempt to create the order")
+  public void i_attempt_to_create_the_order() {
+    try {
+      lastResult = mockMvc.perform(post("/api/orders")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(currentOrderDTO)));
+    } catch (Exception e) {
+      // Exception expected for invalid data
+    }
+  }
+
   // ------------------------------
   // Then Steps
   // ------------------------------
@@ -189,7 +232,7 @@ public class PepitoSteps {
 
   @Then("The order should contain the correct information")
   public void the_order_should_contain_the_correct_information() {
-    assertThat(createdOrder.getCustomerId()).isEqualTo(testCustomer.getId());
+    assertThat(createdOrder.getCustomerId()).isEqualTo(customer.getId());
     assertThat(createdOrder.getOrderNumber()).isNotNull();
   }
 
@@ -219,6 +262,22 @@ public class PepitoSteps {
     mockMvc
       .perform(get("/api/orders/" + createdOrder.getId()))
       .andExpect(status().isNotFound());
+  }
+
+  @Then("I should receive only orders with status {string}")
+  public void i_should_receive_only_orders_with_status(String status) {
+    assertThat(retrievedOrders).isNotEmpty();
+    assertThat(retrievedOrders).allMatch(order -> order.getStatus().equals(OrderStatus.valueOf(status)));
+  }
+
+  @Then("The order creation should fail")
+  public void the_order_creation_should_fail() throws Exception {
+    lastResult.andExpect(status().isBadRequest());
+  }
+
+  @Then("I should receive a validation error")
+  public void i_should_receive_a_validation_error() throws Exception {
+    lastResult.andExpect(jsonPath("$.validation_errors").exists());
   }
 
 }

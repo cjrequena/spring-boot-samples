@@ -16,5 +16,5 @@ import org.junit.platform.suite.api.Suite;
 @ConfigurationParameter(key = Constants.EXECUTION_DRY_RUN_PROPERTY_NAME, value = "false")
 @ConfigurationParameter(key = Constants.FEATURES_PROPERTY_NAME, value = "src/test/resources/features")
 
-public class RunCucumberTest {
+public class RunCucumberIT {
 }

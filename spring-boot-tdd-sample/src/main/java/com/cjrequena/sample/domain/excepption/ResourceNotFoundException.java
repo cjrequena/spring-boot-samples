@@ -1,6 +1,6 @@
-package com.cjrequena.sample.controller.excepption;
+package com.cjrequena.sample.domain.excepption;
 
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends DomainRuntimeException {
     
     public ResourceNotFoundException(String message) {
         super(message);

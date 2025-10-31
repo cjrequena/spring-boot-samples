@@ -1,6 +1,6 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.controller.excepption.ResourceNotFoundException;
+import com.cjrequena.sample.domain.excepption.ResourceNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
@@ -89,7 +89,7 @@ class OrderServiceImplTest {
     when(orderMapper.toDomain(any(OrderEntity.class))).thenReturn(testOrder);
 
     // When
-    Order createdOrder = orderService.createOrder(testOrder);
+    Order createdOrder = orderService.create(testOrder);
 
     // Then
     assertThat(createdOrder).isNotNull();
@@ -108,7 +108,7 @@ class OrderServiceImplTest {
     when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
     // When & Then
-    assertThatThrownBy(() -> orderService.createOrder(testOrder))
+    assertThatThrownBy(() -> orderService.create(testOrder))
       .isInstanceOf(ResourceNotFoundException.class)
       .hasMessageContaining("Customer not found with id: 1");
 

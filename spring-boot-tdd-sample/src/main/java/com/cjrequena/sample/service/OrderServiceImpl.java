@@ -1,6 +1,6 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.controller.excepption.ResourceNotFoundException;
+import com.cjrequena.sample.domain.excepption.ResourceNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
   private final OrderMapper orderMapper;
 
   @Override
-  public Order createOrder(Order order) {
+  public Order create(Order order) {
     log.debug("Creating new order: {}", order);
 
     final long customerId = order.getCustomerId();
@@ -68,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
     log.debug("Fetching order with id: {}", id);
     OrderEntity orderEntity = orderRepository
       .findById(id)
-      .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+      .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: %d".formatted(id)));
     return orderMapper.toDomain(orderEntity);
   }
 

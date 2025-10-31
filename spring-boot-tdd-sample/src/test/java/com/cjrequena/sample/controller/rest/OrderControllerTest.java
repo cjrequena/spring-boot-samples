@@ -79,7 +79,7 @@ class OrderControllerTest {
     void testCreateOrder_Success() throws Exception {
         // Given
         when(orderMapper.toDomainFromDTO(any(OrderDTO.class))).thenReturn(testOrder);
-        when(orderService.createOrder(any(Order.class))).thenReturn(testOrder);
+        when(orderService.create(any(Order.class))).thenReturn(testOrder);
         when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
 
         // When & Then
