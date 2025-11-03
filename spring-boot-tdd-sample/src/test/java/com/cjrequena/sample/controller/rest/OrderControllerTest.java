@@ -8,6 +8,7 @@ import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.domain.model.vo.Money;
 import com.cjrequena.sample.domain.model.vo.OrderNumber;
 import com.cjrequena.sample.service.OrderService;
+import com.cjrequena.sample.shared.common.util.Constant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,172 +37,203 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("OrderController Unit Tests")
 class OrderControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @MockitoBean
-    private OrderService orderService;
+  @MockitoBean
+  private OrderService orderService;
 
-    @MockitoBean
-    private OrderMapper orderMapper;
+  @MockitoBean
+  private OrderMapper orderMapper;
 
-    private ObjectMapper objectMapper;
-    private OrderDTO testOrderDTO;
-    private Order testOrder;
+  private ObjectMapper objectMapper;
+  private OrderDTO testOrderDTO;
+  private Order testOrder;
 
-    @BeforeEach
-    void setUp() {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+  @BeforeEach
+  void setUp() {
+    objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
 
-        testOrderDTO = OrderDTO.builder()
-                .id(1L)
-                .orderNumber("ORD-20250101-00001")
-                .orderDate(LocalDateTime.now())
-                .status(OrderStatus.PENDING)
-                .totalAmount(BigDecimal.valueOf(100.00))
-                .customerId(1L)
-                .build();
+    testOrderDTO = OrderDTO.builder()
+      .id(1L)
+      .orderNumber("ORD-20250101-00001")
+      .orderDate(LocalDateTime.now())
+      .status(OrderStatus.PENDING)
+      .totalAmount(BigDecimal.valueOf(100.00))
+      .customerId(1L)
+      .build();
 
+    testOrder = Order.builder()
+      .id(1L)
+      .orderNumber(OrderNumber.of("ORD-20250101-00001"))
+      .orderDate(testOrderDTO.getOrderDate())
+      .status(OrderStatus.PENDING)
+      .totalAmount(Money.of(100.00))
+      .customerId(1L)
+      .build();
+  }
 
-        testOrder = Order.builder()
-                .id(1L)
-                .orderNumber(OrderNumber.of("ORD-20250101-00001"))
-                .orderDate(testOrderDTO.getOrderDate())
-                .status(OrderStatus.PENDING)
-                .totalAmount(Money.of(100.00))
-                .customerId(1L)
-                .build();
-    }
+  @Test
+  @DisplayName("POST /api/orders - Should create order successfully")
+  void testCreateOrder_Success() throws Exception {
+    // Given
+    when(orderMapper.toDomainFromDTO(any(OrderDTO.class))).thenReturn(testOrder);
+    when(orderService.create(any(Order.class))).thenReturn(testOrder);
+    when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
 
-    @Test
-    @DisplayName("POST /api/orders - Should create order successfully")
-    void testCreateOrder_Success() throws Exception {
-        // Given
-        when(orderMapper.toDomainFromDTO(any(OrderDTO.class))).thenReturn(testOrder);
-        when(orderService.create(any(Order.class))).thenReturn(testOrder);
-        when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
+    // When & Then
+    mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(testOrderDTO))
+      )
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value(1))
+      .andExpect(jsonPath("$.orderNumber").value("ORD-20250101-00001"))
+      .andExpect(jsonPath("$.status").value("PENDING"));
+  }
 
-        // When & Then
-        mockMvc.perform(post("/api/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testOrderDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.orderNumber").value("ORD-20250101-00001"))
-                .andExpect(jsonPath("$.status").value("PENDING"));
-    }
+  @Test
+  @DisplayName("POST /api/orders - Should return 400 for invalid order")
+  void testCreateOrder_ValidationFailed() throws Exception {
+    // Given
+    OrderDTO invalidOrder = OrderDTO.builder()
+      .customerId(1L)
+      .build();
 
-    @Test
-    @DisplayName("POST /api/orders - Should return 400 for invalid order")
-    void testCreateOrder_ValidationFailed() throws Exception {
-        // Given
-        OrderDTO invalidOrder = OrderDTO.builder()
-                .customerId(1L)
-                .build();
+    // When & Then
+    mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(invalidOrder))
+      )
+      .andExpect(status().isBadRequest());
+  }
 
-        // When & Then
-        mockMvc.perform(post("/api/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidOrder)))
-                .andExpect(status().isBadRequest());
-    }
+  @Test
+  @DisplayName("GET /api/orders/{id} - Should get order by id")
+  void testGetOrderById_Success() throws Exception {
+    // Given
+    when(orderService.getOrderById(1L)).thenReturn(testOrder);
+    when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
 
-    @Test
-    @DisplayName("GET /api/orders/{id} - Should get order by id")
-    void testGetOrderById_Success() throws Exception {
-        // Given
-        when(orderService.getOrderById(1L)).thenReturn(testOrder);
-        when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
+    // When & Then
+    mockMvc.perform(
+        get("/api/orders/1")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(1))
+      .andExpect(jsonPath("$.orderNumber").value("ORD-20250101-00001"));
+  }
 
-        // When & Then
-        mockMvc.perform(get("/api/orders/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.orderNumber").value("ORD-20250101-00001"));
-    }
+  @Test
+  @DisplayName("GET /api/orders - Should get all orders")
+  void testGetAllOrders_Success() throws Exception {
+    // Given
+    when(orderService.getAllOrders()).thenReturn(List.of(testOrder));
+    when(orderMapper.toDTOList(any())).thenReturn(List.of(testOrderDTO));
 
-    @Test
-    @DisplayName("GET /api/orders - Should get all orders")
-    void testGetAllOrders_Success() throws Exception {
-        // Given
-        when(orderService.getAllOrders()).thenReturn(List.of(testOrder));
-        when(orderMapper.toDTOList(any())).thenReturn(List.of(testOrderDTO));
+    // When & Then
+    mockMvc.perform(
+        get("/api/orders")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$[0].id").value(1))
+      .andExpect(jsonPath("$[0].orderNumber").value("ORD-20250101-00001"));
+  }
 
-        // When & Then
-        mockMvc.perform(get("/api/orders"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].orderNumber").value("ORD-20250101-00001"));
-    }
+  @Test
+  @DisplayName("GET /api/orders?status=PENDING - Should get orders by status")
+  void testGetOrdersByStatus_Success() throws Exception {
+    // Given
+    when(orderService.getOrdersByStatus(OrderStatus.PENDING)).thenReturn(List.of(testOrder));
+    when(orderMapper.toDTOList(any())).thenReturn(List.of(testOrderDTO));
 
-    @Test
-    @DisplayName("GET /api/orders?status=PENDING - Should get orders by status")
-    void testGetOrdersByStatus_Success() throws Exception {
-        // Given
-        when(orderService.getOrdersByStatus(OrderStatus.PENDING)).thenReturn(List.of(testOrder));
-        when(orderMapper.toDTOList(any())).thenReturn(List.of(testOrderDTO));
+    // When & Then
+    mockMvc.perform(
+        get("/api/orders")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .param("status", "PENDING")
+      )
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$[0].status").value("PENDING"));
+  }
 
-        // When & Then
-        mockMvc.perform(get("/api/orders")
-                        .param("status", "PENDING"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("PENDING"));
-    }
+  @Test
+  @DisplayName("PUT /api/orders/{id} - Should update order")
+  void testUpdateOrder_Success() throws Exception {
+    // Given
+    when(orderMapper.toDomainFromDTO(any(OrderDTO.class))).thenReturn(testOrder);
+    when(orderService.updateOrder(eq(1L), any(Order.class))).thenReturn(testOrder);
+    when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
 
-    @Test
-    @DisplayName("PUT /api/orders/{id} - Should update order")
-    void testUpdateOrder_Success() throws Exception {
-        // Given
-        when(orderMapper.toDomainFromDTO(any(OrderDTO.class))).thenReturn(testOrder);
-        when(orderService.updateOrder(eq(1L), any(Order.class))).thenReturn(testOrder);
-        when(orderMapper.toDTO(any(Order.class))).thenReturn(testOrderDTO);
+    // When & Then
+    mockMvc.perform(
+        put("/api/orders/1")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(testOrderDTO))
+      )
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(1));
+  }
 
-        // When & Then
-        mockMvc.perform(put("/api/orders/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testOrderDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
-    }
+  @Test
+  @DisplayName("DELETE /api/orders/{id} - Should delete order")
+  void testDeleteOrder_Success() throws Exception {
+    // When & Then
+    mockMvc.perform(
+      delete("/api/orders/1")
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
+      .andExpect(status().isNoContent());
+  }
 
-    @Test
-    @DisplayName("DELETE /api/orders/{id} - Should delete order")
-    void testDeleteOrder_Success() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/api/orders/1"))
-                .andExpect(status().isNoContent());
-    }
+  @Test
+  @DisplayName("PATCH /api/orders/{id}/status - Should update order status")
+  void testUpdateOrderStatus_Success() throws Exception {
+    // Given
+    Order updatedOrder = Order.builder()
+      .id(1L)
+      .orderNumber(testOrder.getOrderNumber())
+      .orderDate(testOrder.getOrderDate())
+      .status(OrderStatus.PAID)
+      .totalAmount(testOrder.getTotalAmount())
+      .customerId(testOrder.getCustomerId())
+      .build();
 
-    @Test
-    @DisplayName("PATCH /api/orders/{id}/status - Should update order status")
-    void testUpdateOrderStatus_Success() throws Exception {
-        // Given
-        Order updatedOrder = Order.builder()
-                .id(1L)
-                .orderNumber(testOrder.getOrderNumber())
-                .orderDate(testOrder.getOrderDate())
-                .status(OrderStatus.PAID)
-                .totalAmount(testOrder.getTotalAmount())
-                .customerId(testOrder.getCustomerId())
-                .build();
+    OrderDTO updatedDTO = OrderDTO.builder()
+      .id(1L)
+      .orderNumber(testOrderDTO.getOrderNumber())
+      .orderDate(testOrderDTO.getOrderDate())
+      .status(OrderStatus.PAID)
+      .totalAmount(testOrderDTO.getTotalAmount())
+      .customerId(testOrderDTO.getCustomerId())
+      .build();
 
-        OrderDTO updatedDTO = OrderDTO.builder()
-                .id(1L)
-                .orderNumber(testOrderDTO.getOrderNumber())
-                .orderDate(testOrderDTO.getOrderDate())
-                .status(OrderStatus.PAID)
-                .totalAmount(testOrderDTO.getTotalAmount())
-                .customerId(testOrderDTO.getCustomerId())
-                .build();
+    when(orderService.updateOrderStatus(1L, OrderStatus.PAID)).thenReturn(updatedOrder);
+    when(orderMapper.toDTO(updatedOrder)).thenReturn(updatedDTO);
 
-        when(orderService.updateOrderStatus(1L, OrderStatus.PAID)).thenReturn(updatedOrder);
-        when(orderMapper.toDTO(updatedOrder)).thenReturn(updatedDTO);
-
-        // When & Then
-        mockMvc.perform(patch("/api/orders/1/status")
-                        .param("status", "PAID"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("PAID"));
-    }
+    // When & Then
+    mockMvc.perform(
+      patch("/api/orders/1/status")
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .param("status", "PAID")
+      )
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.status").value("PAID"));
+  }
 }

@@ -12,17 +12,23 @@ import com.github.fge.jsonpatch.JsonPatch;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/orders")
-@RequiredArgsConstructor
+import static com.cjrequena.sample.shared.common.util.Constant.VND_SAMPLE_SERVICE_V1;
+
 @Slf4j
+@RestController
+@RequestMapping(value = OrderController.ENDPOINT, headers = {OrderController.ACCEPT_VERSION})
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderController {
+
+  public static final String ENDPOINT = "/api/orders";
+  public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
 
   private final OrderService orderService;
   private final OrderMapper orderMapper;

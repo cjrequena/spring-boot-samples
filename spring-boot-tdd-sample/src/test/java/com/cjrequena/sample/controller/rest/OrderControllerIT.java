@@ -5,6 +5,7 @@ import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.persistence.entity.CustomerEntity;
 import com.cjrequena.sample.persistence.jpa.repository.CustomerRepository;
 import com.cjrequena.sample.persistence.jpa.repository.OrderRepository;
+import com.cjrequena.sample.shared.common.util.Constant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +49,8 @@ class OrderControllerIT {
   void setUp() {
     orderRepository.deleteAll();
     customerRepository.deleteAll();
-    testCustomer = CustomerEntity.builder()
+    testCustomer = CustomerEntity
+      .builder()
       .firstName("John")
       .lastName("Doe")
       .email("john.doe@example-it.com")
@@ -71,6 +73,7 @@ class OrderControllerIT {
     // When & Then
     mockMvc.perform(post("/api/orders")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
         .content(objectMapper.writeValueAsString(orderDTO)))
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.id").exists())
@@ -92,6 +95,7 @@ class OrderControllerIT {
 
     String createResponse = mockMvc.perform(post("/api/orders")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
         .content(objectMapper.writeValueAsString(orderDTO)))
       .andExpect(status().isCreated())
       .andReturn().getResponse().getContentAsString();
@@ -99,7 +103,11 @@ class OrderControllerIT {
     OrderDTO createdOrder = objectMapper.readValue(createResponse, OrderDTO.class);
 
     // When & Then
-    mockMvc.perform(get("/api/orders/{id}", createdOrder.getId()))
+    mockMvc.perform(
+        get("/api/orders/{id}", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.id").value(createdOrder.getId()))
       .andExpect(jsonPath("$.order_number").value(createdOrder.getOrderNumber()));
@@ -109,7 +117,11 @@ class OrderControllerIT {
   @DisplayName("Should return 404 when order not found")
   void testGetOrderById_NotFound() throws Exception {
     // When & Then
-    mockMvc.perform(get("/api/orders/99999"))
+    mockMvc.perform(
+        get("/api/orders/99999")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
       .andExpect(status().isNotFound())
       .andExpect(jsonPath("$.message").value(containsString("Order not found")));
   }
@@ -125,13 +137,21 @@ class OrderControllerIT {
       .customerId(testCustomer.getId())
       .build();
 
-    mockMvc.perform(post("/api/orders")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(order1)))
+    mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(order1))
+      )
       .andExpect(status().isCreated());
 
     // When & Then
-    mockMvc.perform(get("/api/orders"))
+    mockMvc.perform(
+        get("/api/orders")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
   }
@@ -149,7 +169,10 @@ class OrderControllerIT {
 
     String createResponse = mockMvc.perform(post("/api/orders")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(orderDTO)))
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .content(objectMapper.writeValueAsString(orderDTO))
+      )
       .andExpect(status().isCreated())
       .andReturn().getResponse().getContentAsString();
 
@@ -160,9 +183,13 @@ class OrderControllerIT {
     createdOrder.setTotalAmount(BigDecimal.valueOf(100.00));
 
     // When & Then
-    mockMvc.perform(put("/api/orders/{id}", createdOrder.getId())
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(createdOrder)))
+    mockMvc.perform(
+        put("/api/orders/{id}", createdOrder.getId())
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(createdOrder))
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value("PAID"));
   }
@@ -180,18 +207,29 @@ class OrderControllerIT {
 
     String createResponse = mockMvc.perform(post("/api/orders")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(orderDTO)))
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .content(objectMapper.writeValueAsString(orderDTO))
+      )
       .andExpect(status().isCreated())
       .andReturn().getResponse().getContentAsString();
 
     OrderDTO createdOrder = objectMapper.readValue(createResponse, OrderDTO.class);
 
     // When & Then - Delete
-    mockMvc.perform(delete("/api/orders/{id}", createdOrder.getId()))
+    mockMvc.perform(
+        delete("/api/orders/{id}", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
       .andExpect(status().isNoContent());
 
     // Verify deletion
-    mockMvc.perform(get("/api/orders/{id}", createdOrder.getId()))
+    mockMvc.perform(
+        get("/api/orders/{id}", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
       .andExpect(status().isNotFound());
   }
 
@@ -208,15 +246,22 @@ class OrderControllerIT {
 
     String createResponse = mockMvc.perform(post("/api/orders")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(orderDTO)))
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .content(objectMapper.writeValueAsString(orderDTO))
+      )
       .andExpect(status().isCreated())
       .andReturn().getResponse().getContentAsString();
 
     OrderDTO createdOrder = objectMapper.readValue(createResponse, OrderDTO.class);
 
     // When & Then
-    mockMvc.perform(patch("/api/orders/{id}/status", createdOrder.getId())
-        .param("status", "SHIPPED"))
+    mockMvc.perform(
+        patch("/api/orders/{id}/status", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .param("status", "SHIPPED")
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value("SHIPPED"));
   }
@@ -232,14 +277,22 @@ class OrderControllerIT {
       .customerId(testCustomer.getId())
       .build();
 
-    mockMvc.perform(post("/api/orders")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(pendingOrder)))
+    mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(pendingOrder))
+      )
       .andExpect(status().isCreated());
 
     // When & Then
-    mockMvc.perform(get("/api/orders")
-        .param("status", "PENDING"))
+    mockMvc.perform(
+      get("/api/orders")
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .param("status", "PENDING")
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
       .andExpect(jsonPath("$[0].status").value("PENDING"));
@@ -256,14 +309,22 @@ class OrderControllerIT {
       .customerId(testCustomer.getId())
       .build();
 
-    mockMvc.perform(post("/api/orders")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(orderDTO)))
+    mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(orderDTO))
+      )
       .andExpect(status().isCreated());
 
     // When & Then
-    mockMvc.perform(get("/api/orders")
-        .param("customerId", testCustomer.getId().toString()))
+    mockMvc.perform(
+        get("/api/orders")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .param("customerId", testCustomer.getId().toString())
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
       .andExpect(jsonPath("$[0].customer_id").value(testCustomer.getId()));
@@ -279,9 +340,13 @@ class OrderControllerIT {
       .build();
 
     // When & Then
-    mockMvc.perform(post("/api/orders")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(invalidOrder)))
+    mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(invalidOrder))
+      )
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$.validation_errors").isArray());
   }
@@ -298,9 +363,13 @@ class OrderControllerIT {
       .build();
 
     String createResponse = mockMvc
-      .perform(post("/api/orders")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(orderDTO)))
+      .perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(orderDTO))
+      )
       .andExpect(status().isCreated())
       .andReturn().getResponse().getContentAsString();
 
@@ -308,22 +377,34 @@ class OrderControllerIT {
 
     // Transition: PENDING -> PAID
     mockMvc
-      .perform(patch("/api/orders/{id}/status", createdOrder.getId())
-        .param("status", "PAID"))
+      .perform(
+        patch("/api/orders/{id}/status", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .param("status", "PAID")
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value("PAID"));
 
     // Transition: PAID -> SHIPPED
     mockMvc
-      .perform(patch("/api/orders/{id}/status", createdOrder.getId())
-        .param("status", "SHIPPED"))
+      .perform(
+        patch("/api/orders/{id}/status", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .param("status", "SHIPPED")
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value("SHIPPED"));
 
     // Transition: SHIPPED -> DELIVERED
     mockMvc
-      .perform(patch("/api/orders/{id}/status", createdOrder.getId())
-        .param("status", "DELIVERED"))
+      .perform(
+        patch("/api/orders/{id}/status", createdOrder.getId())
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .param("status", "DELIVERED")
+      )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.status").value("DELIVERED"));
   }
@@ -341,9 +422,13 @@ class OrderControllerIT {
       .build();
 
     // When & Then
-    mockMvc.perform(put("/api/orders/99999")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(orderDTO)))
+    mockMvc.perform(
+        put("/api/orders/99999")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(orderDTO))
+      )
       .andExpect(status().isNotFound());
   }
 }
