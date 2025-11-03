@@ -205,7 +205,8 @@ class OrderControllerTest {
   @DisplayName("PATCH /api/orders/{id}/status - Should update order status")
   void testUpdateOrderStatus_Success() throws Exception {
     // Given
-    Order updatedOrder = Order.builder()
+    Order updatedOrder = Order
+      .builder()
       .id(1L)
       .orderNumber(testOrder.getOrderNumber())
       .orderDate(testOrder.getOrderDate())

@@ -3,6 +3,7 @@ package com.cjrequena.sample.controller.dto;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.shared.common.util.Constant;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ public class OrderDTO {
     private Long id;
 
     @Pattern(regexp = "^ORD-\\d{8}-\\d{5}$", message = "Order number must match format: ORD-YYYYMMDD-XXXXX")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String orderNumber;
 
     @NotNull(message = "Order date is required")
