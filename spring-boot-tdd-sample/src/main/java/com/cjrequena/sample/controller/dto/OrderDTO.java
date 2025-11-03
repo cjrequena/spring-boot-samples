@@ -25,7 +25,7 @@ public class OrderDTO {
     private Long id;
 
     @Pattern(regexp = "^ORD-\\d{8}-\\d{5}$", message = "Order number must match format: ORD-YYYYMMDD-XXXXX")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String orderNumber;
 
     @NotNull(message = "Order date is required")

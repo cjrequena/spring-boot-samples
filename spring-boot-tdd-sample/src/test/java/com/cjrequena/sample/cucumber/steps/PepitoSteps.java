@@ -5,6 +5,7 @@ import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.persistence.entity.CustomerEntity;
 import com.cjrequena.sample.persistence.jpa.repository.CustomerRepository;
 import com.cjrequena.sample.persistence.jpa.repository.OrderRepository;
+import com.cjrequena.sample.shared.common.util.Constant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -125,9 +126,13 @@ public class PepitoSteps {
 
   @When("I create a new order")
   public void i_create_a_new_order() throws Exception {
-    lastResult = mockMvc.perform(post("/api/orders")
-      .contentType(MediaType.APPLICATION_JSON)
-      .content(objectMapper.writeValueAsString(currentOrderDTO)));
+    lastResult = mockMvc.perform(
+      post("/api/orders")
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+        .content(objectMapper.writeValueAsString(currentOrderDTO))
+    );
 
     MvcResult result = lastResult.andReturn();
     if (result.getResponse().getStatus() == 201) {
@@ -139,7 +144,11 @@ public class PepitoSteps {
 
   @When("I request the order by its id")
   public void i_request_the_order_by_its_id() throws Exception {
-    lastResult = mockMvc.perform(get("/api/orders/" + createdOrder.getId()));
+    lastResult = mockMvc.perform(
+      get("/api/orders/" + createdOrder.getId())
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+    );
 
     MvcResult result = lastResult.andReturn();
     if (result.getResponse().getStatus() == 200) {
@@ -151,7 +160,11 @@ public class PepitoSteps {
 
   @When("I request all orders")
   public void i_request_all_orders() throws Exception {
-    lastResult = mockMvc.perform(get("/api/orders"));
+    lastResult = mockMvc.perform(
+      get("/api/orders")
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+    );
     MvcResult result = lastResult.andReturn();
     if (result.getResponse().getStatus() == 200) {
       retrievedOrders = List.of(objectMapper.readValue(
@@ -163,8 +176,12 @@ public class PepitoSteps {
   @When("I update the order status to {string}")
   public void i_update_the_order_status_to(String newStatus) throws Exception {
     lastResult = mockMvc
-      .perform(patch("/api/orders/" + createdOrder.getId() + "/status")
-        .param("status", newStatus));
+      .perform(
+        patch("/api/orders/" + createdOrder.getId() + "/status")
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .param("status", newStatus)
+      );
 
     MvcResult result = lastResult.andReturn();
     if (result.getResponse().getStatus() == 200) {
@@ -176,14 +193,24 @@ public class PepitoSteps {
 
   @When("I delete the order")
   public void i_delete_the_order() throws Exception {
-    lastResult = mockMvc.perform(delete("/api/orders/" + createdOrder.getId()));
+    lastResult = mockMvc.perform(
+      delete("/api/orders/" + createdOrder.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+    );
   }
 
   @When("I request orders with status {string}")
   public void i_request_orders_with_status(String status) throws Exception {
     lastResult = mockMvc
-      .perform(get("/api/orders")
-        .param("status", status));
+      .perform(
+        get("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .param("status", status)
+      );
 
     MvcResult result = lastResult.andReturn();
     if (result.getResponse().getStatus() == 200) {
@@ -194,9 +221,13 @@ public class PepitoSteps {
   @When("I attempt to create the order")
   public void i_attempt_to_create_the_order() {
     try {
-      lastResult = mockMvc.perform(post("/api/orders")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(currentOrderDTO)));
+      lastResult = mockMvc.perform(
+        post("/api/orders")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+          .content(objectMapper.writeValueAsString(currentOrderDTO))
+      );
     } catch (Exception e) {
       // Exception expected for invalid data
     }
@@ -260,7 +291,12 @@ public class PepitoSteps {
   @Then("The order should not be found when requested")
   public void the_order_should_not_be_found_when_requested() throws Exception {
     mockMvc
-      .perform(get("/api/orders/" + createdOrder.getId()))
+      .perform(
+        get("/api/orders/" + createdOrder.getId())
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON)
+          .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+      )
       .andExpect(status().isNotFound());
   }
 
