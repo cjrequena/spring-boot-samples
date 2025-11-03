@@ -17,6 +17,5 @@ public class ErrorDTO {
     private int status;
     private String errorCode;
     private String message;
-    private String path;
     private List<ValidationError> validationErrors;
 }
