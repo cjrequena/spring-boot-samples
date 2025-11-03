@@ -27,21 +27,21 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({ControllerException.class})
   @ResponseBody
-  public ResponseEntity<Object> handleControllerException(ControllerException ex, HttpServletRequest request) {
+  public ResponseEntity<ErrorDTO> handleControllerException(ControllerException ex, HttpServletRequest request) {
     log.info("Exception: {}", ex.getMessage());
     return buildErrorResponse(ex.getHttpStatus(), ex.getMessage());
   }
 
   @ExceptionHandler({ControllerRuntimeException.class})
   @ResponseBody
-  public ResponseEntity<Object> handleControllerRuntimeException(ControllerRuntimeException ex, HttpServletRequest request) {
+  public ResponseEntity<ErrorDTO> handleControllerRuntimeException(ControllerRuntimeException ex, HttpServletRequest request) {
     log.info("Exception: {}", ex.getMessage());
     return buildErrorResponse(ex.getHttpStatus(), ex.getMessage());
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   @ResponseBody
-  public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+  public ResponseEntity<ErrorDTO> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
     log.warn("Failed to read HTTP message at {}: {}", request.getRequestURI(), ex.getMostSpecificCause().toString());
 
     Throwable cause = ex.getCause();
@@ -91,83 +91,52 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseBody
   public ResponseEntity<ErrorDTO> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-
     log.error("Validation error: {}", ex.getMessage());
-
     List<ValidationError> validationErrors = ex.getBindingResult()
       .getFieldErrors()
       .stream()
       .map(this::mapToValidationError)
       .collect(Collectors.toList());
-
-    ErrorDTO error = ErrorDTO.builder()
-      .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ISO_LOCAL_DATE_TIME)))
-      .status(HttpStatus.BAD_REQUEST.value())
-      .errorCode(HttpStatus.BAD_REQUEST.getReasonPhrase())
-      .message("Validation failed for one or more fields")
-      .validationErrors(validationErrors)
-      .build();
-
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed for one or more fields", validationErrors);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorDTO> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
-
     log.error("Illegal argument: {}", ex.getMessage());
-
-    ErrorDTO error = ErrorDTO.builder()
-      .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ISO_LOCAL_DATE_TIME)))
-      .status(HttpStatus.BAD_REQUEST.value())
-      .errorCode(HttpStatus.BAD_REQUEST.getReasonPhrase())
-      .message(ex.getMessage())
-      .build();
-
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
   }
 
   @ExceptionHandler(IllegalStateException.class)
-  public ResponseEntity<ErrorDTO> handleIllegalStateException(
-    IllegalStateException ex,
-    HttpServletRequest request) {
-
+  public ResponseEntity<ErrorDTO> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
     log.error("Illegal state: {}", ex.getMessage());
-
-    ErrorDTO error = ErrorDTO.builder()
-      .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ISO_LOCAL_DATE_TIME)))
-      .status(HttpStatus.CONFLICT.value())
-      .errorCode(HttpStatus.CONFLICT.getReasonPhrase())
-      .message(ex.getMessage())
-      .build();
-
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorDTO> handleGenericException(
-    Exception ex,
-    HttpServletRequest request) {
-
+  public ResponseEntity<ErrorDTO> handleGenericException(Exception ex, HttpServletRequest request) {
     log.error("Unexpected error occurred", ex);
+    return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
 
-    ErrorDTO error = ErrorDTO.builder()
-      .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern(ISO_LOCAL_DATE_TIME)))
-      .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-      .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-      .message("An unexpected error occurred")
-      .build();
-
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
   }
 
-  private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {
+  private ResponseEntity<ErrorDTO> buildErrorResponse(HttpStatus status, String message) {
     ErrorDTO error = ErrorDTO.builder()
       .timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
       .status(status.value())
       .errorCode(status.getReasonPhrase())
       .message(message)
       .build();
+    return ResponseEntity.status(status).body(error);
+  }
 
+  private ResponseEntity<ErrorDTO> buildErrorResponse(HttpStatus status, String message, List<ValidationError> validationErrors) {
+    ErrorDTO error = ErrorDTO.builder()
+      .timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+      .status(status.value())
+      .errorCode(status.getReasonPhrase())
+      .message(message)
+      .validationErrors(validationErrors)
+      .build();
     return ResponseEntity.status(status).body(error);
   }
 
