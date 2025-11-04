@@ -130,7 +130,7 @@ class OrderServiceImplTest {
     // Then
     assertThat(foundOrder).isNotNull();
     assertThat(foundOrder.getId()).isEqualTo(1L);
-    assertThat(foundOrder.getOrderNumber().getValue()).isEqualTo("ORD-20250101-00001");
+    assertThat(foundOrder.getOrderNumber().value()).isEqualTo("ORD-20250101-00001");
 
     verify(orderRepository).findById(1L);
     verify(orderMapper).toDomain(testOrderEntity);

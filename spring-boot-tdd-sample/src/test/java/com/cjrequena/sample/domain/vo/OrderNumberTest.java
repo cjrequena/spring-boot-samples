@@ -14,7 +14,7 @@ class OrderNumberTest {
     @DisplayName("Should create order number with valid format")
     void testCreate_ValidFormat() {
         OrderNumber orderNumber = OrderNumber.of("ORD-20250101-00001");
-        assertThat(orderNumber.getValue()).isEqualTo("ORD-20250101-00001");
+        assertThat(orderNumber.value()).isEqualTo("ORD-20250101-00001");
     }
 
     @Test
@@ -77,7 +77,7 @@ class OrderNumberTest {
     @DisplayName("Should generate valid order number")
     void testGenerate() {
         OrderNumber orderNumber = OrderNumber.generate();
-        assertThat(orderNumber.getValue()).matches("^ORD-\\d{8}-\\d{5}$");
+        assertThat(orderNumber.value()).matches("^ORD-\\d{8}-\\d{5}$");
     }
 
     @Test
@@ -85,14 +85,14 @@ class OrderNumberTest {
     void testGenerate_Unique() {
         OrderNumber orderNumber1 = OrderNumber.generate();
         OrderNumber orderNumber2 = OrderNumber.generate();
-        assertThat(orderNumber1.getValue()).isNotEqualTo(orderNumber2.getValue());
+        assertThat(orderNumber1.value()).isNotEqualTo(orderNumber2.value());
     }
 
     @Test
     @DisplayName("Should generate order numbers with current date")
     void testGenerate_CurrentDate() {
         OrderNumber orderNumber = OrderNumber.generate();
-        String value = orderNumber.getValue();
+        String value = orderNumber.value();
 
         // Check that date part exists
         assertThat(value).contains("ORD-2025");

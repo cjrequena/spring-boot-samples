@@ -3,7 +3,6 @@ package com.cjrequena.sample.controller.dto;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.shared.common.util.Constant;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;

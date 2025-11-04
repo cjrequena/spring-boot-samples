@@ -133,7 +133,7 @@ class OrderTest {
                 .build();
         
         assertThat(newOrder.getOrderNumber()).isNotNull();
-        assertThat(newOrder.getOrderNumber().getValue()).matches("^ORD-\\d{8}-\\d{5}$");
+        assertThat(newOrder.getOrderNumber().value()).matches("^ORD-\\d{8}-\\d{5}$");
     }
 
     @Test

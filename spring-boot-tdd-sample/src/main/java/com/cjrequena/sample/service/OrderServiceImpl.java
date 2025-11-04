@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Update fields
-    existingOrderEntity.setOrderNumber(order.getOrderNumber().getValue());
+    existingOrderEntity.setOrderNumber(order.getOrderNumber().value());
     existingOrderEntity.setOrderDate(order.getOrderDate());
     existingOrderEntity.setStatus(order.getStatus());
 

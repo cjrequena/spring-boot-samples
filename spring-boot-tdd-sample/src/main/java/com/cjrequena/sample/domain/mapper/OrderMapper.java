@@ -45,7 +45,7 @@ public interface OrderMapper {
 
   @Named("orderNumberToString")
   default String orderNumberToString(OrderNumber orderNumber) {
-    return orderNumber != null ? orderNumber.getValue() : null;
+    return orderNumber != null ? orderNumber.value() : null;
   }
 
   @Named("stringToOrderNumber")
@@ -55,7 +55,7 @@ public interface OrderMapper {
 
   @Named("moneyToBigDecimal")
   default BigDecimal moneyToBigDecimal(Money money) {
-    return money != null ? money.getAmount() : null;
+    return money != null ? money.amount() : null;
   }
 
   @Named("bigDecimalToMoney")

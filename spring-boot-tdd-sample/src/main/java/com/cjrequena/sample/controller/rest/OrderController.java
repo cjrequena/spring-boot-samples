@@ -102,9 +102,7 @@ public class OrderController {
   }
 
   @PatchMapping(path = "/{id}", consumes = "application/json-patch+json")
-  public ResponseEntity<OrderDTO> patchOrder(
-    @PathVariable Long id,
-    @RequestBody JsonPatch patch) {
+  public ResponseEntity<OrderDTO> patchOrder(@PathVariable Long id, @RequestBody JsonPatch patch) {
 
     log.info("REST request to patch order with id: {}", id);
 
@@ -115,9 +113,7 @@ public class OrderController {
   }
 
   @PatchMapping("/{id}/status")
-  public ResponseEntity<OrderDTO> updateOrderStatus(
-    @PathVariable Long id,
-    @RequestParam OrderStatus status) {
+  public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long id, @RequestParam OrderStatus status) {
 
     log.info("REST request to update order status. Id: {}, Status: {}", id, status);
 

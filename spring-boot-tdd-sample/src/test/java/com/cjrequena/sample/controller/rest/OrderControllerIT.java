@@ -258,6 +258,7 @@ class OrderControllerIT {
     // When & Then
     mockMvc.perform(
         patch("/api/orders/{id}/status", createdOrder.getId())
+          .contentType("application/json-patch+json")
           .accept(MediaType.APPLICATION_JSON)
           .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
           .param("status", "SHIPPED")
@@ -379,6 +380,7 @@ class OrderControllerIT {
     mockMvc
       .perform(
         patch("/api/orders/{id}/status", createdOrder.getId())
+          .contentType("application/json-patch+json")
           .accept(MediaType.APPLICATION_JSON)
           .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
         .param("status", "PAID")
@@ -390,6 +392,7 @@ class OrderControllerIT {
     mockMvc
       .perform(
         patch("/api/orders/{id}/status", createdOrder.getId())
+          .contentType("application/json-patch+json")
           .accept(MediaType.APPLICATION_JSON)
           .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
         .param("status", "SHIPPED")
@@ -401,6 +404,7 @@ class OrderControllerIT {
     mockMvc
       .perform(
         patch("/api/orders/{id}/status", createdOrder.getId())
+          .contentType("application/json-patch+json")
           .accept(MediaType.APPLICATION_JSON)
           .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
         .param("status", "DELIVERED")

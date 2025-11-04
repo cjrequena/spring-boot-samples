@@ -16,7 +16,7 @@ class MoneyTest {
     @DisplayName("Should create money with valid amount")
     void testCreate_ValidAmount() {
         Money money = Money.of(BigDecimal.valueOf(100.50));
-        assertThat(money.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(100.50));
+        assertThat(money.amount()).isEqualByComparingTo(BigDecimal.valueOf(100.50));
     }
 
     @Test
@@ -41,7 +41,7 @@ class MoneyTest {
         Money money1 = Money.of(50.00);
         Money money2 = Money.of(30.00);
         Money result = money1.add(money2);
-        assertThat(result.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(80.00));
+        assertThat(result.amount()).isEqualByComparingTo(BigDecimal.valueOf(80.00));
     }
 
     @Test
@@ -50,7 +50,7 @@ class MoneyTest {
         Money money1 = Money.of(100.00);
         Money money2 = Money.of(30.00);
         Money result = money1.subtract(money2);
-        assertThat(result.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(70.00));
+        assertThat(result.amount()).isEqualByComparingTo(BigDecimal.valueOf(70.00));
     }
 
     @Test
@@ -58,7 +58,7 @@ class MoneyTest {
     void testMultiply() {
         Money money = Money.of(25.00);
         Money result = money.multiply(4);
-        assertThat(result.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(100.00));
+        assertThat(result.amount()).isEqualByComparingTo(BigDecimal.valueOf(100.00));
     }
 
     @Test
@@ -76,7 +76,7 @@ class MoneyTest {
     @DisplayName("Should create zero money")
     void testZero() {
         Money zero = Money.zero();
-        assertThat(zero.getAmount()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(zero.amount()).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
     @Test
@@ -91,21 +91,21 @@ class MoneyTest {
     @DisplayName("Should handle decimal precision correctly")
     void testDecimalPrecision() {
         Money money = Money.of(10.999);
-        assertThat(money.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(11.00));
+        assertThat(money.amount()).isEqualByComparingTo(BigDecimal.valueOf(11.00));
     }
 
     @Test
     @DisplayName("Should create money from double")
     void testCreateFromDouble() {
         Money money = Money.of(49.99);
-        assertThat(money.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(49.99));
+        assertThat(money.amount()).isEqualByComparingTo(BigDecimal.valueOf(49.99));
     }
 
     @Test
     @DisplayName("Should handle zero amount")
     void testZeroAmount() {
         Money money = Money.of(BigDecimal.ZERO);
-        assertThat(money.getAmount()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(money.amount()).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
     @Test
@@ -114,8 +114,8 @@ class MoneyTest {
         Money money1 = Money.of(100.00);
         Money money2 = money1.add(Money.of(50.00));
         
-        assertThat(money1.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(100.00));
-        assertThat(money2.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(150.00));
+        assertThat(money1.amount()).isEqualByComparingTo(BigDecimal.valueOf(100.00));
+        assertThat(money2.amount()).isEqualByComparingTo(BigDecimal.valueOf(150.00));
     }
 
     @Test
