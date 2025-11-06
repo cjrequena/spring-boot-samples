@@ -9,7 +9,7 @@ Feature: Pepito
       | John      | Doe      | john.doe@example-bdd.com |
 
   Scenario: Create a new order successfully
-    Given I have order details with status "PENDING"
+    Given I have order detail with status "PENDING"
     When I create a new order
     Then The order should be created successfully
     And The order should have status "PENDING"
@@ -56,3 +56,9 @@ Feature: Pepito
     And I update the order status to "SHIPPED"
     And I update the order status to "DELIVERED"
     Then The order should have status "DELIVERED"
+
+  Scenario: Cannot modify cancelled order
+    Given An order exists with status "CANCELLED"
+    When I attempt to update the order status to "PAID"
+    Then The update should fail
+    And I should receive an error message

@@ -69,9 +69,10 @@ public class PepitoSteps {
     customer = customerRepository.save(customer);
   }
 
-  @Given("I have order details with status {string}")
-  public void i_have_order_details_with_status(String status) {
-    currentOrderDTO = OrderDTO.builder()
+  @Given("I have order detail with status {string}")
+  public void i_have_order_detail_with_status(String status) {
+    currentOrderDTO = OrderDTO
+      .builder()
       .orderDate(LocalDateTime.now())
       .status(OrderStatus.valueOf(status))
       .totalAmount(BigDecimal.valueOf(100.00))
@@ -81,7 +82,7 @@ public class PepitoSteps {
 
   @Given("An order exists in the system")
   public void an_order_exists_in_the_system() throws Exception {
-    i_have_order_details_with_status("PENDING");
+    i_have_order_detail_with_status("PENDING");
     i_create_a_new_order();
     the_order_should_be_created_successfully();
   }
@@ -89,24 +90,24 @@ public class PepitoSteps {
   @Given("Multiple orders exist in the system")
   public void multiple_orders_exist_in_the_system() throws Exception {
     for (int i = 0; i < 2; i++) {
-      i_have_order_details_with_status("PENDING");
+      i_have_order_detail_with_status("PENDING");
       i_create_a_new_order();
     }
   }
 
   @Given("An order exists with status {string}")
   public void an_order_exists_with_status(String status) throws Exception {
-    i_have_order_details_with_status(status);
+    i_have_order_detail_with_status(status);
     i_create_a_new_order();
     the_order_should_be_created_successfully();
   }
 
   @Given("Multiple orders exist with different statuses")
   public void multiple_orders_exist_with_different_statuses() throws Exception {
-    i_have_order_details_with_status("PENDING");
+    i_have_order_detail_with_status("PENDING");
     i_create_a_new_order();
 
-    i_have_order_details_with_status("PAID");
+    i_have_order_detail_with_status("PAID");
     i_create_a_new_order();
   }
 
@@ -233,6 +234,21 @@ public class PepitoSteps {
     }
   }
 
+  @When("I attempt to update the order status to {string}")
+  public void i_attempt_to_update_the_order_status_to(String status) {
+    try {
+      lastResult = mockMvc
+        .perform(
+          patch("/api/orders/" + createdOrder.getId() + "/status")
+            .accept(MediaType.APPLICATION_JSON)
+            .header("Accept-Version", Constant.VND_SAMPLE_SERVICE_V1)
+            .param("status", status)
+        );
+    } catch (Exception e) {
+      // Exception expected for invalid transition
+    }
+  }
+
   // ------------------------------
   // Then Steps
   // ------------------------------
@@ -311,9 +327,26 @@ public class PepitoSteps {
     lastResult.andExpect(status().isBadRequest());
   }
 
+  @Then("The update should fail")
+  public void the_update_should_fail() throws Exception {
+    lastResult.andExpect(status().isConflict());
+  }
+
   @Then("I should receive a validation error")
   public void i_should_receive_a_validation_error() throws Exception {
+    lastResult.andExpect(jsonPath("$.timestamp").exists());
+    lastResult.andExpect(jsonPath("$.status").exists());
+    lastResult.andExpect(jsonPath("$.error_code").exists());
+    lastResult.andExpect(jsonPath("$.message").exists());
     lastResult.andExpect(jsonPath("$.validation_errors").exists());
+  }
+
+  @Then("I should receive an error message")
+  public void i_should_receive_an_error_message() throws Exception {
+    lastResult.andExpect(jsonPath("$.timestamp").exists());
+    lastResult.andExpect(jsonPath("$.status").exists());
+    lastResult.andExpect(jsonPath("$.error_code").exists());
+    lastResult.andExpect(jsonPath("$.message").exists());
   }
 
 }
