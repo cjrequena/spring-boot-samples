@@ -1,91 +1,79 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.dto.FooDTO;
-import com.cjrequena.sample.entity.FooEntity;
-import com.cjrequena.sample.exception.service.FooNotFoundServiceException;
-import com.cjrequena.sample.exception.service.ServiceException;
-import com.cjrequena.sample.mapper.FooMapper;
-import com.cjrequena.sample.repository.FooRepository;
+import com.cjrequena.sample.domain.exception.DomainException;
+import com.cjrequena.sample.domain.exception.FooNotFoundException;
+import com.cjrequena.sample.domain.mapper.FooMapper;
+import com.cjrequena.sample.domain.model.Foo;
+import com.cjrequena.sample.persistence.entity.FooEntity;
+import com.cjrequena.sample.persistence.repository.FooRepository;
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonPatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-/**
- * <p>
- * <p>
- * <p>
- * <p>
- * @author cjrequena
- */
 @Log4j2
 @Service
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = ServiceException.class)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = DomainException.class)
 public class FooService {
 
   private final FooMapper fooMapper;
   private final FooRepository fooRepository;
 
-  public FooDTO create(FooDTO dto) {
-    FooEntity entity = this.fooMapper.toEntity(dto);
-    this.fooRepository.saveAndFlush(entity);
-    dto = this.fooMapper.toDTO(entity);
-    return dto;
+  public Foo create(Foo foo) {
+    FooEntity entity = fooMapper.toEntity(foo);
+    FooEntity saved = fooRepository.saveAndFlush(entity);
+    log.debug("Created Foo id={}", saved.getId());
+    return fooMapper.toDomain(saved);
   }
 
-  public FooDTO retrieveById(Long id) throws FooNotFoundServiceException {
-    Optional<FooEntity> optional = this.fooRepository.findById(id);
-    if (!optional.isPresent()) {
-      throw new FooNotFoundServiceException("Foo with (ID=" + id + ") was not found");
-    }
-    return fooMapper.toDTO(optional.get());
+  @Transactional(readOnly = true)
+  public Foo retrieveById(Long id) {
+    FooEntity entity = fooRepository
+      .findById(id)
+      .orElseThrow(() -> new FooNotFoundException("Foo with ID " + id + " was not found"));
+
+    return fooMapper.toDomain(entity);
   }
 
-  public List<FooDTO> retrieve() {
-    List<FooEntity> entities = this.fooRepository.findAll();
-    List<FooDTO> dtoList = entities.stream().map(
-      (entity) -> this.fooMapper.toDTO(entity)
-    ).collect(Collectors.toList());
-    return dtoList;
+  @Transactional(readOnly = true)
+  public List<Foo> retrieve() {
+    return fooRepository.findAll().stream()
+      .map(fooMapper::toDomain)
+      .toList();
   }
 
-  public FooDTO update(FooDTO dto) throws FooNotFoundServiceException {
-    Optional<FooEntity> optional = fooRepository.findById(dto.getId());
-    if (optional.isPresent()) {
-      FooEntity entity = this.fooMapper.toEntity(dto);
-      fooRepository.saveAndFlush(entity);
-      log.debug("Updated account with id {}", entity.getId());
-      return this.fooMapper.toDTO(entity);
-    } else {
-      throw new FooNotFoundServiceException("The account " + dto.getId() + " was not Found");
-    }
+  public Foo update(Foo foo) {
+    fooRepository.findById(foo.getId())
+      .orElseThrow(() -> new FooNotFoundException("Foo with ID " + foo.getId() + " was not found"));
+
+    FooEntity updated = fooRepository.saveAndFlush(fooMapper.toEntity(foo));
+
+    log.debug("Updated Foo id={}", updated.getId());
+    return fooMapper.toDomain(updated);
   }
 
-  public FooDTO patch(Long id, JsonPatch patchDocument) {
-    return null;
+  // TODO: implement JSON-PATCH
+  public Foo patch(Long id, JsonPatch patchDocument) {
+    throw new UnsupportedOperationException("JSON Patch not yet implemented");
   }
 
-  public FooDTO patch(Long id, JsonMergePatch mergePatchDocument) {
-    return null;
+  // TODO: implement JSON-MERGE-PATCH
+  public Foo patch(Long id, JsonMergePatch mergePatchDocument) {
+    throw new UnsupportedOperationException("JSON Merge Patch not yet implemented");
   }
 
-  public void delete(Long id) throws FooNotFoundServiceException {
-    Optional<FooEntity> optional = fooRepository.findById(id);
-    optional.ifPresent(
-      entity -> {
-        fooRepository.delete(entity);
-        log.debug("Deleted User: {}", entity);
-      }
-    );
-    optional.orElseThrow(() -> new FooNotFoundServiceException("Not Found"));
+  public void delete(Long id) {
+    FooEntity entity = fooRepository
+      .findById(id)
+      .orElseThrow(() -> new FooNotFoundException("Foo with ID " + id + " was not found"));
+
+    fooRepository.delete(entity);
+    log.debug("Deleted Foo id={}", id);
   }
 }

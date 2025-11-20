@@ -1,4 +1,4 @@
-package com.cjrequena.sample.entity;
+package com.cjrequena.sample.persistence.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -33,8 +33,8 @@ public class FooEntity {
   @Column(name = "description")
   private String description;
 
-  @Column(name = "creation_date")
+  @Column(name = "created_at")
   @Convert(converter = LocalDateConverter.class)
-  private LocalDate creationDate;
+  private LocalDate createdAt;
 
 }

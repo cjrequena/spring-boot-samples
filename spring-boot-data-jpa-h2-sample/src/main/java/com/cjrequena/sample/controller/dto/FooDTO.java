@@ -1,4 +1,4 @@
-package com.cjrequena.sample.dto;
+package com.cjrequena.sample.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,8 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -25,12 +24,16 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
  * <p>
  * @author cjrequena
  */
-@Data
+@Getter
+@Setter
+@Builder(toBuilder = true)        // <-- enable toBuilder()
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonPropertyOrder(value = {
   "id",
   "name",
   "description",
-  "creation_date"
+  "created_at"
 })
 @JsonTypeName("foo")
 @Schema(name = "Foo", description = "FooDTO")
@@ -53,12 +56,12 @@ public class FooDTO {
   @Schema(name = "description")
   private String description;
 
-  @JsonProperty(value = "creation_date")
-  @Getter(onMethod = @__({@JsonProperty("creation_date")}))
+  @JsonProperty(value = "created_at")
+  @Getter(onMethod = @__({@JsonProperty("created_at")}))
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
   @Schema(example = "yyyy-MM-dd", name = "creation_date", accessMode = Schema.AccessMode.READ_ONLY)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-  private LocalDate creationDate;
+  private LocalDate createdAt;
 
 }
