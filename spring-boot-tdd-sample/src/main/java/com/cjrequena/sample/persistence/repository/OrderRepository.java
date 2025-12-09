@@ -1,4 +1,4 @@
-package com.cjrequena.sample.persistence.jpa.repository;
+package com.cjrequena.sample.persistence.repository;
 
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
 import com.cjrequena.sample.persistence.entity.OrderEntity;

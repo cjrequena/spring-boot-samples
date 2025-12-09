@@ -1,11 +1,11 @@
-package com.cjrequena.sample.controller.dto.serializer;
+package com.cjrequena.sample.shared.common.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
-import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
  * @see
  *
  */
-public class LocalTimeSerializer extends JsonSerializer<LocalTime> {
+public class OffsetDateTimeSerializer extends JsonSerializer<OffsetDateTime> {
 
   /**
    *
@@ -29,7 +29,7 @@ public class LocalTimeSerializer extends JsonSerializer<LocalTime> {
    * @throws IOException
    */
   @Override
-  public void serialize(LocalTime value, JsonGenerator generator, SerializerProvider provider) throws IOException {
-    generator.writeString(value.format(DateTimeFormatter.ISO_LOCAL_TIME));
+  public void serialize(OffsetDateTime value, JsonGenerator generator, SerializerProvider provider) throws IOException {
+    generator.writeString(value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
   }
 }

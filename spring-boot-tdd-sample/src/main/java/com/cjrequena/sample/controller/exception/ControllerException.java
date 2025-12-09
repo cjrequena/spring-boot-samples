@@ -1,4 +1,4 @@
-package com.cjrequena.sample.controller.excepption;
+package com.cjrequena.sample.controller.exception;
 
 import lombok.Getter;
 import lombok.ToString;

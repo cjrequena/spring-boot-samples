@@ -1,4 +1,4 @@
-package com.cjrequena.sample.controller.excepption;
+package com.cjrequena.sample.controller.exception;
 
 import org.springframework.http.HttpStatus;
 

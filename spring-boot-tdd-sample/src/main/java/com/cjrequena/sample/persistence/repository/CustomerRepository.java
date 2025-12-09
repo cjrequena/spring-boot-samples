@@ -1,4 +1,4 @@
-package com.cjrequena.sample.persistence.jpa.repository;
+package com.cjrequena.sample.persistence.repository;
 
 import com.cjrequena.sample.persistence.entity.CustomerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -33,7 +33,7 @@ import javax.sql.DataSource;
   entityManagerFactoryRef = "entityManagerFactoryH2",
   transactionManagerRef = "transactionManagerH2",
   basePackages = {
-    "com.cjrequena.sample.persistence.jpa.repository"
+    "com.cjrequena.sample.persistence.repository"
   }
 )
 public class H2Configuration {

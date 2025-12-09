@@ -1,4 +1,4 @@
-package com.cjrequena.sample.controller.dto.serializer;
+package com.cjrequena.sample.shared.common.serializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

@@ -1,7 +1,7 @@
 package com.cjrequena.sample.controller.rest;
 
 import com.cjrequena.sample.controller.dto.OrderDTO;
-import com.cjrequena.sample.controller.excepption.GlobalExceptionHandler;
+import com.cjrequena.sample.controller.exception.GlobalExceptionHandler;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;

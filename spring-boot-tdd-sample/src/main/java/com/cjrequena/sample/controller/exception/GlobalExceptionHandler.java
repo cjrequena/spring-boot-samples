@@ -1,4 +1,4 @@
-package com.cjrequena.sample.controller.excepption;
+package com.cjrequena.sample.controller.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import jakarta.servlet.http.HttpServletRequest;
