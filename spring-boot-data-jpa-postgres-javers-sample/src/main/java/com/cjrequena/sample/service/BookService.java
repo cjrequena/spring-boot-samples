@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,15 +43,16 @@ public class BookService {
     return bookRepository
       .findById(id)
       .map(bookMapper::toAggregate)
-      .orElseThrow(() -> new BookNotFoundException("Foo with ID " + id + " was not found"));
+      .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " was not found"));
   }
 
   @Transactional(readOnly = true)
-  public Optional<Book> getBookByIsbn(String isbn) {
+  public Book getBookByIsbn(String isbn) {
     log.info("Fetching book by isbn: {}", isbn);
     return bookRepository
       .findByIsbn(isbn)
-      .map(bookMapper::toAggregate);
+      .map(bookMapper::toAggregate)
+      .orElseThrow(() -> new BookNotFoundException("Book with isbn " + isbn + " was not found"));
   }
 
   @Auditable(action = "UPDATE_BOOK")
@@ -60,7 +60,7 @@ public class BookService {
     log.info("Updating book with id: {}", id);
     BookEntity entity = bookRepository
       .findById(id)
-      .orElseThrow(() -> new BookNotFoundException("Book " + id + " not found"));
+      .orElseThrow(() -> new BookNotFoundException("Book with " + id + " was not found"));
 
     aggregate.setId(id);
     bookMapper.updateEntityFromAggregate(aggregate, entity);
@@ -69,13 +69,11 @@ public class BookService {
   }
 
   @Auditable(action = "DELETE_BOOK")
-  public Book deleteBook(Long id) {
+  public void deleteBook(Long id) {
     log.info("Deleting book with id: {}", id);
     BookEntity entity = bookRepository
       .findById(id)
-      .orElseThrow(() -> new BookNotFoundException("Book " + id + " not found"));
-    Book aggregate = bookMapper.toAggregate(entity);
+      .orElseThrow(() -> new BookNotFoundException("Book with " + id + " was not found"));
     bookRepository.delete(entity);
-    return aggregate;
   }
 }
