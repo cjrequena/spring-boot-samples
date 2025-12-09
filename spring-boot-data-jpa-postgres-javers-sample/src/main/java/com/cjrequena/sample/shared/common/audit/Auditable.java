@@ -1,4 +1,4 @@
-package com.cjrequena.sample.shared.common.util;
+package com.cjrequena.sample.shared.common.audit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookAggregate {
+public class Book {
     private Long id;
     private String title;
     private String author;

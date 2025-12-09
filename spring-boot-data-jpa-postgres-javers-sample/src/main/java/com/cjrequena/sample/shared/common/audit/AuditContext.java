@@ -1,4 +1,4 @@
-package com.cjrequena.sample.shared.common.util;
+package com.cjrequena.sample.shared.common.audit;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.cjrequena.sample.domain.mapper;
 
 import com.cjrequena.sample.controller.dto.BookDTO;
-import com.cjrequena.sample.domain.model.aggregate.BookAggregate;
+import com.cjrequena.sample.domain.model.aggregate.Book;
 import com.cjrequena.sample.persistence.entity.BookEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -16,21 +16,21 @@ import java.util.List;
 public interface BookMapper {
     
     // DTO to Aggregate
-    BookAggregate toAggregate(BookDTO dto);
+    Book toAggregate(BookDTO dto);
     
     // Aggregate to DTO
-    BookDTO toDTO(BookAggregate aggregate);
+    BookDTO toDTO(Book aggregate);
     
     // Entity to Aggregate
-    BookAggregate toAggregate(BookEntity entity);
+    Book toAggregate(BookEntity entity);
     
     // Aggregate to Entity
-    BookEntity toEntity(BookAggregate aggregate);
+    BookEntity toEntity(Book aggregate);
     
     // List conversions
-    List<BookAggregate> toAggregateList(List<BookEntity> entities);
-    List<BookDTO> toDTOList(List<BookAggregate> aggregates);
+    List<Book> toAggregateList(List<BookEntity> entities);
+    List<BookDTO> toDTOList(List<Book> aggregates);
     
     // Update entity from aggregate
-    void updateEntityFromAggregate(BookAggregate aggregate, @MappingTarget BookEntity entity);
+    void updateEntityFromAggregate(Book aggregate, @MappingTarget BookEntity entity);
 }

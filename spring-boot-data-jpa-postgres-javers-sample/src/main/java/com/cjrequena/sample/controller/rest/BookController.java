@@ -2,7 +2,7 @@ package com.cjrequena.sample.controller.rest;
 
 import com.cjrequena.sample.controller.dto.BookDTO;
 import com.cjrequena.sample.domain.mapper.BookMapper;
-import com.cjrequena.sample.domain.model.aggregate.BookAggregate;
+import com.cjrequena.sample.domain.model.aggregate.Book;
 import com.cjrequena.sample.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,20 +13,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.cjrequena.sample.shared.common.util.Constant.VND_SAMPLE_SERVICE_V1;
+
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping(
+  value = BookController.ENDPOINT,
+  headers = {BookController.ACCEPT_VERSION}
+)
 @RequiredArgsConstructor
 @Slf4j
 public class BookController {
-    
-    private final BookService bookService;
+
+  public static final String ENDPOINT = "/api/books";
+  public static final String ACCEPT_VERSION = "Accept-Version=" + VND_SAMPLE_SERVICE_V1;
+
+  private final BookService bookService;
     private final BookMapper bookMapper;
     
     @PostMapping
     public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
         log.info("POST /api/v1/books - Creating book: {}", bookDTO.getTitle());
-        BookAggregate aggregate = bookMapper.toAggregate(bookDTO);
-        BookAggregate createdAggregate = bookService.createBook(aggregate);
+        Book aggregate = bookMapper.toAggregate(bookDTO);
+        Book createdAggregate = bookService.createBook(aggregate);
         BookDTO response = bookMapper.toDTO(createdAggregate);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -34,7 +42,7 @@ public class BookController {
     @GetMapping
     public ResponseEntity<List<BookDTO>> getAllBooks() {
         log.info("GET /api/v1/books - Fetching all books");
-        List<BookAggregate> aggregates = bookService.getAllBooks();
+        List<Book> aggregates = bookService.getAllBooks();
         List<BookDTO> response = bookMapper.toDTOList(aggregates);
         return ResponseEntity.ok(response);
     }
@@ -62,8 +70,8 @@ public class BookController {
             @PathVariable Long id, 
             @Valid @RequestBody BookDTO bookDTO) {
         log.info("PUT /api/v1/books/{} - Updating book", id);
-        BookAggregate aggregate = bookMapper.toAggregate(bookDTO);
-        BookAggregate updatedAggregate = bookService.updateBook(id, aggregate);
+        Book aggregate = bookMapper.toAggregate(bookDTO);
+        Book updatedAggregate = bookService.updateBook(id, aggregate);
         BookDTO response = bookMapper.toDTO(updatedAggregate);
         return ResponseEntity.ok(response);
     }

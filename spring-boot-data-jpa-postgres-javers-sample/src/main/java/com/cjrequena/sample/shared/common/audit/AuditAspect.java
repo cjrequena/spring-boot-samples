@@ -1,9 +1,7 @@
-package com.cjrequena.sample.configuration;
+package com.cjrequena.sample.shared.common.audit;
 
 import com.cjrequena.sample.domain.mapper.BookMapper;
-import com.cjrequena.sample.domain.model.aggregate.BookAggregate;
-import com.cjrequena.sample.shared.common.util.AuditContext;
-import com.cjrequena.sample.shared.common.util.Auditable;
+import com.cjrequena.sample.domain.model.aggregate.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -81,13 +79,13 @@ public class AuditAspect {
    */
   private Object resolveAuditableObject(Object result, Object[] args) {
     // Case 1: result is a BookAggregate
-    if (result instanceof BookAggregate) {
+    if (result instanceof Book) {
       return result;
     }
 
     // Case 2: find BookAggregate in method arguments
     for (Object arg : args) {
-      if (arg instanceof BookAggregate) {
+      if (arg instanceof Book) {
         return arg;
       }
     }
@@ -100,7 +98,7 @@ public class AuditAspect {
    * Convert domain aggregate to persistence entity (mapper used only for known types)
    */
   private Object convertToEntityIfNeeded(Object obj) {
-    if (obj instanceof BookAggregate bookAgg) {
+    if (obj instanceof Book bookAgg) {
       return bookMapper.toEntity(bookAgg);
     }
     return obj; // already an entity or other object

@@ -1,6 +1,5 @@
-package com.cjrequena.sample.configuration;
+package com.cjrequena.sample.shared.common.audit;
 
-import com.cjrequena.sample.shared.common.util.AuditContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
