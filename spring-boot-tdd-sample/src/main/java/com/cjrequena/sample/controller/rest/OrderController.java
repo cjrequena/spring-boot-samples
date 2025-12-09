@@ -3,7 +3,7 @@ package com.cjrequena.sample.controller.rest;
 import com.cjrequena.sample.controller.dto.OrderDTO;
 import com.cjrequena.sample.controller.exception.BadRequestException;
 import com.cjrequena.sample.controller.exception.NotFoundException;
-import com.cjrequena.sample.domain.excepption.CustomertNotFoundException;
+import com.cjrequena.sample.domain.exception.CustomertNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;

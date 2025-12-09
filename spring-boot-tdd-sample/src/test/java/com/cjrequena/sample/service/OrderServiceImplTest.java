@@ -1,7 +1,7 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.domain.excepption.CustomertNotFoundException;
-import com.cjrequena.sample.domain.excepption.ResourceNotFoundException;
+import com.cjrequena.sample.domain.exception.CustomertNotFoundException;
+import com.cjrequena.sample.domain.exception.ResourceNotFoundException;
 import com.cjrequena.sample.domain.mapper.OrderMapper;
 import com.cjrequena.sample.domain.model.aggregate.Order;
 import com.cjrequena.sample.domain.model.enums.OrderStatus;
