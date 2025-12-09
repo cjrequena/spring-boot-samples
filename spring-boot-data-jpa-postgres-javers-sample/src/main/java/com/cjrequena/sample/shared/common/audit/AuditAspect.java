@@ -59,7 +59,7 @@ public class AuditAspect {
       Map<String, String> commitProperties = new HashMap<>();
       commitProperties.put("action", action);
       commitProperties.put("justification", context.getJustification());
-      commitProperties.put("performedAt", context.getPerformedAt().toString());
+      commitProperties.put("performed_at", context.getPerformedAt().toString());
 
       javers.commit(context.getAuthor(), entity, commitProperties);
 

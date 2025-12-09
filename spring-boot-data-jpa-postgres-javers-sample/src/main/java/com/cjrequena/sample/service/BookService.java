@@ -39,16 +39,19 @@ public class BookService {
   }
 
   @Transactional(readOnly = true)
-  public Optional<Book> getBookById(Long id) {
+  public Book getBookById(Long id) {
     log.info("Fetching book by id: {}", id);
-    return bookRepository.findById(id)
-      .map(bookMapper::toAggregate);
+    return bookRepository
+      .findById(id)
+      .map(bookMapper::toAggregate)
+      .orElseThrow(() -> new BookNotFoundException("Foo with ID " + id + " was not found"));
   }
 
   @Transactional(readOnly = true)
   public Optional<Book> getBookByIsbn(String isbn) {
     log.info("Fetching book by isbn: {}", isbn);
-    return bookRepository.findByIsbn(isbn)
+    return bookRepository
+      .findByIsbn(isbn)
       .map(bookMapper::toAggregate);
   }
 
