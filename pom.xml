@@ -48,6 +48,7 @@
         <module>spring-boot-drools-sample</module>
         <module>spring-boot-easy-rules-sample</module>
         <module>spring-boot-tdd-sample</module>
+        <module>spring-boot-data-jpa-postgres-javers-sample</module>
     </modules>
     <dependencies>
         <dependency>
