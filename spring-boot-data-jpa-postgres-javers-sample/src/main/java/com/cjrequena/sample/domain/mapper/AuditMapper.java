@@ -25,7 +25,6 @@ public abstract class AuditMapper {
   @Mapping(target = "changedProperties", expression = "java(snapshot.getChanged())")
   public abstract AuditSnapshotDTO toSnapshotDTO(CdoSnapshot snapshot);
 
-  // Concrete, non-generic Shadow -> DTO for BookEntity
   public AuditShadowDTO<Object> toShadowDTO(Shadow<?> shadow) {
     if (shadow == null) return null;
     AuditShadowDTO<Object> dto = new AuditShadowDTO<>();
