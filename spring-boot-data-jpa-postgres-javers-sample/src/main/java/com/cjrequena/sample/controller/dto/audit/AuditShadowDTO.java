@@ -6,22 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuditSnapshotDTO {
-
-  private String commitId;
+public class AuditShadowDTO<T> {
+  private T entity;
   private Instant commitDate;
   private String author;
-  private String action;
-  private String justification;
-  private String performedAt;
-  private Map<String, String> properties;
-  private Object state;
-  private List<String> changedProperties;
 }

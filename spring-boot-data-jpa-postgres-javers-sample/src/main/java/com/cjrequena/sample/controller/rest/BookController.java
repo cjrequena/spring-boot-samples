@@ -1,6 +1,7 @@
 package com.cjrequena.sample.controller.rest;
 
 import com.cjrequena.sample.controller.dto.BookDTO;
+import com.cjrequena.sample.controller.dto.audit.AuditShadowDTO;
 import com.cjrequena.sample.controller.dto.audit.AuditSnapshotDTO;
 import com.cjrequena.sample.controller.exception.NotFoundException;
 import com.cjrequena.sample.domain.exception.BookNotFoundException;
@@ -106,13 +107,26 @@ public class BookController {
   //  Audit
   // -------------------------------------------------------------
   @GetMapping("/{id}/audit-changes")
-  public ResponseEntity<List<AuditSnapshotDTO>> getBookChanges(@PathVariable Long id) {
+  public ResponseEntity<List<AuditSnapshotDTO>> changes(@PathVariable Long id) {
     List<AuditSnapshotDTO> response = javers.findSnapshots(
         QueryBuilder.byInstanceId(id, BookEntity.class).build()
       )
       .stream()
       .map(auditMapper::toSnapshotDTO)
       .toList();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}/audit-history")
+  public ResponseEntity<List<AuditShadowDTO<Object>>> history(@PathVariable Long id) {
+    var shadows = javers.findShadows(
+      QueryBuilder.byInstanceId(id, BookEntity.class).build()
+    );
+
+    List<AuditShadowDTO<Object>> response = shadows.stream()
+      .map(this.auditMapper::toShadowDTO) // lambda needed for type inference
+      .toList();
+
     return ResponseEntity.ok(response);
   }
 }

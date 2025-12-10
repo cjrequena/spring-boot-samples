@@ -60,3 +60,32 @@ spring.flyway.locations: classpath:/db/migration
 javers.sqlSchemaManagementEnabled: true
 javers.prettyPrint: true
 javers.packagesToScan: com.cjrequena.sample.persistence.entity
+
+javers:
+  mappingStyle: FIELD
+  algorithm: SIMPLE
+  commitIdGenerator: synchronized_sequence
+  prettyPrint: true
+  typeSafeValues: false
+  initialChanges: true
+  terminalChanges: true
+  packagesToScan:
+  auditableAspectEnabled: true
+  springDataAuditableRepositoryAspectEnabled: true
+  usePrimitiveDefaults: true
+  prettyPrintDateFormats:
+    localDateTime: 'dd MMM yyyy, HH:mm:ss'
+    zonedDateTime: 'dd MMM yyyy, HH:mm:ssZ'
+    localDate: 'dd MMM yyyy'
+    localTime: 'HH:mm:ss'
+  sqlSchema:
+  sqlSchemaManagementEnabled: true
+  sqlGlobalIdCacheDisabled: false
+  objectAccessHook: org.javers.hibernate.integration.HibernateUnproxyObjectAccessHook
+  sqlGlobalIdTableName: jv_global_id
+  sqlCommitTableName: jv_commit
+  sqlSnapshotTableName: jv_snapshot
+  sqlCommitPropertyTableName: jv_commit_property
+  sqlGlobalIdSequenceName: jv_global_id_pk_seq
+  sqlCommitSequenceName: jv_commit_pk_seq
+  sqlSnapshotSequenceName: jv_snapshot_pk_seq

@@ -12,10 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuditContext {
-  private String action;
   private String author;
   private String justification;
-
   private LocalDateTime performedAt;
 
   private static final ThreadLocal<AuditContext> CONTEXT = new ThreadLocal<>();

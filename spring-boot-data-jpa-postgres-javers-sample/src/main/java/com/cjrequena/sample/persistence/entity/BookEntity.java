@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.javers.core.metamodel.annotation.DiffIgnore;
 
 import java.time.LocalDateTime;
 
+@org.javers.core.metamodel.annotation.Entity
+@org.javers.core.metamodel.annotation.TypeName("Book")
 @Entity
 @Table(name = "book")
 @Data
@@ -18,6 +19,7 @@ public class BookEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @org.javers.core.metamodel.annotation.Id
     private Long id;
     
     @Column(nullable = false)
@@ -30,14 +32,17 @@ public class BookEntity {
     private String isbn;
     
     @Column(name = "published_year")
+    @org.javers.core.metamodel.annotation.PropertyName("published_year")
     private Integer publishedYear;
     
-    @DiffIgnore
+    @org.javers.core.metamodel.annotation.DiffIgnore
     @Column(name = "created_at", updatable = false)
+    @org.javers.core.metamodel.annotation.PropertyName("created_at")
     private LocalDateTime createdAt;
     
-    @DiffIgnore
+    @org.javers.core.metamodel.annotation.DiffIgnore
     @Column(name = "updated_at")
+    @org.javers.core.metamodel.annotation.PropertyName("updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist
