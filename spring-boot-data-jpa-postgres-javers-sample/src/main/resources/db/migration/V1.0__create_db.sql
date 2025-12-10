@@ -6,7 +6,8 @@ CREATE TABLE book (
     isbn VARCHAR(20) NOT NULL,
     published_year INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 -- Create index on ISBN for faster lookups

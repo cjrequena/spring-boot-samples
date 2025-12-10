@@ -21,4 +21,5 @@ public class Book {
   private Integer publishedYear;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private Long version;
 }

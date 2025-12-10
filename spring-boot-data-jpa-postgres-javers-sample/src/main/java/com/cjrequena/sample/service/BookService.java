@@ -65,6 +65,7 @@ public class BookService {
     aggregate.setId(id);
     bookMapper.updateEntityFromAggregate(aggregate, entity);
     BookEntity updatedEntity = bookRepository.save(entity);
+
     return bookMapper.toAggregate(updatedEntity);
   }
 

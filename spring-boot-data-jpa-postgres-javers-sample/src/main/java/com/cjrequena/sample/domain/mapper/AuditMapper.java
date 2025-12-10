@@ -31,6 +31,9 @@ public abstract class AuditMapper {
     dto.setEntity(shadow.get());
     dto.setCommitDate(shadow.getCommitMetadata().getCommitDateInstant());
     dto.setAuthor(shadow.getCommitMetadata().getAuthor());
+    dto.setAction(shadow.getCommitMetadata().getProperties().get("action"));
+    dto.setJustification(shadow.getCommitMetadata().getProperties().get("justification"));
+    dto.setPerformedAt(shadow.getCommitMetadata().getProperties().get("performed_at"));
     return dto;
   }
 }

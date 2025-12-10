@@ -15,4 +15,7 @@ public class AuditShadowDTO<T> {
   private T entity;
   private Instant commitDate;
   private String author;
+  private String action;
+  private String justification;
+  private String performedAt;
 }
