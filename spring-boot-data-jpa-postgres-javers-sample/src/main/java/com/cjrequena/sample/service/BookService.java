@@ -1,6 +1,7 @@
 package com.cjrequena.sample.service;
 
 import com.cjrequena.sample.domain.exception.BookNotFoundException;
+import com.cjrequena.sample.domain.exception.DomainException;
 import com.cjrequena.sample.domain.mapper.BookMapper;
 import com.cjrequena.sample.domain.model.aggregate.Book;
 import com.cjrequena.sample.persistence.entity.BookEntity;
@@ -8,14 +9,16 @@ import com.cjrequena.sample.persistence.repository.BookRepository;
 import com.cjrequena.sample.shared.common.audit.Auditable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-@Transactional
+@RequiredArgsConstructor(onConstructor = @__(@Autowired) )
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = DomainException.class)
 @Slf4j
 public class BookService {
 
