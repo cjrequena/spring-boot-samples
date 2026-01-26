@@ -34,6 +34,7 @@ public class FooService {
 
   @Transactional(readOnly = true)
   public Foo retrieveById(Long id) {
+
     FooEntity entity = fooRepository
       .findById(id)
       .orElseThrow(() -> new FooNotFoundException("Foo with ID " + id + " was not found"));
