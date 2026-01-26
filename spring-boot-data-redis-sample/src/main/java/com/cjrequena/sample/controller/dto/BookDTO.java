@@ -1,4 +1,4 @@
-package com.cjrequena.sample.dto;
+package com.cjrequena.sample.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

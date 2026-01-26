@@ -1,10 +1,10 @@
 package com.cjrequena.sample.service;
 
-import com.cjrequena.sample.domain.Book;
-import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
-import com.cjrequena.sample.mapper.BookMapper;
-import com.cjrequena.sample.repository.BookRepository;
-import com.cjrequena.sample.repository.cache.BookCacheRedisRepository;
+import com.cjrequena.sample.domain.exception.BookNotFoundException;
+import com.cjrequena.sample.domain.mapper.BookMapper;
+import com.cjrequena.sample.domain.model.Book;
+import com.cjrequena.sample.persistence.repository.BookRepository;
+import com.cjrequena.sample.persistence.repository.cache.BookCacheRedisRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
@@ -50,13 +50,13 @@ public class BookService {
     return bookCacheRepository.retrieve();
   }
 
-  public Book retrieveById(String isbn) throws BookNotFoundServiceException {
+  public Book retrieveById(String isbn) throws BookNotFoundException {
     Book book = bookCacheRepository.retrieveById(isbn);
     if (book == null) {
       book = bookRepository
         .findById(isbn)
         .map(bookMapper::toDomain)
-        .orElseThrow(() -> new BookNotFoundServiceException("Book not found with ISBN: " + isbn));
+        .orElseThrow(() -> new BookNotFoundException("Book not found with ISBN: " + isbn));
       if (book != null) {
         bookCacheRepository.add(book); // cache update
       }
@@ -75,23 +75,23 @@ public class BookService {
     return books;
   }
 
-  public void update(Book book) throws BookNotFoundServiceException {
+  public void update(Book book) throws BookNotFoundException {
     if (bookRepository.findById(book.getIsbn()).isPresent()) {
       bookRepository.save(bookMapper.toEntity(book));
       bookCacheRepository.removeById(book.getIsbn()); // Cleanly replace in cache
       bookCacheRepository.add(book);
     } else {
-      throw new BookNotFoundServiceException("Book with ISBN " + book.getIsbn() + " was not Found");
+      throw new BookNotFoundException("Book with ISBN " + book.getIsbn() + " was not Found");
     }
   }
 
-  public boolean deleteByIsbn(String isbn) throws BookNotFoundServiceException {
+  public boolean deleteByIsbn(String isbn) throws BookNotFoundException {
     bookCacheRepository.removeById(isbn);
     if (bookRepository.existsById(isbn)) {
       bookRepository.deleteById(isbn);
       return true;
     } else {
-      throw new BookNotFoundServiceException("Book with ISBN " + isbn + " was not Found");
+      throw new BookNotFoundException("Book with ISBN " + isbn + " was not Found");
     }
   }
 }

@@ -1,6 +1,6 @@
-package com.cjrequena.sample.repository;
+package com.cjrequena.sample.persistence.repository;
 
-import com.cjrequena.sample.entity.BookEntity;
+import com.cjrequena.sample.persistence.entity.BookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

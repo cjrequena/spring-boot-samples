@@ -1,8 +1,8 @@
-package com.cjrequena.sample.mapper;
+package com.cjrequena.sample.domain.mapper;
 
-import com.cjrequena.sample.domain.Book;
-import com.cjrequena.sample.dto.BookDTO;
-import com.cjrequena.sample.entity.BookEntity;
+import com.cjrequena.sample.controller.dto.BookDTO;
+import com.cjrequena.sample.domain.model.Book;
+import com.cjrequena.sample.persistence.entity.BookEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 

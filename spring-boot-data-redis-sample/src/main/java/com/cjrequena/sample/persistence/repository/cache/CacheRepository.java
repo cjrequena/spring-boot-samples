@@ -1,4 +1,4 @@
-package com.cjrequena.sample.repository.cache;
+package com.cjrequena.sample.persistence.repository.cache;
 
 import java.util.List;
 

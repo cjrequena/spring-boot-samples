@@ -1,10 +1,10 @@
-package com.cjrequena.sample.api.rest;
+package com.cjrequena.sample.controller;
 
-import com.cjrequena.sample.domain.Book;
-import com.cjrequena.sample.dto.BookDTO;
-import com.cjrequena.sample.exception.api.NotFoundApiException;
-import com.cjrequena.sample.exception.service.BookNotFoundServiceException;
-import com.cjrequena.sample.mapper.BookMapper;
+import com.cjrequena.sample.controller.dto.BookDTO;
+import com.cjrequena.sample.controller.exception.NotFoundException;
+import com.cjrequena.sample.domain.exception.BookNotFoundException;
+import com.cjrequena.sample.domain.mapper.BookMapper;
+import com.cjrequena.sample.domain.model.Book;
 import com.cjrequena.sample.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -19,12 +19,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/books")
-public class BookAPI {
+public class BookController {
 
   private final BookService bookService;
   private final BookMapper bookMapper;
 
-  public BookAPI(BookService bookService, BookMapper bookMapper) {
+  public BookController(BookService bookService, BookMapper bookMapper) {
     this.bookService = bookService;
     this.bookMapper = bookMapper;
   }
@@ -41,11 +41,11 @@ public class BookAPI {
   }
 
   @GetMapping("/{isbn}")
-  public BookDTO retrieveByIsbn(@PathVariable String isbn) throws NotFoundApiException {
+  public BookDTO retrieveByIsbn(@PathVariable String isbn) throws NotFoundException {
     try {
       return this.bookMapper.toDTO(bookService.retrieveById(isbn));
-    } catch (BookNotFoundServiceException ex) {
-      throw new NotFoundApiException(ex.getMessage());
+    } catch (BookNotFoundException ex) {
+      throw new NotFoundException(ex.getMessage());
     }
   }
 
@@ -58,13 +58,13 @@ public class BookAPI {
     path = "/{isbn}",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<Void> update(@PathVariable(value = "isbn") String isbn, @Valid @RequestBody BookDTO dto) throws NotFoundApiException {
+  public ResponseEntity<Void> update(@PathVariable(value = "isbn") String isbn, @Valid @RequestBody BookDTO dto) throws NotFoundException {
     final Book book = this.bookMapper.toDomain(dto);
     book.setIsbn(isbn);
     try {
       this.bookService.update(book);
-    } catch (BookNotFoundServiceException ex) {
-      throw new NotFoundApiException(ex.getMessage());
+    } catch (BookNotFoundException ex) {
+      throw new NotFoundException(ex.getMessage());
     }
     //Headers
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -73,11 +73,11 @@ public class BookAPI {
   }
 
   @DeleteMapping("/{isbn}")
-  public boolean deleteBook(@PathVariable String isbn) throws NotFoundApiException {
+  public boolean deleteBook(@PathVariable String isbn) throws NotFoundException {
     try {
       return bookService.deleteByIsbn(isbn);
-    } catch (BookNotFoundServiceException ex) {
-      throw new NotFoundApiException(ex.getMessage());
+    } catch (BookNotFoundException ex) {
+      throw new NotFoundException(ex.getMessage());
     }
   }
 }

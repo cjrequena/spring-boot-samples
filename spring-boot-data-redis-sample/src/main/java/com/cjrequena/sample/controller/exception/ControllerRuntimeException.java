@@ -1,17 +1,11 @@
-package com.cjrequena.sample.exception.api;
+package com.cjrequena.sample.controller.exception;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
-/**
- *
- * <p></p>
- * <p></p>
- * @author cjrequena
- */
 @ToString
-public abstract class ApiException extends Exception {
+public abstract class ControllerRuntimeException extends RuntimeException {
   @Getter
   private final HttpStatus httpStatus;
 
@@ -19,7 +13,7 @@ public abstract class ApiException extends Exception {
    * Constructor
    * @param httpStatus status code
    */
-  public ApiException(HttpStatus httpStatus) {
+  public ControllerRuntimeException(HttpStatus httpStatus) {
     super(httpStatus.getReasonPhrase());
     this.httpStatus = httpStatus;
   }
@@ -29,7 +23,7 @@ public abstract class ApiException extends Exception {
    * @param httpStatus status code
    * @param message Custom message
    */
-  public ApiException(HttpStatus httpStatus, String message) {
+  public ControllerRuntimeException(HttpStatus httpStatus, String message) {
     super(message);
     this.httpStatus = httpStatus;
   }
@@ -40,7 +34,7 @@ public abstract class ApiException extends Exception {
    * @param message custom message
    * @param throwable Exception
    */
-  public ApiException(HttpStatus httpStatus, String message, Throwable throwable) {
+  public ControllerRuntimeException(HttpStatus httpStatus, String message, Throwable throwable) {
     super(message, throwable);
     this.httpStatus = httpStatus;
   }

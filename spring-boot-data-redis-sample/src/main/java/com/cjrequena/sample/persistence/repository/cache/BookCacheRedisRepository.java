@@ -1,6 +1,6 @@
-package com.cjrequena.sample.repository.cache;
+package com.cjrequena.sample.persistence.repository.cache;
 
-import com.cjrequena.sample.domain.Book;
+import com.cjrequena.sample.domain.model.Book;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

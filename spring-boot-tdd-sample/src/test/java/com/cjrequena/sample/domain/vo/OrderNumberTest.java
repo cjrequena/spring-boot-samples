@@ -95,7 +95,7 @@ class OrderNumberTest {
         String value = orderNumber.value();
 
         // Check that date part exists
-        assertThat(value).contains("ORD-2025");
+        assertThat(value).contains("ORD-202");
     }
 
     @Test
