@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Entity(name = "Foo")
 @Table(name = "Foo")
 @NamedNativeQuery(name = "FooEntity.findByNameNamedNativeQueryExample", query = "SELECT * FROM Foo WHERE name = ?", resultClass = FooEntity.class)
-@NamedQuery(name = "FooEntity.findByNameNameQueryExample", query = "FROM Foo WHERE name = ?1")
+@NamedQuery(name = "FooEntity.findByNameNamedQueryExample", query = "FROM Foo WHERE name = ?1")
 public class FooEntity {
 
   @Id

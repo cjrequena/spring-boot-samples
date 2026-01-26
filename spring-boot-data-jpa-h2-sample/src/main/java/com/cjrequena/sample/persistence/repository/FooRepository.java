@@ -19,6 +19,6 @@ public interface FooRepository extends JpaRepository<FooEntity, Long> {
 
   List<FooEntity> findByNameNamedNativeQueryExample(String name);
 
-  List<FooEntity> findByNameNameQueryExample(String name);
+  List<FooEntity> findByNameNamedQueryExample(String name);
 
 }
