@@ -3,6 +3,7 @@ package com.cjrequena.sample.persistence.repository.cache;
 import com.cjrequena.sample.domain.model.Book;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Repository
+@Qualifier("bookCacheRedisRepository")
 @Log4j2
 public class BookCacheRedisRepository implements CacheRepository<String, Book>{
 

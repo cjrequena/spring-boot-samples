@@ -5,67 +5,66 @@ import com.cjrequena.sample.domain.mapper.BookMapper;
 import com.cjrequena.sample.domain.model.Book;
 import com.cjrequena.sample.persistence.repository.BookRepository;
 import com.cjrequena.sample.persistence.repository.cache.BookCacheRedisRepository;
+import com.cjrequena.sample.persistence.repository.cache.CacheRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
 @Service
-//@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class BookService {
+public class BookServiceV1 {
 
   private final BookRepository bookRepository;
   private final BookMapper bookMapper;
-  private final BookCacheRedisRepository bookCacheRepository;
-  //private final CacheRepository<String, Book> bookCacheRepository;
+  private final BookCacheRedisRepository bookCacheRedisRepository;
 
-  public BookService(
+
+  public BookServiceV1(
     BookMapper bookMapper,
     BookRepository bookRepository,
-    BookCacheRedisRepository bookCacheRepository
-    //@Qualifier("bookCacheRedisRepository") CacheRepository<String, Book> bookCacheRepository
+    @Qualifier("bookCacheRedisRepository") CacheRepository<String, Book> bookCacheRedisRepository
   ) {
     this.bookRepository = bookRepository;
     this.bookMapper = bookMapper;
-    this.bookCacheRepository = bookCacheRepository;
-    //this.bookCacheRepository = cacheRepository;
+    this.bookCacheRedisRepository = (BookCacheRedisRepository) bookCacheRedisRepository;
   }
 
   @PostConstruct
   public void loadUpCache() {
     List<Book> books = this.bookMapper.toDomain(bookRepository.findAll());
-    bookCacheRepository.load(books);
+    bookCacheRedisRepository.load(books);
   }
 
   public void create(Book book) {
     bookRepository.save(this.bookMapper.toEntity(book));
-    bookCacheRepository.add(book); // write-through
+    bookCacheRedisRepository.add(book); // write-through
   }
 
   public List<Book> retrieve() {
-    if (bookCacheRepository.isEmpty()) {
+    if (bookCacheRedisRepository.isEmpty()) {
       loadUpCache(); // recovery logic
     }
-    return bookCacheRepository.retrieve();
+    return bookCacheRedisRepository.retrieve();
   }
 
   public Book retrieveById(String isbn) throws BookNotFoundException {
-    Book book = bookCacheRepository.retrieveById(isbn);
+    Book book = bookCacheRedisRepository.retrieveById(isbn);
     if (book == null) {
       book = bookRepository
         .findById(isbn)
         .map(bookMapper::toDomain)
         .orElseThrow(() -> new BookNotFoundException("Book not found with ISBN: " + isbn));
       if (book != null) {
-        bookCacheRepository.add(book); // cache update
+        bookCacheRedisRepository.add(book); // cache update
       }
     }
     return book;
   }
 
   public List<Book> retrieveByAuthor(String author) {
-    List<Book> books = bookCacheRepository.retrieveByAuthor(author);
+    List<Book> books = bookCacheRedisRepository.retrieveByAuthor(author);
     if (books == null) {
       books = bookRepository
         .findByAuthor(author)
@@ -78,15 +77,15 @@ public class BookService {
   public void update(Book book) throws BookNotFoundException {
     if (bookRepository.findById(book.getIsbn()).isPresent()) {
       bookRepository.save(bookMapper.toEntity(book));
-      bookCacheRepository.removeById(book.getIsbn()); // Cleanly replace in cache
-      bookCacheRepository.add(book);
+      bookCacheRedisRepository.removeById(book.getIsbn()); // Cleanly replace in cache
+      bookCacheRedisRepository.add(book);
     } else {
       throw new BookNotFoundException("Book with ISBN " + book.getIsbn() + " was not Found");
     }
   }
 
   public boolean deleteByIsbn(String isbn) throws BookNotFoundException {
-    bookCacheRepository.removeById(isbn);
+    bookCacheRedisRepository.removeById(isbn);
     if (bookRepository.existsById(isbn)) {
       bookRepository.deleteById(isbn);
       return true;
