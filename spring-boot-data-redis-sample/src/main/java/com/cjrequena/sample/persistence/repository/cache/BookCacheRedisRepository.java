@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class BookCacheRedisRepository implements CacheRepository<String, Book>{
 
-  private static final String CACHE_PREFIX = "books:";
+  private static final String KEY_PREFIX = "books:";
 
   private final RedisTemplate<String, Book> redisTemplate;
   private final ValueOperations<String, Book> valueOps;
@@ -29,12 +29,12 @@ public class BookCacheRedisRepository implements CacheRepository<String, Book>{
   }
 
   private String key(String id) {
-    return CACHE_PREFIX + id;
+    return KEY_PREFIX + id;
   }
 
   @Override
   public void load(List<Book> books) {
-    redisTemplate.delete(redisTemplate.keys(CACHE_PREFIX + "*"));
+    redisTemplate.delete(redisTemplate.keys(KEY_PREFIX + "*"));
     books.forEach(book -> valueOps.set(key(book.getIsbn()), book));
     log.info("Redis cache loaded with {} books.", books.size());
   }
@@ -46,7 +46,7 @@ public class BookCacheRedisRepository implements CacheRepository<String, Book>{
 
   @Override
   public List<Book> retrieve() {
-    return redisTemplate.keys(CACHE_PREFIX + "*").stream()
+    return redisTemplate.keys(KEY_PREFIX + "*").stream()
       .map(valueOps::get)
       .collect(Collectors.toList());
   }
@@ -64,7 +64,7 @@ public class BookCacheRedisRepository implements CacheRepository<String, Book>{
 
   @Override
   public boolean isEmpty() {
-    return redisTemplate.keys(CACHE_PREFIX + "*").isEmpty();
+    return redisTemplate.keys(KEY_PREFIX + "*").isEmpty();
   }
 
   public List<Book> retrieveByAuthor(String author) {

@@ -17,8 +17,8 @@ import java.util.List;
 public class BookServiceV1 {
 
   private final BookRepository bookRepository;
-  private final BookMapper bookMapper;
   private final BookCacheRedisRepository bookCacheRedisRepository;
+  private final BookMapper bookMapper;
 
 
   public BookServiceV1(

@@ -46,22 +46,6 @@ import java.util.stream.Collectors;
 public class BookServiceV3 {
 
   private final RedisTemplate<String, Object> redisTemplate;
-
-  /* =========================================================
-   * Key helpers & constants
-   * ========================================================= */
-
-  /**
-   * Generates a Redis key for a specific book by ISBN.
-   *
-   * @param isbn the book's ISBN
-   * @return the Redis key (e.g., "book:978-0-123456-78-9")
-   */
-  private String bookKey(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
-    return "book:" + isbn;
-  }
-
   private static final String BOOK_HASH_KEY = "books:hash";
   private static final String BOOK_LIST_KEY = "books:list";
   private static final String BOOK_SET_KEY = "books:set";
@@ -71,6 +55,21 @@ public class BookServiceV3 {
   private static final String BOOK_GEO_KEY = "books:geo";
   private static final String BOOK_STREAM_KEY = "books:stream";
   private static final String BOOK_PUBSUB_CHANNEL = "books:pubsub";
+
+  /* =========================================================
+   * Key helpers & constants
+   * ========================================================= */
+
+  /**
+   * Generates a Redis key for a specific book by ISBN.
+   *
+   * @param id the book's id
+   * @return the Redis key (e.g., "book:978-0-123456-78-9")
+   */
+  private String key(String id) {
+    Objects.requireNonNull(id, "ID cannot be null");
+    return "book:" + id;
+  }
 
   /* =========================================================
    * STRING (Value) Operations
@@ -85,7 +84,7 @@ public class BookServiceV3 {
   public void saveBook(BookEntity book) {
     validateBook(book);
     try {
-      redisTemplate.opsForValue().set(bookKey(book.getIsbn()), book);
+      redisTemplate.opsForValue().set(key(book.getIsbn()), book);
       log.debug("Saved book with ISBN: {}", book.getIsbn());
     } catch (Exception e) {
       log.error("Failed to save book with ISBN: {}", book.getIsbn(), e);
@@ -105,7 +104,7 @@ public class BookServiceV3 {
     Objects.requireNonNull(ttl, "TTL cannot be null");
 
     try {
-      redisTemplate.opsForValue().set(bookKey(book.getIsbn()), book, ttl);
+      redisTemplate.opsForValue().set(key(book.getIsbn()), book, ttl);
       log.debug("Saved book with ISBN: {} and TTL: {}", book.getIsbn(), ttl);
     } catch (Exception e) {
       log.error("Failed to save book with TTL for ISBN: {}", book.getIsbn(), e);
@@ -124,7 +123,7 @@ public class BookServiceV3 {
     Objects.requireNonNull(isbn, "ISBN cannot be null");
 
     try {
-      BookEntity book = (BookEntity) redisTemplate.opsForValue().get(bookKey(isbn));
+      BookEntity book = (BookEntity) redisTemplate.opsForValue().get(key(isbn));
       return Optional.ofNullable(book);
     } catch (Exception e) {
       log.error("Failed to retrieve book with ISBN: {}", isbn, e);
@@ -143,7 +142,7 @@ public class BookServiceV3 {
     Objects.requireNonNull(isbn, "ISBN cannot be null");
 
     try {
-      Boolean deleted = redisTemplate.delete(bookKey(isbn));
+      Boolean deleted = redisTemplate.delete(key(isbn));
       boolean result = Boolean.TRUE.equals(deleted);
       log.debug("Delete book with ISBN: {} - Result: {}", isbn, result);
       return result;
@@ -164,7 +163,7 @@ public class BookServiceV3 {
     Objects.requireNonNull(isbn, "ISBN cannot be null");
 
     try {
-      return Boolean.TRUE.equals(redisTemplate.hasKey(bookKey(isbn)));
+      return Boolean.TRUE.equals(redisTemplate.hasKey(key(isbn)));
     } catch (Exception e) {
       log.error("Failed to check existence for ISBN: {}", isbn, e);
       return false;
@@ -789,7 +788,7 @@ public class BookServiceV3 {
         public List<Object> execute(RedisOperations operations) {
           operations.multi();
 
-          operations.opsForValue().set(bookKey(book.getIsbn()), book);
+          operations.opsForValue().set(key(book.getIsbn()), book);
           operations.opsForHash().put(BOOK_HASH_KEY, book.getIsbn(), book);
           operations.opsForSet().add(BOOK_SET_KEY, book);
 
@@ -832,7 +831,7 @@ public class BookServiceV3 {
 
         for (BookEntity book : books) {
           if (book != null && book.getIsbn() != null) {
-            byte[] key = keySerializer.serialize(bookKey(book.getIsbn()));
+            byte[] key = keySerializer.serialize(key(book.getIsbn()));
             byte[] value = valueSerializer.serialize(book);
 
             if (key != null && value != null) {
