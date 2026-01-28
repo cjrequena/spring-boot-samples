@@ -46,16 +46,16 @@ import java.util.stream.Collectors;
 public class BookServiceV3 {
 
   private final RedisTemplate<String, Object> redisTemplate;
-  private static final String BOOK_HASH_KEY = "books:hash";
-  private static final String BOOK_LIST_KEY = "books:list";
-  private static final String BOOK_SET_KEY = "books:set";
-  private static final String BOOK_ZSET_KEY = "books:zset";
-  private static final String BOOK_BITMAP_KEY = "books:bitmap";
-  private static final String BOOK_HLL_KEY = "books:hll";
-  private static final String BOOK_GEO_KEY = "books:geo";
-  private static final String BOOK_STREAM_KEY = "books:stream";
-  private static final String BOOK_PUBSUB_CHANNEL = "books:pubsub";
-
+  private static final String KEY_PREFIX = "books:";
+  private static final String BOOK_HASH_KEY = KEY_PREFIX + "hash";           // Primary storage
+  private static final String BOOK_LIST_KEY = KEY_PREFIX + "list";           // Recent books
+  private static final String BOOK_SET_KEY = KEY_PREFIX + "set";             // Favorites
+  private static final String BOOK_ZSET_KEY = KEY_PREFIX + "zset";           // Rankings
+  private static final String BOOK_BITMAP_KEY = KEY_PREFIX + "bitmap";       // Availability
+  private static final String BOOK_HLL_KEY = KEY_PREFIX + "hll";             // View counting
+  private static final String BOOK_GEO_KEY = KEY_PREFIX + "geo";             // Locations
+  private static final String BOOK_STREAM_KEY = KEY_PREFIX + "stream";       // Event log
+  private static final String BOOK_PUBSUB_CHANNEL = KEY_PREFIX + "pubsub";   // Notifications
   /* =========================================================
    * Key helpers & constants
    * ========================================================= */
@@ -68,7 +68,7 @@ public class BookServiceV3 {
    */
   private String key(String id) {
     Objects.requireNonNull(id, "ID cannot be null");
-    return "book:" + id;
+    return KEY_PREFIX + id;
   }
 
   /* =========================================================
