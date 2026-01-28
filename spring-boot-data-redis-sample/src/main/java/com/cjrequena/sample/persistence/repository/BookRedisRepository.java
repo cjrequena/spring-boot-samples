@@ -1,4 +1,4 @@
-package com.cjrequena.sample.service;
+package com.cjrequena.sample.persistence.repository;
 
 import com.cjrequena.sample.persistence.entity.BookEntity;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.connection.stream.StreamReadOptions;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -41,9 +42,9 @@ import java.util.stream.Collectors;
  * @author cjrequena
  */
 @Slf4j
-@Service
+@Repository
 @RequiredArgsConstructor
-public class BookServiceV3 {
+public class BookRedisRepository {
 
   private final RedisTemplate<String, Object> redisTemplate;
   private static final String KEY_PREFIX = "books:";
