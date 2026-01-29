@@ -5,7 +5,8 @@ import com.cjrequena.sample.domain.model.Book;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -26,52 +27,25 @@ public class BookCacheRedisHashOpsRepository implements CacheRepository<String, 
    * ========================================================= */
   private static final String KEY_PREFIX = "books:";
   private static final String HASH_KEY = KEY_PREFIX + "hash";           // Primary storage
-  private static final String LIST_KEY = KEY_PREFIX + "list";           // Recent books
-  private static final String SET_KEY = KEY_PREFIX + "set";             // Favorites
-  private static final String ZSET_KEY = KEY_PREFIX + "zset";           // Rankings
-  private static final String BITMAP_KEY = KEY_PREFIX + "bitmap";       // Availability
-  private static final String HLL_KEY = KEY_PREFIX + "hll";             // View counting
-  private static final String GEO_KEY = KEY_PREFIX + "geo";             // Locations
-  private static final String STREAM_KEY = KEY_PREFIX + "stream";       // Event log
-  private static final String PUBSUB_CHANNEL = KEY_PREFIX + "pubsub";   // Notifications
+
 
   /* =========================================================
    * Redis Operations
    * ========================================================= */
-
   private final RedisTemplate<String, Book> redisTemplate;
   private final HashOperations<String, String, Book> hashOps;
-  private final ListOperations<String, Book> listOps;
-  private final SetOperations<String, Book> setOps;
-  private final ZSetOperations<String, Book> zSetOps;
-  private final ValueOperations<String, Book> valueOps;
-  private final GeoOperations<String, Book> geoOps;
-  private final StreamOperations<String, Object, Book> streamOps;
-  private final HyperLogLogOperations<String, Book> hllOps;
+
 
   @Autowired
   public BookCacheRedisHashOpsRepository(RedisTemplate<String, Book> redisTemplate) {
     this.redisTemplate = redisTemplate;
     this.hashOps = redisTemplate.opsForHash();
-    this.listOps = redisTemplate.opsForList();
-    this.setOps = redisTemplate.opsForSet();
-    this.zSetOps = redisTemplate.opsForZSet();
-    this.valueOps = redisTemplate.opsForValue();
-    this.geoOps = redisTemplate.opsForGeo();
-    this.streamOps = redisTemplate.opsForStream();
-    this.hllOps = redisTemplate.opsForHyperLogLog();
   }
 
   /* =========================================================
    * HASH Operations - Primary Storage
    * ========================================================= */
 
-  /**
-   * Loads books into the hash (primary storage).
-   * Clears existing data and loads fresh data.
-   *
-   * @param books the list of books to load
-   */
   @Override
   public void load(List<Book> books) {
     Objects.requireNonNull(books, "Books list cannot be null");
@@ -88,9 +62,9 @@ public class BookCacheRedisHashOpsRepository implements CacheRepository<String, 
       // Convert to map and bulk insert
       Map<String, Book> bookMap = books.stream()
         .filter(Objects::nonNull)
-        .filter(book -> book.getIsbn() != null)
+        .filter(book -> book.getId() != null)
         .collect(Collectors.toMap(
-          Book::getIsbn,
+          Book::getId,
           book -> book,
           (existing, replacement) -> replacement
         ));
@@ -104,29 +78,19 @@ public class BookCacheRedisHashOpsRepository implements CacheRepository<String, 
     }
   }
 
-  /**
-   * Adds a book to the hash (primary storage).
-   *
-   * @param book the book to add
-   */
   @Override
   public void add(Book book) {
     validateBook(book);
 
     try {
-      hashOps.put(HASH_KEY, book.getIsbn(), book);
-      log.debug("Added book to hash: {}", book.getIsbn());
+      hashOps.put(HASH_KEY, book.getId(), book);
+      log.debug("Added book to hash: {}", book.getId());
     } catch (Exception e) {
-      log.error("Failed to add book to hash: {}", book.getIsbn(), e);
+      log.error("Failed to add book to hash: {}", book.getId(), e);
       throw new CacheException("Failed to add book", e);
     }
   }
 
-  /**
-   * Retrieves all books from the hash.
-   *
-   * @return list of all books
-   */
   @Override
   public List<Book> retrieve() {
     try {
@@ -143,47 +107,31 @@ public class BookCacheRedisHashOpsRepository implements CacheRepository<String, 
     }
   }
 
-  /**
-   * Retrieves a book by ISBN from the hash.
-   *
-   * @param isbn the book's ISBN
-   * @return the book, or null if not found
-   */
   @Override
-  public Book retrieveById(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public Book retrieveById(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      return hashOps.get(HASH_KEY, isbn);
+      return hashOps.get(HASH_KEY, id);
     } catch (Exception e) {
-      log.error("Failed to retrieve book from hash: {}", isbn, e);
+      log.error("Failed to retrieve book from hash: {}", id, e);
       return null;
     }
   }
 
-  /**
-   * Removes a book from the hash by ISBN.
-   *
-   * @param isbn the book's ISBN
-   */
   @Override
-  public void removeById(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public void removeById(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      hashOps.delete(HASH_KEY, isbn);
-      log.debug("Removed book from hash: {}", isbn);
+      hashOps.delete(HASH_KEY, id);
+      log.debug("Removed book from hash: {}", id);
     } catch (Exception e) {
-      log.error("Failed to remove book from hash: {}", isbn, e);
+      log.error("Failed to remove book from hash: {}", id, e);
       throw new CacheException("Failed to remove book", e);
     }
   }
 
-  /**
-   * Checks if the hash is empty.
-   *
-   * @return true if empty, false otherwise
-   */
   @Override
   public boolean isEmpty() {
     try {
@@ -195,12 +143,6 @@ public class BookCacheRedisHashOpsRepository implements CacheRepository<String, 
     }
   }
 
-  /**
-   * Retrieves books by author from the hash.
-   *
-   * @param author the author name
-   * @return list of books by the author
-   */
   public List<Book> retrieveByAuthor(String author) {
     Objects.requireNonNull(author, "Author cannot be null");
 
@@ -216,7 +158,7 @@ public class BookCacheRedisHashOpsRepository implements CacheRepository<String, 
 
   private void validateBook(Book book) {
     Objects.requireNonNull(book, "Book cannot be null");
-    Objects.requireNonNull(book.getIsbn(), "Book ISBN cannot be null");
+    Objects.requireNonNull(book.getId(), "Book Id cannot be null");
   }
 
 }

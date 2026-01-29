@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BookRepository extends JpaRepository<BookEntity, String> {
+public interface BookJpaRepository extends JpaRepository<BookEntity, String> {
 
   Optional<List<BookEntity>> findByAuthor(String author);
 }

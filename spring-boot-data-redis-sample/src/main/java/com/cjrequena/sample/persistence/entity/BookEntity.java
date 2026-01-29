@@ -1,5 +1,6 @@
 package com.cjrequena.sample.persistence.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,8 +15,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "books")
 public class BookEntity {
 
-    @Id
-    private String isbn;
-    private String title;
-    private String author;
+  @Id
+  @Column(name = "id")
+  private String id;
+  private String title;
+  private String author;
 }

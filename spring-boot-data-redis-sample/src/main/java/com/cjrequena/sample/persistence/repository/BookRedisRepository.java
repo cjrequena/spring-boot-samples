@@ -12,7 +12,6 @@ import org.springframework.data.redis.connection.stream.StreamReadOptions;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.*;
@@ -62,7 +61,7 @@ public class BookRedisRepository {
    * ========================================================= */
 
   /**
-   * Generates a Redis key for a specific book by ISBN.
+   * Generates a Redis key for a specific book by ID.
    *
    * @param id the book's id
    * @return the Redis key (e.g., "book:978-0-123456-78-9")
@@ -80,15 +79,15 @@ public class BookRedisRepository {
    * Saves a book to Redis using a simple key-value structure.
    *
    * @param book the book entity to save
-   * @throws IllegalArgumentException if book or ISBN is null
+   * @throws IllegalArgumentException if book or Id is null
    */
-  public void saveBook(BookEntity book) {
+  public void save(BookEntity book) {
     validateBook(book);
     try {
-      redisTemplate.opsForValue().set(key(book.getIsbn()), book);
-      log.debug("Saved book with ISBN: {}", book.getIsbn());
+      redisTemplate.opsForValue().set(key(book.getId()), book);
+      log.debug("Saved book with Id: {}", book.getId());
     } catch (Exception e) {
-      log.error("Failed to save book with ISBN: {}", book.getIsbn(), e);
+      log.error("Failed to save book with Id: {}", book.getId(), e);
       throw new RedisOperationException("Failed to save book", e);
     }
   }
@@ -98,57 +97,57 @@ public class BookRedisRepository {
    *
    * @param book the book entity to save
    * @param ttl the time-to-live duration
-   * @throws IllegalArgumentException if book, ISBN, or TTL is null
+   * @throws IllegalArgumentException if book, Id, or TTL is null
    */
-  public void saveBookWithTTL(BookEntity book, Duration ttl) {
+  public void saveWithTTL(BookEntity book, Duration ttl) {
     validateBook(book);
     Objects.requireNonNull(ttl, "TTL cannot be null");
 
     try {
-      redisTemplate.opsForValue().set(key(book.getIsbn()), book, ttl);
-      log.debug("Saved book with ISBN: {} and TTL: {}", book.getIsbn(), ttl);
+      redisTemplate.opsForValue().set(key(book.getId()), book, ttl);
+      log.debug("Saved book with Id: {} and TTL: {}", book.getId(), ttl);
     } catch (Exception e) {
-      log.error("Failed to save book with TTL for ISBN: {}", book.getIsbn(), e);
+      log.error("Failed to save book with TTL for Id: {}", book.getId(), e);
       throw new RedisOperationException("Failed to save book with TTL", e);
     }
   }
 
   /**
-   * Retrieves a book by its ISBN.
+   * Retrieves a book by its Id.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @return an Optional containing the book if found, empty otherwise
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public Optional<BookEntity> getBook(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public Optional<BookEntity> retrieve(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      BookEntity book = (BookEntity) redisTemplate.opsForValue().get(key(isbn));
+      BookEntity book = (BookEntity) redisTemplate.opsForValue().get(key(id));
       return Optional.ofNullable(book);
     } catch (Exception e) {
-      log.error("Failed to retrieve book with ISBN: {}", isbn, e);
+      log.error("Failed to retrieve book with Id: {}", id, e);
       return Optional.empty();
     }
   }
 
   /**
-   * Deletes a book by its ISBN.
+   * Deletes a book by its Id.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @return true if the book was deleted, false otherwise
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public boolean deleteBook(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public boolean delete(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      Boolean deleted = redisTemplate.delete(key(isbn));
+      Boolean deleted = redisTemplate.delete(key(id));
       boolean result = Boolean.TRUE.equals(deleted);
-      log.debug("Delete book with ISBN: {} - Result: {}", isbn, result);
+      log.debug("Delete book with Id: {} - Result: {}", id, result);
       return result;
     } catch (Exception e) {
-      log.error("Failed to delete book with ISBN: {}", isbn, e);
+      log.error("Failed to delete book with Id: {}", id, e);
       return false;
     }
   }
@@ -156,17 +155,17 @@ public class BookRedisRepository {
   /**
    * Checks if a book exists in Redis.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @return true if the book exists, false otherwise
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public boolean exists(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public boolean exists(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      return Boolean.TRUE.equals(redisTemplate.hasKey(key(isbn)));
+      return Boolean.TRUE.equals(redisTemplate.hasKey(key(id)));
     } catch (Exception e) {
-      log.error("Failed to check existence for ISBN: {}", isbn, e);
+      log.error("Failed to check existence for Id: {}", id, e);
       return false;
     }
   }
@@ -177,38 +176,38 @@ public class BookRedisRepository {
 
   /**
    * Saves a book to a Redis hash structure.
-   * All books are stored in a single hash with ISBN as the field name.
+   * All books are stored in a single hash with Id as the field name.
    *
    * @param book the book entity to save
-   * @throws IllegalArgumentException if book or ISBN is null
+   * @throws IllegalArgumentException if book or Id is null
    */
-  public void saveBookToHash(BookEntity book) {
+  public void saveOpsForHash(BookEntity book) {
     validateBook(book);
 
     try {
-      redisTemplate.opsForHash().put(BOOK_HASH_KEY, book.getIsbn(), book);
-      log.debug("Saved book to hash with ISBN: {}", book.getIsbn());
+      redisTemplate.opsForHash().put(BOOK_HASH_KEY, book.getId(), book);
+      log.debug("Saved book to hash with Id: {}", book.getId());
     } catch (Exception e) {
-      log.error("Failed to save book to hash with ISBN: {}", book.getIsbn(), e);
+      log.error("Failed to save book to hash with Id: {}", book.getId(), e);
       throw new RedisOperationException("Failed to save book to hash", e);
     }
   }
 
   /**
-   * Retrieves a book from the hash by ISBN.
+   * Retrieves a book from the hash by Id.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @return an Optional containing the book if found, empty otherwise
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public Optional<BookEntity> getBookFromHash(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public Optional<BookEntity> retrieveOpsForHash(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      BookEntity book = (BookEntity) redisTemplate.opsForHash().get(BOOK_HASH_KEY, isbn);
+      BookEntity book = (BookEntity) redisTemplate.opsForHash().get(BOOK_HASH_KEY, id);
       return Optional.ofNullable(book);
     } catch (Exception e) {
-      log.error("Failed to retrieve book from hash with ISBN: {}", isbn, e);
+      log.error("Failed to retrieve book from hash with Id: {}", id, e);
       return Optional.empty();
     }
   }
@@ -216,9 +215,9 @@ public class BookRedisRepository {
   /**
    * Retrieves all books from the hash.
    *
-   * @return a map of ISBN to BookEntity
+   * @return a map of Id to BookEntity
    */
-  public Map<String, BookEntity> getAllBooksFromHash() {
+  public Map<String, BookEntity> retrieveOpsForHash() {
     try {
       Map<Object, Object> raw = redisTemplate.opsForHash().entries(BOOK_HASH_KEY);
 
@@ -234,21 +233,21 @@ public class BookRedisRepository {
   }
 
   /**
-   * Deletes a book from the hash by ISBN.
+   * Deletes a book from the hash by Id.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @return the number of fields removed (0 or 1)
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public Long deleteBookFromHash(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public Long deleteOpsForHash(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      Long deleted = redisTemplate.opsForHash().delete(BOOK_HASH_KEY, isbn);
-      log.debug("Deleted book from hash with ISBN: {} - Count: {}", isbn, deleted);
+      Long deleted = redisTemplate.opsForHash().delete(BOOK_HASH_KEY, id);
+      log.debug("Deleted book from hash with Id: {} - Count: {}", id, deleted);
       return deleted;
     } catch (Exception e) {
-      log.error("Failed to delete book from hash with ISBN: {}", isbn, e);
+      log.error("Failed to delete book from hash with Id: {}", id, e);
       return 0L;
     }
   }
@@ -263,12 +262,12 @@ public class BookRedisRepository {
    * @param book the book entity to push
    * @throws IllegalArgumentException if book is null
    */
-  public void pushBookToList(BookEntity book) {
+  public void pushOpsForList(BookEntity book) {
     Objects.requireNonNull(book, "Book cannot be null");
 
     try {
       redisTemplate.opsForList().rightPush(BOOK_LIST_KEY, book);
-      log.debug("Pushed book to list: {}", book.getIsbn());
+      log.debug("Pushed book to list: {}", book.getId());
     } catch (Exception e) {
       log.error("Failed to push book to list", e);
       throw new RedisOperationException("Failed to push book to list", e);
@@ -282,7 +281,7 @@ public class BookRedisRepository {
    * @param end the ending index (-1 for all)
    * @return a list of books
    */
-  public List<BookEntity> getBooksFromList(long start, long end) {
+  public List<BookEntity> retrieveOpsForList(long start, long end) {
     try {
       List<Object> values = redisTemplate.opsForList().range(BOOK_LIST_KEY, start, end);
 
@@ -304,7 +303,7 @@ public class BookRedisRepository {
    *
    * @return an Optional containing the popped book, or empty if list is empty
    */
-  public Optional<BookEntity> popBookFromList() {
+  public Optional<BookEntity> popOpsForList() {
     try {
       BookEntity book = (BookEntity) redisTemplate.opsForList().leftPop(BOOK_LIST_KEY);
       return Optional.ofNullable(book);
@@ -319,7 +318,7 @@ public class BookRedisRepository {
    *
    * @return the number of books in the list
    */
-  public long getListSize() {
+  public long getListSizeOpsForList() {
     try {
       Long size = redisTemplate.opsForList().size(BOOK_LIST_KEY);
       return size != null ? size : 0L;
@@ -340,12 +339,12 @@ public class BookRedisRepository {
    * @return the number of elements added (0 if already exists, 1 if new)
    * @throws IllegalArgumentException if book is null
    */
-  public Long addBookToSet(BookEntity book) {
+  public Long addOpsForSet(BookEntity book) {
     Objects.requireNonNull(book, "Book cannot be null");
 
     try {
       Long added = redisTemplate.opsForSet().add(BOOK_SET_KEY, book);
-      log.debug("Added book to set: {} - Result: {}", book.getIsbn(), added);
+      log.debug("Added book to set: {} - Result: {}", book.getId(), added);
       return added;
     } catch (Exception e) {
       log.error("Failed to add book to set", e);
@@ -358,7 +357,7 @@ public class BookRedisRepository {
    *
    * @return a set of books
    */
-  public Set<BookEntity> getAllBooksFromSet() {
+  public Set<BookEntity> retrieveOpsForSet() {
     try {
       Set<Object> raw = redisTemplate.opsForSet().members(BOOK_SET_KEY);
 
@@ -400,12 +399,12 @@ public class BookRedisRepository {
    * @return the number of elements removed
    * @throws IllegalArgumentException if book is null
    */
-  public Long removeBookFromSet(BookEntity book) {
+  public Long removeOpsForSet(BookEntity book) {
     Objects.requireNonNull(book, "Book cannot be null");
 
     try {
       Long removed = redisTemplate.opsForSet().remove(BOOK_SET_KEY, book);
-      log.debug("Removed book from set: {} - Count: {}", book.getIsbn(), removed);
+      log.debug("Removed book from set: {} - Count: {}", book.getId(), removed);
       return removed;
     } catch (Exception e) {
       log.error("Failed to remove book from set", e);
@@ -425,12 +424,12 @@ public class BookRedisRepository {
    * @return true if added, false if updated
    * @throws IllegalArgumentException if book is null
    */
-  public Boolean addBookToZSet(BookEntity book, double score) {
+  public Boolean addOpsForZSet(BookEntity book, double score) {
     Objects.requireNonNull(book, "Book cannot be null");
 
     try {
       Boolean added = redisTemplate.opsForZSet().add(BOOK_ZSET_KEY, book, score);
-      log.debug("Added book to sorted set: {} with score: {}", book.getIsbn(), score);
+      log.debug("Added book to sorted set: {} with score: {}", book.getId(), score);
       return added;
     } catch (Exception e) {
       log.error("Failed to add book to sorted set", e);
@@ -444,7 +443,7 @@ public class BookRedisRepository {
    * @param limit the maximum number of books to return
    * @return a set of books in descending score order
    */
-  public Set<BookEntity> getTopBooks(int limit) {
+  public Set<BookEntity> retrieveOpsForZSet(int limit) {
     if (limit <= 0) {
       throw new IllegalArgumentException("Limit must be positive");
     }
@@ -473,7 +472,7 @@ public class BookRedisRepository {
    * @return an Optional containing the score, or empty if not found
    * @throws IllegalArgumentException if book is null
    */
-  public Optional<Double> getBookScore(BookEntity book) {
+  public Optional<Double> getScoreOpsForZSet(BookEntity book) {
     Objects.requireNonNull(book, "Book cannot be null");
 
     try {
@@ -492,7 +491,7 @@ public class BookRedisRepository {
    * @param maxScore maximum score (inclusive)
    * @return set of books within the score range
    */
-  public Set<BookEntity> getBooksByScoreRange(double minScore, double maxScore) {
+  public Set<BookEntity> getByScoreRangeOpsForZSet(double minScore, double maxScore) {
     try {
       Set<Object> raw = redisTemplate.opsForZSet()
         .rangeByScore(BOOK_ZSET_KEY, minScore, maxScore);
@@ -516,21 +515,21 @@ public class BookRedisRepository {
 
   /**
    * Marks a book as available or unavailable using a bitmap.
-   * Uses the ISBN hashcode as the bit offset.
+   * Uses the Id hashcode as the bit offset.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @param available true for available, false for unavailable
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public void markBookAvailable(String isbn, boolean available) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public void markBookAvailable(String id, boolean available) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      long offset = Math.abs((long) isbn.hashCode());
+      long offset = Math.abs((long) id.hashCode());
       redisTemplate.opsForValue().setBit(BOOK_BITMAP_KEY, offset, available);
-      log.debug("Marked book {} as available: {}", isbn, available);
+      log.debug("Marked book {} as available: {}", id, available);
     } catch (Exception e) {
-      log.error("Failed to mark book availability for ISBN: {}", isbn, e);
+      log.error("Failed to mark book availability for Id: {}", id, e);
       throw new RedisOperationException("Failed to set book availability", e);
     }
   }
@@ -538,20 +537,20 @@ public class BookRedisRepository {
   /**
    * Checks if a book is marked as available in the bitmap.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @return true if available, false otherwise
-   * @throws IllegalArgumentException if ISBN is null
+   * @throws IllegalArgumentException if Id is null
    */
-  public boolean isBookAvailable(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public boolean isBookAvailable(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      long offset = Math.abs((long) isbn.hashCode());
+      long offset = Math.abs((long) id.hashCode());
       return Boolean.TRUE.equals(
         redisTemplate.opsForValue().getBit(BOOK_BITMAP_KEY, offset)
       );
     } catch (Exception e) {
-      log.error("Failed to check book availability for ISBN: {}", isbn, e);
+      log.error("Failed to check book availability for Id: {}", id, e);
       return false;
     }
   }
@@ -563,17 +562,17 @@ public class BookRedisRepository {
   /**
    * Tracks a book view using HyperLogLog for approximate counting.
    *
-   * @param isbn the book's ISBN
-   * @throws IllegalArgumentException if ISBN is null
+   * @param id the book's Id
+   * @throws IllegalArgumentException if Id is null
    */
-  public void trackBookView(String isbn) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public void trackBookView(String id) {
+    Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      redisTemplate.opsForHyperLogLog().add(BOOK_HLL_KEY, isbn);
-      log.debug("Tracked view for book: {}", isbn);
+      redisTemplate.opsForHyperLogLog().add(BOOK_HLL_KEY, id);
+      log.debug("Tracked view for book: {}", id);
     } catch (Exception e) {
-      log.error("Failed to track book view for ISBN: {}", isbn, e);
+      log.error("Failed to track book view for Id: {}", id, e);
       throw new RedisOperationException("Failed to track book view", e);
     }
   }
@@ -600,25 +599,25 @@ public class BookRedisRepository {
   /**
    * Adds a book's location to the geospatial index.
    *
-   * @param isbn the book's ISBN
+   * @param id the book's Id
    * @param longitude the longitude coordinate
    * @param latitude the latitude coordinate
-   * @throws IllegalArgumentException if ISBN is null or coordinates are invalid
+   * @throws IllegalArgumentException if Id is null or coordinates are invalid
    */
-  public void addBookLocation(String isbn, double longitude, double latitude) {
-    Objects.requireNonNull(isbn, "ISBN cannot be null");
+  public void addBookLocation(String id, double longitude, double latitude) {
+    Objects.requireNonNull(id, "Id cannot be null");
     validateCoordinates(longitude, latitude);
 
     try {
       Long added = redisTemplate.opsForGeo().add(
         BOOK_GEO_KEY,
         new Point(longitude, latitude),
-        isbn
+        id
       );
       log.debug("Added location for book {}: ({}, {}) - Result: {}",
-        isbn, longitude, latitude, added);
+        id, longitude, latitude, added);
     } catch (Exception e) {
-      log.error("Failed to add book location for ISBN: {}", isbn, e);
+      log.error("Failed to add book location for Id: {}", id, e);
       throw new RedisOperationException("Failed to add book location", e);
     }
   }
@@ -626,21 +625,21 @@ public class BookRedisRepository {
   /**
    * Calculates the distance between two books.
    *
-   * @param isbn1 the first book's ISBN
-   * @param isbn2 the second book's ISBN
+   * @param id1 the first book's Id
+   * @param id2 the second book's Id
    * @return an Optional containing the distance, or empty if not found
-   * @throws IllegalArgumentException if either ISBN is null
+   * @throws IllegalArgumentException if either Id is null
    */
-  public Optional<Distance> distanceBetweenBooks(String isbn1, String isbn2) {
-    Objects.requireNonNull(isbn1, "First ISBN cannot be null");
-    Objects.requireNonNull(isbn2, "Second ISBN cannot be null");
+  public Optional<Distance> distanceBetweenBooks(String id1, String id2) {
+    Objects.requireNonNull(id1, "First Id cannot be null");
+    Objects.requireNonNull(id2, "Second Id cannot be null");
 
     try {
       Distance distance = redisTemplate.opsForGeo()
-        .distance(BOOK_GEO_KEY, isbn1, isbn2, Metrics.KILOMETERS);
+        .distance(BOOK_GEO_KEY, id1, id2, Metrics.KILOMETERS);
       return Optional.ofNullable(distance);
     } catch (Exception e) {
-      log.error("Failed to calculate distance between {} and {}", isbn1, isbn2, e);
+      log.error("Failed to calculate distance between {} and {}", id1, id2, e);
       return Optional.empty();
     }
   }
@@ -698,16 +697,16 @@ public class BookRedisRepository {
 
     try {
       Map<String, String> body = new HashMap<>();
-      body.put("isbn", book.getIsbn());
+      body.put("id", book.getId());
       body.put("title", book.getTitle());
       body.put("author", book.getAuthor());
 
       RecordId recordId = redisTemplate.opsForStream().add(BOOK_STREAM_KEY, body);
       log.debug("Published book event to stream: {} - RecordId: {}",
-        book.getIsbn(), recordId);
+        book.getId(), recordId);
       return recordId;
     } catch (Exception e) {
-      log.error("Failed to publish book event for ISBN: {}", book.getIsbn(), e);
+      log.error("Failed to publish book event for Id: {}", book.getId(), e);
       throw new RedisOperationException("Failed to publish book event", e);
     }
   }
@@ -789,18 +788,18 @@ public class BookRedisRepository {
         public List<Object> execute(RedisOperations operations) {
           operations.multi();
 
-          operations.opsForValue().set(key(book.getIsbn()), book);
-          operations.opsForHash().put(BOOK_HASH_KEY, book.getIsbn(), book);
+          operations.opsForValue().set(key(book.getId()), book);
+          operations.opsForHash().put(BOOK_HASH_KEY, book.getId(), book);
           operations.opsForSet().add(BOOK_SET_KEY, book);
 
           return operations.exec();
         }
       });
 
-      log.debug("Saved book transactionally: {}", book.getIsbn());
+      log.debug("Saved book transactionally: {}", book.getId());
       return result != null ? result : Collections.emptyList();
     } catch (Exception e) {
-      log.error("Failed to save book transactionally for ISBN: {}", book.getIsbn(), e);
+      log.error("Failed to save book transactionally for Id: {}", book.getId(), e);
       throw new RedisOperationException("Transaction failed", e);
     }
   }
@@ -831,8 +830,8 @@ public class BookRedisRepository {
         var keySerializer = redisTemplate.getStringSerializer();
 
         for (BookEntity book : books) {
-          if (book != null && book.getIsbn() != null) {
-            byte[] key = keySerializer.serialize(key(book.getIsbn()));
+          if (book != null && book.getId() != null) {
+            byte[] key = keySerializer.serialize(key(book.getId()));
             byte[] value = valueSerializer.serialize(book);
 
             if (key != null && value != null) {
@@ -1009,7 +1008,7 @@ public class BookRedisRepository {
    */
   private void validateBook(BookEntity book) {
     Objects.requireNonNull(book, "Book cannot be null");
-    Objects.requireNonNull(book.getIsbn(), "Book ISBN cannot be null");
+    Objects.requireNonNull(book.getId(), "Book Id cannot be null");
   }
 
   /**

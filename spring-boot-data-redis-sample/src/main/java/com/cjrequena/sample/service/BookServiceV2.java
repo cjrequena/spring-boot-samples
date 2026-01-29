@@ -3,7 +3,7 @@ package com.cjrequena.sample.service;
 import com.cjrequena.sample.domain.exception.BookNotFoundException;
 import com.cjrequena.sample.domain.mapper.BookMapper;
 import com.cjrequena.sample.domain.model.Book;
-import com.cjrequena.sample.persistence.repository.BookRepository;
+import com.cjrequena.sample.persistence.repository.BookJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,24 +22,21 @@ public class BookServiceV2 {
 
   private static final String CACHE_PREFIX = "books";
 
-  private final BookRepository bookRepository;
+  private final BookJpaRepository bookJpaRepository;
   private final BookMapper bookMapper;
 
   // --------------------------
   // CREATE
   // --------------------------
 
-  /**
-   * New book: save to DB and evict all relevant caches.
-   */
   @Caching(evict = {
     @CacheEvict(value = CACHE_PREFIX, key = "'ALL'"),
-    @CacheEvict(value = CACHE_PREFIX, key = "#book.isbn"),
+    @CacheEvict(value = CACHE_PREFIX, key = "#book.id"),
     @CacheEvict(value = CACHE_PREFIX, key = "'author_' + #book.author")
   })
   public void create(Book book) {
-    log.info("Creating book {}", book.getIsbn());
-    bookRepository.save(bookMapper.toEntity(book));
+    log.info("Creating book {}", book.getId());
+    bookJpaRepository.save(bookMapper.toEntity(book));
   }
 
 
@@ -50,21 +47,21 @@ public class BookServiceV2 {
   @Cacheable(value = CACHE_PREFIX, key = "'ALL'")
   public List<Book> retrieve() {
     log.info("Cache MISS → fetching ALL books from DB");
-    return bookMapper.toDomain(bookRepository.findAll());
+    return bookMapper.toDomain(bookJpaRepository.findAll());
   }
 
 
   // --------------------------
-  // RETRIEVE BY ISBN
+  // RETRIEVE BY ID
   // --------------------------
 
-  @Cacheable(value = CACHE_PREFIX, key = "#isbn")
-  public Book retrieveById(String isbn) throws BookNotFoundException {
-    log.info("Cache MISS → fetching book {} from DB", isbn);
-    return bookRepository
-      .findById(isbn)
+  @Cacheable(value = CACHE_PREFIX, key = "#id")
+  public Book retrieveById(String id) throws BookNotFoundException {
+    log.info("Cache MISS → fetching book {} from DB", id);
+    return bookJpaRepository
+      .findById(id)
       .map(bookMapper::toDomain)
-      .orElseThrow(() -> new BookNotFoundException("Book not found with ISBN: " + isbn));
+      .orElseThrow(() -> new BookNotFoundException("Book not found with Id: " + id));
   }
 
 
@@ -76,7 +73,7 @@ public class BookServiceV2 {
   public List<Book> retrieveByAuthor(String author) {
     log.info("Cache MISS → fetching books by author {} from DB", author);
 
-    return bookRepository
+    return bookJpaRepository
       .findByAuthor(author)
       .map(bookMapper::toDomain)
       .orElseGet(Collections::emptyList);
@@ -87,13 +84,9 @@ public class BookServiceV2 {
   // UPDATE
   // --------------------------
 
-  /**
-   * Update DB and update cache entry using @CachePut.
-   * Also evicts ALL + author caches.
-   */
   @Caching(
     put = {
-      @CachePut(value = CACHE_PREFIX, key = "#book.isbn", unless = "#book == null")
+      @CachePut(value = CACHE_PREFIX, key = "#book.id", unless = "#book == null")
     },
     evict = {
       @CacheEvict(value = CACHE_PREFIX, key = "'ALL'"),
@@ -101,11 +94,11 @@ public class BookServiceV2 {
     }
   )
   public Book update(Book book) throws BookNotFoundException {
-    if (!bookRepository.existsById(book.getIsbn())) {
-      throw new BookNotFoundException("Book with ISBN " + book.getIsbn() + " was not found");
+    if (!bookJpaRepository.existsById(book.getId())) {
+      throw new BookNotFoundException("Book with Id " + book.getId() + " was not found");
     }
 
-    bookRepository.save(bookMapper.toEntity(book));
+    bookJpaRepository.save(bookMapper.toEntity(book));
     return book; // @CachePut stores this in cache
   }
 
@@ -115,17 +108,17 @@ public class BookServiceV2 {
   // --------------------------
 
   @Caching(evict = {
-    @CacheEvict(value = CACHE_PREFIX, key = "#isbn"),
+    @CacheEvict(value = CACHE_PREFIX, key = "#id"),
     @CacheEvict(value = CACHE_PREFIX, key = "'ALL'"),
     @CacheEvict(value = CACHE_PREFIX, allEntries = false) // optional: catch author caches
   })
-  public boolean deleteByIsbn(String isbn) throws BookNotFoundException {
+  public boolean deleteById(String id) throws BookNotFoundException {
 
-    if (!bookRepository.existsById(isbn)) {
-      throw new BookNotFoundException("Book with ISBN " + isbn + " was not found");
+    if (!bookJpaRepository.existsById(id)) {
+      throw new BookNotFoundException("Book with Id " + id + " was not found");
     }
 
-    bookRepository.deleteById(isbn);
+    bookJpaRepository.deleteById(id);
     return true;
   }
 

@@ -3,7 +3,8 @@ package com.cjrequena.sample.service;
 import com.cjrequena.sample.domain.exception.BookNotFoundException;
 import com.cjrequena.sample.domain.mapper.BookMapper;
 import com.cjrequena.sample.domain.model.Book;
-import com.cjrequena.sample.persistence.repository.BookRepository;
+import com.cjrequena.sample.persistence.repository.BookJpaRepository;
+import com.cjrequena.sample.persistence.repository.BookRedisSearchRepository;
 import com.cjrequena.sample.persistence.repository.cache.BookCacheRedisHashOpsRepository;
 import com.cjrequena.sample.persistence.repository.cache.BookCacheRedisValueOpsRepository;
 import com.cjrequena.sample.persistence.repository.cache.CacheRepository;
@@ -17,32 +18,36 @@ import java.util.List;
 @Service
 public class BookServiceV1 {
 
-  private final BookRepository bookRepository;
+  private final BookJpaRepository bookJpaRepository;
   private final BookCacheRedisHashOpsRepository bookCacheRedisHashOpsRepository;
   private final BookCacheRedisValueOpsRepository bookCacheRedisValueOpsRepository;
+  private final BookRedisSearchRepository bookRedisSearchRepository;
   private final BookMapper bookMapper;
 
   public BookServiceV1(
     BookMapper bookMapper,
-    BookRepository bookRepository,
+    BookJpaRepository bookJpaRepository,
+    BookRedisSearchRepository bookRedisSearchRepository,
     @Qualifier("bookCacheRedisHashOpsRepository") CacheRepository<String, Book> bookCacheRedisHashOpsRepository,
     @Qualifier("bookCacheRedisValueOpsRepository") CacheRepository<String, Book> bookCacheRedisValueOpsRepository
 
   ) {
-    this.bookRepository = bookRepository;
     this.bookMapper = bookMapper;
+    this.bookJpaRepository = bookJpaRepository;
+    this.bookRedisSearchRepository = bookRedisSearchRepository;
     this.bookCacheRedisHashOpsRepository = (BookCacheRedisHashOpsRepository) bookCacheRedisHashOpsRepository;
     this.bookCacheRedisValueOpsRepository = (BookCacheRedisValueOpsRepository) bookCacheRedisValueOpsRepository;
   }
 
   @PostConstruct
   public void loadUpCache() {
-    List<Book> books = this.bookMapper.toDomain(bookRepository.findAll());
+    List<Book> books = this.bookMapper.toDomain(bookJpaRepository.findAll());
     bookCacheRedisHashOpsRepository.load(books);
+    bookRedisSearchRepository.load(books);
   }
 
   public void create(Book book) {
-    bookRepository.save(this.bookMapper.toEntity(book));
+    bookJpaRepository.save(this.bookMapper.toEntity(book));
     bookCacheRedisHashOpsRepository.add(book); // write-through
   }
 
@@ -53,13 +58,13 @@ public class BookServiceV1 {
     return bookCacheRedisHashOpsRepository.retrieve();
   }
 
-  public Book retrieveById(String isbn) throws BookNotFoundException {
-    Book book = bookCacheRedisHashOpsRepository.retrieveById(isbn);
+  public Book retrieveById(String id) throws BookNotFoundException {
+    Book book = bookCacheRedisHashOpsRepository.retrieveById(id);
     if (book == null) {
-      book = bookRepository
-        .findById(isbn)
+      book = bookJpaRepository
+        .findById(id)
         .map(bookMapper::toDomain)
-        .orElseThrow(() -> new BookNotFoundException("Book not found with ISBN: " + isbn));
+        .orElseThrow(() -> new BookNotFoundException("Book not found with Id: " + id));
       if (book != null) {
         bookCacheRedisHashOpsRepository.add(book); // cache update
       }
@@ -70,7 +75,7 @@ public class BookServiceV1 {
   public List<Book> retrieveByAuthor(String author) {
     List<Book> books = bookCacheRedisHashOpsRepository.retrieveByAuthor(author);
     if (books == null) {
-      books = bookRepository
+      books = bookJpaRepository
         .findByAuthor(author)
         .map(bookMapper::toDomain)
         .orElseGet(Collections::emptyList);
@@ -79,22 +84,22 @@ public class BookServiceV1 {
   }
 
   public void update(Book book) throws BookNotFoundException {
-    if (bookRepository.findById(book.getIsbn()).isPresent()) {
-      bookRepository.save(bookMapper.toEntity(book));
-      bookCacheRedisHashOpsRepository.removeById(book.getIsbn()); // Cleanly replace in cache
+    if (bookJpaRepository.findById(book.getId()).isPresent()) {
+      bookJpaRepository.save(bookMapper.toEntity(book));
+      bookCacheRedisHashOpsRepository.removeById(book.getId()); // Cleanly replace in cache
       bookCacheRedisHashOpsRepository.add(book);
     } else {
-      throw new BookNotFoundException("Book with ISBN " + book.getIsbn() + " was not Found");
+      throw new BookNotFoundException("Book with Id " + book.getId() + " was not Found");
     }
   }
 
-  public boolean deleteByIsbn(String isbn) throws BookNotFoundException {
-    bookCacheRedisHashOpsRepository.removeById(isbn);
-    if (bookRepository.existsById(isbn)) {
-      bookRepository.deleteById(isbn);
+  public boolean deleteById(String id) throws BookNotFoundException {
+    bookCacheRedisHashOpsRepository.removeById(id);
+    if (bookJpaRepository.existsById(id)) {
+      bookJpaRepository.deleteById(id);
       return true;
     } else {
-      throw new BookNotFoundException("Book with ISBN " + isbn + " was not Found");
+      throw new BookNotFoundException("Book with Id " + id + " was not Found");
     }
   }
 }

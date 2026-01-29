@@ -46,10 +46,10 @@ public class BookController {
     return this.bookMapper.toDTO(bookServiceV1.retrieve());
   }
 
-  @GetMapping("/{isbn}")
-  public BookDTO retrieveByIsbn(@PathVariable String isbn) throws NotFoundException {
+  @GetMapping("/{id}")
+  public BookDTO retrieveById(@PathVariable String id) throws NotFoundException {
     try {
-      return this.bookMapper.toDTO(bookServiceV1.retrieveById(isbn));
+      return this.bookMapper.toDTO(bookServiceV1.retrieveById(id));
     } catch (BookNotFoundException ex) {
       throw new NotFoundException(ex.getMessage());
     }
@@ -61,12 +61,12 @@ public class BookController {
   }
 
   @PutMapping(
-    path = "/{isbn}",
+    path = "/{id}",
     produces = {APPLICATION_JSON_VALUE}
   )
-  public ResponseEntity<Void> update(@PathVariable(value = "isbn") String isbn, @Valid @RequestBody BookDTO dto) throws NotFoundException {
+  public ResponseEntity<Void> update(@PathVariable(value = "id") String id, @Valid @RequestBody BookDTO dto) throws NotFoundException {
     final Book book = this.bookMapper.toDomain(dto);
-    book.setIsbn(isbn);
+    book.setId(id);
     try {
       this.bookServiceV1.update(book);
     } catch (BookNotFoundException ex) {
@@ -78,10 +78,10 @@ public class BookController {
     return new ResponseEntity<>(responseHeaders, HttpStatus.NO_CONTENT);
   }
 
-  @DeleteMapping("/{isbn}")
-  public boolean deleteBook(@PathVariable String isbn) throws NotFoundException {
+  @DeleteMapping("/{id}")
+  public boolean deleteBook(@PathVariable String id) throws NotFoundException {
     try {
-      return bookServiceV1.deleteByIsbn(isbn);
+      return bookServiceV1.deleteById(id);
     } catch (BookNotFoundException ex) {
       throw new NotFoundException(ex.getMessage());
     }
