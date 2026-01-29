@@ -22,8 +22,7 @@ public class BookRedisHashOpsRepository {
   /* =========================================================
    * Key helpers & constants
    * ========================================================= */
-  private static final String KEY_PREFIX = "books:";
-  private static final String BOOK_HASH_KEY = KEY_PREFIX + "hash";           // Primary storage
+  private static final String KEY_PREFIX = "books:hash:";
 
   /* =========================================================
    * HASH Operations
@@ -33,7 +32,7 @@ public class BookRedisHashOpsRepository {
     validateBook(book);
 
     try {
-      redisTemplate.opsForHash().put(BOOK_HASH_KEY, book.getId(), book);
+      redisTemplate.opsForHash().put(KEY_PREFIX, book.getId(), book);
       log.debug("Saved book to hash with Id: {}", book.getId());
     } catch (Exception e) {
       log.error("Failed to save book to hash with Id: {}", book.getId(), e);
@@ -45,7 +44,7 @@ public class BookRedisHashOpsRepository {
     Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      BookEntity book = (BookEntity) redisTemplate.opsForHash().get(BOOK_HASH_KEY, id);
+      BookEntity book = (BookEntity) redisTemplate.opsForHash().get(KEY_PREFIX, id);
       return Optional.ofNullable(book);
     } catch (Exception e) {
       log.error("Failed to retrieve book from hash with Id: {}", id, e);
@@ -55,7 +54,7 @@ public class BookRedisHashOpsRepository {
 
   public Map<String, BookEntity> retrieve() {
     try {
-      Map<Object, Object> raw = redisTemplate.opsForHash().entries(BOOK_HASH_KEY);
+      Map<Object, Object> raw = redisTemplate.opsForHash().entries(KEY_PREFIX);
 
       return raw.entrySet().stream()
         .collect(Collectors.toMap(
@@ -72,7 +71,7 @@ public class BookRedisHashOpsRepository {
     Objects.requireNonNull(id, "Id cannot be null");
 
     try {
-      Long deleted = redisTemplate.opsForHash().delete(BOOK_HASH_KEY, id);
+      Long deleted = redisTemplate.opsForHash().delete(KEY_PREFIX, id);
       log.debug("Deleted book from hash with Id: {} - Count: {}", id, deleted);
       return deleted;
     } catch (Exception e) {
