@@ -60,4 +60,20 @@
     curl --location --request DELETE 'http://localhost:8080/api/books/978-1-123456986' \
     --header 'Accept-Version: application/vnd.sample-service.v1'
 ```
+
+### Search
+```bash
+    curl --location 'http://localhost:8080/api/books/search?q=@author:Eli*' \
+    --header 'Accept-Version: application/vnd.sample-service.v1'
+```
+
+```bash
+    curl --location 'http://localhost:8080/api/books/search?q=@title:Clean*' \
+    --header 'Accept-Version: application/vnd.sample-service.v1'
+```
+
+```bash
+    curl --location 'http://localhost:8080/api/books/search?q=Java' \
+    --header 'Accept-Version: application/vnd.sample-service.v1'
+```
 ---
