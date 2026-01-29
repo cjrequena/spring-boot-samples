@@ -60,6 +60,11 @@ public class BookController {
     return this.bookMapper.toDTO(bookServiceV1.retrieveByAuthor(author));
   }
 
+  @GetMapping("/autocomplete")
+  public List<Book> autocomplete(@RequestParam("q") String query) {
+    return bookServiceV1.autocomplete(query);
+  }
+
   @PutMapping(
     path = "/{id}",
     produces = {APPLICATION_JSON_VALUE}

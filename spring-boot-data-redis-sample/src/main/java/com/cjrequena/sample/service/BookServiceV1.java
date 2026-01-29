@@ -83,6 +83,12 @@ public class BookServiceV1 {
     return books;
   }
 
+  public List<Book> autocomplete(String query) {
+    // Build a RediSearch query for partial matching
+    //String redisQuery = "*" + query + "*"; // Wildcards for partial match
+    return bookRedisSearchRepository.search(query);
+  }
+
   public void update(Book book) throws BookNotFoundException {
     if (bookJpaRepository.findById(book.getId()).isPresent()) {
       bookJpaRepository.save(bookMapper.toEntity(book));
