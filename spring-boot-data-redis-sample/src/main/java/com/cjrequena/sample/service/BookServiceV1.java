@@ -12,7 +12,6 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -72,23 +71,6 @@ public class BookServiceV1 {
     return book;
   }
 
-  public List<Book> retrieveByAuthor(String author) {
-    List<Book> books = bookCacheRedisHashOpsRepository.retrieveByAuthor(author);
-    if (books == null) {
-      books = bookJpaRepository
-        .findByAuthor(author)
-        .map(bookMapper::toDomain)
-        .orElseGet(Collections::emptyList);
-    }
-    return books;
-  }
-
-  public List<Book> autocomplete(String query) {
-    // Build a RediSearch query for partial matching
-    //String redisQuery = "*" + query + "*"; // Wildcards for partial match
-    return bookRedisSearchRepository.search(query);
-  }
-
   public void update(Book book) throws BookNotFoundException {
     if (bookJpaRepository.findById(book.getId()).isPresent()) {
       bookJpaRepository.save(bookMapper.toEntity(book));
@@ -108,4 +90,11 @@ public class BookServiceV1 {
       throw new BookNotFoundException("Book with Id " + id + " was not Found");
     }
   }
+
+  public List<Book> search(String query) {
+    // Build a RediSearch query for partial matching
+    //String redisQuery = "*" + query + "*"; // Wildcards for partial match
+    return bookRedisSearchRepository.search(query);
+  }
+
 }
